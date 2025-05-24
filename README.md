@@ -25,6 +25,18 @@ Quests consist of 2-5 sequential steps that unfold as short adventures:
 
 Each step takes a short time (200ms) to complete and appears as a separate log entry, creating a more immersive questing experience.
 
+### Dark Mode Support
+
+The application features a comprehensive dark mode theme system:
+
+- **Theme Toggle**: Click the theme toggle button in the header to switch between light and dark modes
+- **Automatic Detection**: On first visit, the app detects your system preference (light/dark)
+- **Persistent Preference**: Your theme choice is saved to localStorage and restored on future visits
+- **Smooth Transitions**: All UI elements transition smoothly between themes with CSS animations
+- **Accessibility**: Proper contrast ratios and focus states are maintained in both themes
+
+The dark mode uses a carefully designed color palette that reduces eye strain while maintaining excellent readability and visual hierarchy.
+
 ## Getting Started
 
 ### Prerequisites

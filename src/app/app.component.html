@@ -1,12 +1,19 @@
 <main class="main">
   <div class="nercana-container">
-    <app-hero-details 
-      [hero]="hero()" 
-      (embarkOnQuest)="embarkOnQuest()">
-    </app-hero-details>
+    <div class="header-section">
+      <h1 class="app-title">Nercana Quest</h1>
+      <app-theme-toggle></app-theme-toggle>
+    </div>
     
-    <app-quest-log 
-      [log]="log()">
-    </app-quest-log>
+    <div class="content-section">
+      <app-hero-details 
+        [hero]="hero()" 
+        (embarkOnQuest)="embarkOnQuest()">
+      </app-hero-details>
+      
+      <app-quest-log 
+        [log]="log()">
+      </app-quest-log>
+    </div>
   </div>
 </main>

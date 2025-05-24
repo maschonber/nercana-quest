@@ -1,6 +1,55 @@
 /* Global styles for Nercana application */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600&display=swap');
 
+/* CSS Custom Properties for Theming */
+:root {
+  /* Light theme variables */
+  --background-primary: #ffffff;
+  --background-secondary: #f5f7fa;
+  --background-tertiary: #e7eaee;
+  
+  --text-primary: #333333;
+  --text-secondary: #5f6368;
+  --text-muted: #9aa0a6;
+  
+  --border-color: #e7eaee;
+  --border-hover: #1a73e8;
+  
+  --accent-primary: #1a73e8;
+  --accent-secondary: #34a853;
+  --accent-danger: #ea4335;
+  --accent-warning: #fbbc04;
+  
+  --shadow-light: rgba(0, 0, 0, 0.08);
+  --shadow-medium: rgba(0, 0, 0, 0.1);
+  
+  --focus-ring: rgba(26, 115, 232, 0.2);
+}
+
+/* Dark theme variables */
+.dark-theme {
+  --background-primary: #1a202c;
+  --background-secondary: #2d3748;
+  --background-tertiary: #4a5568;
+  
+  --text-primary: #f7fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #a0aec0;
+  
+  --border-color: #4a5568;
+  --border-hover: #63b3ed;
+  
+  --accent-primary: #63b3ed;
+  --accent-secondary: #68d391;
+  --accent-danger: #fc8181;
+  --accent-warning: #f6d55c;
+  
+  --shadow-light: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.4);
+  
+  --focus-ring: rgba(99, 179, 237, 0.2);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -10,13 +59,15 @@
 body {
   font-family: 'Inter', sans-serif;
   line-height: 1.6;
-  background-color: #f5f7fa;
-  color: #333;
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 ul {
