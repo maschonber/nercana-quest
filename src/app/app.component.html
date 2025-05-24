@@ -1,25 +1,12 @@
 <main class="main">
   <div class="nercana-container">
-    <div class="hero-details">
-      <h2>Hero Details</h2>
-      <ul>
-        <li><strong>Name:</strong> {{ hero().name }}</li>
-        <li><strong>Health:</strong> {{ hero().health }}</li>
-        <li><strong>Attack:</strong> {{ hero().attack }}</li>
-        <li><strong>Defense:</strong> {{ hero().defense }}</li>
-        <li><strong>Luck:</strong> {{ hero().luck }}</li>
-      </ul>
-      <button class="quest-btn" (click)="embarkOnQuest()">Embark on quest</button>
-    </div>
-    <div class="log-view">
-      <h2>Quest Log</h2>
-      <ul>
-        <li *ngFor="let entry of log()">
-          <span [class.success]="entry.success" [class.fail]="!entry.success">
-            [{{ entry.timestamp | date:'shortTime' }}] {{ entry.message }}
-          </span>
-        </li>
-      </ul>
-    </div>
+    <app-hero-details 
+      [hero]="hero()" 
+      (embarkOnQuest)="embarkOnQuest()">
+    </app-hero-details>
+    
+    <app-quest-log 
+      [log]="log()">
+    </app-quest-log>
   </div>
 </main>

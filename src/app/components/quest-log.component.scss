@@ -1,0 +1,49 @@
+.log-view {
+  flex: 2 1 400px;
+  background: linear-gradient(120deg, #232946 80%, #393e5c 100%);
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  min-height: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  border: 1.5px solid #393e5c;
+  color: #f4f4f6;
+  font-family: 'Merriweather', serif;
+}
+
+.log-view h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  color: #e0b973;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.04em;
+}
+
+.log-view ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.log-view li {
+  margin-bottom: 0.85rem;
+  font-size: 1.05rem;
+  font-family: 'Merriweather', serif;
+}
+
+.log-view span.success {
+  color: #7fffd4;
+  font-weight: bold;
+  text-shadow: 0 1px 4px #232946;
+}
+
+.log-view span.fail {
+  color: #ff6f61;
+  font-weight: bold;
+  text-shadow: 0 1px 4px #232946;
+}
+
+@media (max-width: 900px) {
+  .log-view {
+    padding: 1.2rem 1rem;
+  }
+}

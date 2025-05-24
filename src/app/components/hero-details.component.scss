@@ -1,0 +1,57 @@
+.hero-details {
+  flex: 1 1 250px;
+  background: linear-gradient(120deg, #232946 80%, #393e5c 100%);
+  color: #f4f4f6;
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  font-family: 'Merriweather', serif;
+  border: 1.5px solid #393e5c;
+}
+
+.hero-details h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  margin-bottom: 1.2rem;
+  color: #e0b973;
+  letter-spacing: 0.04em;
+}
+
+.hero-details ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+}
+
+.hero-details li {
+  margin-bottom: 0.7rem;
+  font-size: 1.08rem;
+  letter-spacing: 0.01em;
+}
+
+.quest-btn {
+  background: linear-gradient(90deg, #e0b973 0%, #b6894c 100%);
+  color: #232946;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.8rem 2.2rem;
+  font-size: 1.1rem;
+  font-family: 'Cinzel', serif;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(224,185,115,0.10);
+  transition: background 0.2s, color 0.2s;
+  margin-top: 1.2rem;
+  letter-spacing: 0.04em;
+}
+
+.quest-btn:hover {
+  background: linear-gradient(90deg, #b6894c 0%, #e0b973 100%);
+  color: #181c2b;
+}
+
+@media (max-width: 900px) {
+  .hero-details {
+    padding: 1.2rem 1rem;
+  }
+}

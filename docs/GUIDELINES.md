@@ -1,91 +1,47 @@
 # Development Guidelines
 
-This document outlines the development standards and best practices for the Nercana project.
+Development standards and best practices for the Nercana Angular project.
 
-## Coding Guidelines
+## AI Agent Workflow
 
-The application should follow best practices for a clean architecture and maintainable, easily extendable code.
+Follow this systematic approach for any code changes:
 
-- Style definitions should be restricted to SCSS files only, not inside HTML
-- Use meaningful variable and function names
-- Follow consistent code formatting (use Prettier and ESLint)
-- Document complex logic with clear comments
-- Keep functions small and focused on a single responsibility
+1. **Research**: Read README.md, SPECS.md, and related files to understand context and requirements
+2. **Analyze**: Examine existing code, tests, and dependencies affected by the change  
+3. **Plan**: Design solution following project architecture and identify all impacted files
+4. **Implement**: Make focused, consistent changes following the guidelines below
+5. **Test**: Add/update tests for new functionality, ensure comprehensive coverage
+6. **Validate**: Run all tests (Jest + Playwright) and iterate until passing
 
-## Architecture Guidelines
+## Core Standards
 
-Follow these separation principles to ensure a clean, maintainable, and easily extendable codebase:
+- **Architecture**: Models in `/models/`, business logic in `/services/`, UI in components
+- **State**: Use NgRx Signal Store exclusively, keep state immutable
+- **TypeScript**: Explicit types everywhere, avoid `any`, use interfaces for contracts
+- **Testing**: Jest for units, Playwright for e2e, aim for 80%+ coverage on critical features
+- **Styling**: SCSS only (no inline styles), use BEM naming, component-scoped styles
 
-### Component-Based Architecture
+## Angular Specifics
 
-- **Models**: All data models and interfaces (such as `Hero`, `LogEntry`, etc.) must be defined in their own files under `src/app/models/`
-- **Services**: Business logic and data management should be implemented in Angular services under `src/app/services/`. Services should not contain UI logic
-- **View Components**: UI and presentation logic should be implemented in Angular components under `src/app/`. Components should only interact with models and services via well-defined interfaces
+### State Management
+- NgRx Signal Store for all state
+- Never modify state directly, use store methods
+- Access state only through stores, not duplicate service properties
 
-This separation of concerns makes the application easier to test, extend, and maintain.
+### Components  
+- Small, focused components with single responsibilities
+- Container/presentational pattern for complex views
+- Use `OnPush` change detection when appropriate
 
-### Angular Best Practices
+### Performance
+- Prefer Angular bindings over DOM manipulation
+- Unsubscribe observables to prevent memory leaks
+- Use `trackBy` with `*ngFor` for better rendering
 
-#### State Management
+### Testing
+- Mock dependencies with Jest
+- Test edge cases and error scenarios  
+- Use Angular TestBed sparingly, only for integration tests
+- Maintain clean test setup/teardown
 
-- Use NgRx Signal Store for state management
-- Make state immutable; never modify state directly
-- Separate reads (selectors/computed values) from writes (methods/actions)
-- Use proper typing for all state
-- Store all relevant application state in the NgRx Signal Store
-- Never duplicate state across multiple services or components
-- Always access state data from the appropriate store, not from redundant service properties
-
-#### Component Design
-
-- Keep components small and focused on specific UI tasks
-- Use `OnPush` change detection strategy where appropriate
-- Implement container/presentational component pattern for complex views
-  - Container components manage state and connect to services
-  - Presentational components receive inputs and emit outputs
-
-#### Performance Optimization
-
-- Minimize DOM manipulation; prefer Angular's binding system
-- Unsubscribe from observables to prevent memory leaks
-- Use `trackBy` function with `*ngFor` directives to improve rendering performance
-- Implement lazy loading for feature modules
-
-#### Testing
-
-- Write unit tests for all services and components
-- Use Jest as the testing framework
-- Mock dependencies using Jest's mocking capabilities
-- Use Angular TestBed only when necessary to test component interactions
-- Test edge cases and failure scenarios
-- Write readable, maintainable tests using describe/it structure
-- Use the Jest coverage report to identify untested code
-- Aim for at least 80% code coverage for critical app features
-- Include proper setup and cleanup in tests to avoid test pollution
-
-## TypeScript Typing Guidelines
-
-To ensure code quality, maintainability, and robust tooling support:
-
-- Always use explicit and correct TypeScript types for all variables, function parameters, and return values
-- Avoid using `any` and prefer strong typing for all data structures
-- Use interfaces to define data structure contracts
-- Leverage TypeScript's advanced types (union, intersection, generics) when appropriate
-- Define meaningful type aliases for complex types
-
-## SCSS Best Practices
-
-- Use variables for colors, spacing, and typography
-- Implement a consistent naming convention (BEM recommended)
-- Create reusable mixins for common style patterns
-- Organize styles by component, with shared styles in a common location
-- Use nesting judiciously to avoid overly specific selectors
-
-## Git Workflow
-
-- Make frequent, small commits with clear messages
-- Create feature branches for new development
-- Use pull requests for code review before merging
-- Keep the main branch deployable at all times
-
-Following these guidelines will help create a consistent, maintainable codebase that is easy to extend and enhances collaboration among developers.
+Following these guidelines ensures consistent, maintainable code that integrates well with the existing codebase.

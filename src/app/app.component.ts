@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
 import { QuestStore } from './services/quest.store';
 import { Hero } from './models/hero.model';
 import { LogEntry } from './models/log-entry.model';
+import { HeroDetailsComponent } from './components/hero-details.component';
+import { QuestLogComponent } from './components/quest-log.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   standalone: true,
-  imports: [CommonModule, DatePipe]
+  imports: [HeroDetailsComponent, QuestLogComponent]
 })
 export class AppComponent {
   hero: () => Hero;

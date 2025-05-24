@@ -3,7 +3,8 @@ import { AppComponent } from './app.component';
 import { QuestStore } from './services/quest.store';
 import { LogEntry } from './models/log-entry.model';
 import { Hero } from './models/hero.model';
-import { CommonModule } from '@angular/common';
+import { HeroDetailsComponent } from './components/hero-details.component';
+import { QuestLogComponent } from './components/quest-log.component';
 import { signal } from '@angular/core';
 
 // Create a mock QuestStore
@@ -37,10 +38,9 @@ const mockQuestStore = {
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule, AppComponent],
+      imports: [AppComponent],
       providers: [
         { provide: QuestStore, useValue: mockQuestStore }
       ]
