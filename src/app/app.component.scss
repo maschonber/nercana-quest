@@ -1,31 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Merriweather:wght@400;700&display=swap');
-
 .main {
   width: 100vw;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #181c2b 0%, #232946 100%);
-  box-sizing: border-box;
+  background-color: #f5f7fa;
+  padding: 1rem;
 }
 
 .nercana-container {
   display: flex;
   flex-direction: row;
-  gap: 2.5rem;
+  gap: 1.5rem;
   width: 100%;
-  max-width: 900px;
-  background: rgba(30, 34, 54, 0.95);
-  border-radius: 1.5rem;
-  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);
-  padding: 2.5rem 2rem;
+  max-width: 1000px;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
 }
 
 @media (max-width: 900px) {
   .nercana-container {
     flex-direction: column;
-    padding: 1.5rem 0.5rem;
-    gap: 1.5rem;
+    padding: 1rem;
+    gap: 1rem;
   }
 }

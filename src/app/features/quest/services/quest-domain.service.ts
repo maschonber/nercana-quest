@@ -55,23 +55,42 @@ export class QuestDomainService {
       ];
       return failureMessages[Math.floor(Math.random() * failureMessages.length)];
     }
-  }
-  /**
+  }  /**
    * Calculates experience gained from quest
+   * Experience scales with hero level and stats
    */
   private calculateExperience(hero: Hero): number {
     const baseExperience = 10;
-    const difficultyMultiplier = 1 + (hero.attack + hero.defense) / 50;
-    return Math.floor(baseExperience * difficultyMultiplier);
+    
+    // Increase base XP with level to ensure progression
+    const levelScaling = 1 + (hero.level * 0.2);
+    
+    // Bonus from hero stats
+    const statMultiplier = 1 + (hero.attack + hero.defense) / 50;
+    
+    // Final calculation with randomness for variety
+    const varianceFactor = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
+    
+    return Math.floor(baseExperience * levelScaling * statMultiplier * varianceFactor);
   }
 
   /**
    * Calculates gold reward from successful quest
+   * Gold rewards scale with hero level and luck
    */
   private calculateGoldReward(hero: Hero): number {
     const baseGold = 5;
+    
+    // Increase base gold with level
+    const levelBonus = hero.level * 2;
+    
+    // Luck affects gold found
     const luckMultiplier = 1 + hero.luck / 20;
-    return Math.floor(baseGold * luckMultiplier);
+    
+    // Add randomness
+    const varianceFactor = 0.9 + (Math.random() * 0.3); // 0.9 to 1.2
+    
+    return Math.floor((baseGold + levelBonus) * luckMultiplier * varianceFactor);
   }
 
   /**

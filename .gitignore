@@ -98,3 +98,6 @@ pids
 
 # Jest coverage
 coverage/
+
+# Playwright
+node_modules/

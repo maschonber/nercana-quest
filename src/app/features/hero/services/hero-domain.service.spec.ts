@@ -29,34 +29,48 @@ describe('HeroDomainService', () => {
       expect(service.calculateTotalPower(hero)).toBe(125);
     });
   });
-
   describe('calculateLevel', () => {
-    it('should calculate level based on experience', () => {
+    it('should calculate level based on experience with scaling formula', () => {
       expect(service.calculateLevel(0)).toBe(1);
-      expect(service.calculateLevel(99)).toBe(1);
-      expect(service.calculateLevel(100)).toBe(2);
-      expect(service.calculateLevel(250)).toBe(3);
+      expect(service.calculateLevel(40)).toBe(1);
+      expect(service.calculateLevel(50)).toBe(2);
+      expect(service.calculateLevel(200)).toBe(3);
+      expect(service.calculateLevel(450)).toBe(4);
+      expect(service.calculateLevel(800)).toBe(5);
+    });
+  });
+
+  describe('getExperienceForLevel', () => {
+    it('should calculate total experience needed for a specific level', () => {
+      expect(service.getExperienceForLevel(1)).toBe(0);
+      expect(service.getExperienceForLevel(2)).toBe(50);
+      expect(service.getExperienceForLevel(3)).toBe(200);
+      expect(service.getExperienceForLevel(4)).toBe(450);
+      expect(service.getExperienceForLevel(5)).toBe(800);
     });
   });
 
   describe('getExperienceForNextLevel', () => {
-    it('should calculate experience needed for next level', () => {
-      expect(service.getExperienceForNextLevel(0)).toBe(100);
-      expect(service.getExperienceForNextLevel(150)).toBe(200);
-      expect(service.getExperienceForNextLevel(250)).toBe(300);
+    it('should calculate experience needed to reach next level', () => {
+      expect(service.getExperienceForNextLevel(0)).toBe(50);
+      expect(service.getExperienceForNextLevel(50)).toBe(150);
+      expect(service.getExperienceForNextLevel(150)).toBe(50);
+      expect(service.getExperienceForNextLevel(300)).toBe(150);
     });
   });
 
   describe('canLevelUp', () => {
-    it('should determine if hero can level up', () => {
-      expect(service.canLevelUp(50)).toBe(false);
-      expect(service.canLevelUp(100)).toBe(true);
-      expect(service.canLevelUp(150)).toBe(false);
-      expect(service.canLevelUp(200)).toBe(true);
+    it('should determine if hero can level up based on old and new experience', () => {
+      expect(service.canLevelUp(40, 45)).toBe(false); // Both level 1
+      expect(service.canLevelUp(40, 60)).toBe(true);  // Level 1 to 2
+      expect(service.canLevelUp(180, 210)).toBe(true); // Level 2 to 3
+      expect(service.canLevelUp(210, 220)).toBe(false); // Both level 3
+      expect(service.canLevelUp(10, 500)).toBe(true);  // Multiple level gain
     });
   });
+  
   describe('levelUpHero', () => {
-    it('should increase hero stats when leveling up', () => {
+    it('should increase hero stats for a single level', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
@@ -75,9 +89,28 @@ describe('HeroDomainService', () => {
       expect(leveledHero.defense).toBe(10);
       expect(leveledHero.luck).toBe(6);
       expect(leveledHero.name).toBe('Test Hero');
-      expect(leveledHero.level).toBe(1); // levelUpHero doesn't change level
       expect(leveledHero.experience).toBe(100);
       expect(leveledHero.gold).toBe(50);
+    });
+    
+    it('should increase hero stats for multiple levels', () => {
+      const hero: Hero = {
+        name: 'Test Hero',
+        health: 100,
+        attack: 12,
+        defense: 8,
+        luck: 5,
+        level: 1,
+        experience: 100,
+        gold: 50
+      };
+
+      const leveledHero = service.levelUpHero(hero, 3);
+
+      expect(leveledHero.health).toBe(115);
+      expect(leveledHero.attack).toBe(18);
+      expect(leveledHero.defense).toBe(14);
+      expect(leveledHero.luck).toBe(8);
     });
   });
   describe('validateHeroStats', () => {

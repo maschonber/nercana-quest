@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { QuestStore } from './services/quest.store';
+import { QuestStore } from './shared/services/quest.store';
 import { Hero } from './features/hero/models/hero.model';
 import { LogEntry } from './models/log-entry.model';
 import { HeroDetailsComponent } from './features/hero/components/hero-details.component';

@@ -18,11 +18,19 @@ export class HeroDetailsComponent {
   get heroPower(): number {
     return this.heroDomainService.calculateTotalPower(this.hero);
   }
-
   get experienceToNextLevel(): number {
+    return this.heroDomainService.getExperienceForNextLevel(this.hero.experience);
+  }
+  
+  get experienceProgress(): number {
     const currentLevel = this.hero.level;
-    const currentExp = this.hero.experience;
-    return this.heroDomainService.getExperienceForNextLevel(currentExp) - currentExp;
+    const expForCurrentLevel = this.heroDomainService.getExperienceForLevel(currentLevel);
+    const expForNextLevel = this.heroDomainService.getExperienceForLevel(currentLevel + 1);
+    const expInCurrentLevel = this.hero.experience - expForCurrentLevel;
+    const expRequiredForLevel = expForNextLevel - expForCurrentLevel;
+    
+    // Return percentage of level completed (0-100)
+    return Math.floor((expInCurrentLevel / expRequiredForLevel) * 100);
   }
 
   get isHeroReady(): boolean {

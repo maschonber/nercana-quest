@@ -12,40 +12,74 @@ export class HeroDomainService {
   calculateTotalPower(hero: Hero): number {
     return hero.health + hero.attack + hero.defense + hero.luck;
   }
-
   /**
-   * Calculates hero's level based on experience
+   * Calculates hero's level based on experience using a scaling formula
+   * Level increases get progressively harder to reach
+   * @param experience Total accumulated experience
+   * @returns Current level based on experience
    */
   calculateLevel(experience: number): number {
-    return Math.floor(experience / 100) + 1;
+    // Make higher levels require exponentially more XP
+    // Base formula: level = 1 + sqrt(experience / 50)
+    return Math.floor(1 + Math.sqrt(experience / 50));
   }
 
   /**
-   * Calculates experience needed for next level
+   * Calculates total experience needed to reach a specific level
+   * @param level Target level
+   * @returns Experience required for that level
+   */
+  getExperienceForLevel(level: number): number {
+    // Inversion of the level calculation formula
+    // experience = 50 * (level - 1)²
+    return 50 * Math.pow(level - 1, 2);
+  }
+
+  /**
+   * Calculates experience required for the next level from current experience
+   * @param currentExperience Current experience total
+   * @returns Experience points needed to reach next level
    */
   getExperienceForNextLevel(currentExperience: number): number {
     const currentLevel = this.calculateLevel(currentExperience);
-    return currentLevel * 100;
-  }  /**
-   * Determines if hero can level up
+    const nextLevel = currentLevel + 1;
+    const expNeededForNextLevel = this.getExperienceForLevel(nextLevel);
+    return expNeededForNextLevel - currentExperience;
+  }
+  
+  /**
+   * Determines if hero can level up based on old and new experience values
+   * @param oldExperience Experience before gain
+   * @param newExperience Experience after gain
+   * @returns True if level has increased
    */
-  canLevelUp(currentExperience: number): boolean {
-    // Experience levels: 0-99=Level1, 100-199=Level2, 200-299=Level3, etc.
-    // Can level up at exactly 100, 200, 300, etc.
-    return currentExperience > 0 && currentExperience % 100 === 0;
+  canLevelUp(oldExperience: number, newExperience: number): boolean {
+    const oldLevel = this.calculateLevel(oldExperience);
+    const newLevel = this.calculateLevel(newExperience);
+    return newLevel > oldLevel;
   }
 
   /**
    * Applies stat increases when hero levels up
+   * @param hero Hero to level up
+   * @param levels Number of levels gained
+   * @returns Updated hero with improved stats
    */
-  levelUpHero(hero: Hero): Hero {
-    return {
-      ...hero,
-      health: hero.health + 5,
-      attack: hero.attack + 2,
-      defense: hero.defense + 2,
-      luck: hero.luck + 1
-    };
+  levelUpHero(hero: Hero, levels: number = 1): Hero {
+    let updatedHero = { ...hero };
+    
+    // Apply stat increases for each level gained
+    for (let i = 0; i < levels; i++) {
+      updatedHero = {
+        ...updatedHero,
+        health: updatedHero.health + 5,
+        attack: updatedHero.attack + 2,
+        defense: updatedHero.defense + 2,
+        luck: updatedHero.luck + 1
+      };
+    }
+    
+    return updatedHero;
   }
 
   /**

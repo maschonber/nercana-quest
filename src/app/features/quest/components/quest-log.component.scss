@@ -1,49 +1,41 @@
 .log-view {
   flex: 2 1 400px;
-  background: linear-gradient(120deg, #232946 80%, #393e5c 100%);
-  border-radius: 1rem;
-  padding: 2rem 1.5rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
   min-height: 320px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  border: 1.5px solid #393e5c;
-  color: #f4f4f6;
-  font-family: 'Merriweather', serif;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e7eaee;
+  color: #333;
 }
 
 .log-view h2 {
-  font-family: 'Cinzel', serif;
-  font-size: 1.5rem;
-  color: #e0b973;
-  margin-bottom: 1.2rem;
-  letter-spacing: 0.04em;
+  font-size: 1.25rem;
+  color: #1a73e8;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e7eaee;
 }
 
 .log-view ul {
-  list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .log-view li {
-  margin-bottom: 0.85rem;
-  font-size: 1.05rem;
-  font-family: 'Merriweather', serif;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #f5f7fa;
 }
 
 .log-view span.success {
-  color: #7fffd4;
-  font-weight: bold;
-  text-shadow: 0 1px 4px #232946;
+  color: #34a853;
+  font-weight: 500;
 }
 
 .log-view span.fail {
-  color: #ff6f61;
-  font-weight: bold;
-  text-shadow: 0 1px 4px #232946;
-}
-
-@media (max-width: 900px) {
-  .log-view {
-    padding: 1.2rem 1rem;
-  }
+  color: #ea4335;
+  font-weight: 500;
 }

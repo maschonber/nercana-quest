@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { QuestStore } from './services/quest.store';
+import { QuestStore } from './shared/services/quest.store';
 import { LogEntry } from './models/log-entry.model';
 import { Hero } from './features/hero/models/hero.model';
 import { HeroDetailsComponent } from './features/hero/components/hero-details.component';
