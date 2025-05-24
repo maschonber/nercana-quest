@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ThemeStore } from './theme.store';
 
 describe('ThemeStore', () => {
-  let store: ThemeStore;
+  let store: InstanceType<typeof ThemeStore>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

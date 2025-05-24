@@ -9,10 +9,8 @@ import { CombatService } from './combat.service';
   providedIn: 'root'
 })
 export class QuestDomainService {
-  constructor(
-    private monsterService: MonsterService,
-    private combatService: CombatService
-  ) {}
+  private readonly monsterService = inject(MonsterService);
+  private readonly combatService = inject(CombatService);
   
   /**
    * Calculates the outcome of a quest based on hero stats,

@@ -49,14 +49,6 @@ Quests are dynamic adventures that unfold through multiple steps:
 - **Step Display**: Each step appears as a separate log entry with appropriate visual styling
 - **Reward Distribution**: Experience is gained primarily from encounters, gold from treasure steps
 
-### Quest Success Mechanics
-
-- Base 30% success chance
-- Up to 60% bonus from total hero power (attack + defense + luck)
-- Maximum 95% success chance
-- Experience and gold rewards scale with hero level and stats
-- Random variance in rewards for variety
-
 ## Design Specifications
 
 The application uses a clean, modern UI design with a light color scheme:

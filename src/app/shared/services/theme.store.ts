@@ -1,4 +1,4 @@
-import { Injectable, computed } from '@angular/core';
+import { computed } from '@angular/core';
 import { signalStore, withState, withMethods, patchState } from '@ngrx/signals';
 
 export interface ThemeState {
@@ -9,10 +9,8 @@ const initialState: ThemeState = {
   isDarkMode: false
 };
 
-@Injectable({
-  providedIn: 'root'
-})
-export class ThemeStore extends signalStore(
+export const ThemeStore = signalStore(
+  { providedIn: 'root' },
   withState(initialState),
   withMethods((store) => ({
     /**
@@ -72,4 +70,4 @@ export class ThemeStore extends signalStore(
       }
     }
   }))
-) {}
+);

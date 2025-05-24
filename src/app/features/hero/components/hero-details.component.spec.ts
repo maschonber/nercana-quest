@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HeroDetailsComponent } from './hero-details.component';
 import { Hero } from '../models/hero.model';
-import { HeroDomainService } from '../services/hero-domain.service';
+import { HeroFacadeService } from '../services/hero-facade.service';
+import { signal } from '@angular/core';
 
 describe('HeroDetailsComponent', () => {
   let component: HeroDetailsComponent;
@@ -17,14 +18,30 @@ describe('HeroDetailsComponent', () => {
     gold: 0
   };
 
+  // Create a mock HeroFacadeService
+  const mockHeroFacade = {
+    hero: signal<Hero>(mockHero),
+    heroPower: signal<number>(25), // attack + defense
+    experienceToNextLevel: signal<number>(100),
+    experienceProgress: signal<number>(0),
+    isHeroReady: signal<boolean>(true),
+    gainExperience: jest.fn(),
+    gainGold: jest.fn(),
+    takeDamage: jest.fn(),
+    heal: jest.fn(),
+    levelUp: jest.fn()
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HeroDetailsComponent]
+      imports: [HeroDetailsComponent],
+      providers: [
+        { provide: HeroFacadeService, useValue: mockHeroFacade }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HeroDetailsComponent);
     component = fixture.componentInstance;
-    component.hero = mockHero;
     fixture.detectChanges();
   });
 

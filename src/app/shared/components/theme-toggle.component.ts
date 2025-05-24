@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ThemeStore } from '../../shared/services/theme.store';
+import { ThemeStore } from '../services/theme.store';
 
 @Component({
   selector: 'app-theme-toggle',
@@ -10,7 +10,7 @@ import { ThemeStore } from '../../shared/services/theme.store';
   imports: [CommonModule]
 })
 export class ThemeToggleComponent {
-  private themeStore = inject(ThemeStore);
+  private readonly themeStore = inject(ThemeStore);
 
   // Access theme state
   isDarkMode = this.themeStore.isDarkMode;

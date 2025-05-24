@@ -1,21 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ThemeToggleComponent } from './theme-toggle.component';
 import { ThemeStore } from '../services/theme.store';
+import { signal } from '@angular/core';
 
 describe('ThemeToggleComponent', () => {
   let component: ThemeToggleComponent;
   let fixture: ComponentFixture<ThemeToggleComponent>;
-  let mockThemeStore: jest.Mocked<ThemeStore>;
+  let mockThemeStore: any;
 
   beforeEach(async () => {
-    // Create mock theme store
+    // Create mock theme store with signals
     mockThemeStore = {
-      isDarkMode: jest.fn().mockReturnValue(false),
+      isDarkMode: signal(false),
       toggleTheme: jest.fn(),
       setTheme: jest.fn(),
       initializeTheme: jest.fn(),
       applyThemeToBody: jest.fn()
-    } as any;
+    };
 
     await TestBed.configureTestingModule({
       imports: [ThemeToggleComponent],
@@ -34,7 +35,7 @@ describe('ThemeToggleComponent', () => {
   });
 
   it('should display correct icon and text for light mode', () => {
-    mockThemeStore.isDarkMode.mockReturnValue(false);
+    mockThemeStore.isDarkMode.set(false);
     fixture.detectChanges();
     
     const compiled = fixture.nativeElement;
@@ -46,9 +47,8 @@ describe('ThemeToggleComponent', () => {
   });
 
   it('should display correct icon and text for dark mode', () => {
-    mockThemeStore.isDarkMode.mockReturnValue(true);
-    fixture.detectChanges();
-    
+    mockThemeStore.isDarkMode.set(true);
+    fixture.detectChanges();    
     const compiled = fixture.nativeElement;
     const icon = compiled.querySelector('.theme-icon');
     const text = compiled.querySelector('.theme-text');
@@ -66,7 +66,7 @@ describe('ThemeToggleComponent', () => {
   });
 
   it('should have correct aria-label for light mode', () => {
-    mockThemeStore.isDarkMode.mockReturnValue(false);
+    mockThemeStore.isDarkMode.set(false);
     fixture.detectChanges();
     
     const button = fixture.nativeElement.querySelector('.theme-toggle-btn');
@@ -75,7 +75,7 @@ describe('ThemeToggleComponent', () => {
   });
 
   it('should have correct aria-label for dark mode', () => {
-    mockThemeStore.isDarkMode.mockReturnValue(true);
+    mockThemeStore.isDarkMode.set(true);
     fixture.detectChanges();
     
     const button = fixture.nativeElement.querySelector('.theme-toggle-btn');

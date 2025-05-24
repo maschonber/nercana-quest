@@ -1,9 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { QuestStore } from './shared/services/quest.store';
 import { ThemeStore } from './shared/services/theme.store';
+import { QuestFacadeService } from './features/quest/services/quest-facade.service';
 import { LogEntry } from './models/log-entry.model';
-import { Hero } from './features/hero/models/hero.model';
 import { HeroDetailsComponent } from './features/hero/components/hero-details.component';
 import { QuestLogComponent } from './features/quest/components/quest-log.component';
 import { signal } from '@angular/core';
@@ -34,26 +33,17 @@ Object.defineProperty(window, 'localStorage', {
   },
 });
 
-// Create a mock QuestStore
-const mockQuestStore = {  // Mock the hero and log signals
-  hero: signal<Hero>({
-    name: 'Adventurer',
-    health: 100,
-    attack: 12,
-    defense: 8,
-    luck: 5,
-    level: 1,
-    experience: 0,
-    gold: 0
-  }),
-  
+// Create a mock QuestFacadeService
+const mockQuestFacade = {
+  questInProgress: signal<boolean>(false),
   log: signal<LogEntry[]>([]),
+  recentLogEntries: signal<LogEntry[]>([]),
+  hasLogEntries: signal<boolean>(false),
   
-  // Mock the embarkOnQuest method
   embarkOnQuest: jest.fn(() => {
     // Update the log signal when called
-    const currentLog = mockQuestStore.log();
-    mockQuestStore.log.set([
+    const currentLog = mockQuestFacade.log();
+    mockQuestFacade.log.set([
       {
         message: 'Quest succeeded! Your hero returns victorious.',
         timestamp: new Date(),
@@ -61,7 +51,10 @@ const mockQuestStore = {  // Mock the hero and log signals
       },
       ...currentLog
     ]);
-  })
+  }),
+  
+  addLogEntry: jest.fn(),
+  clearLog: jest.fn()
 };
 
 // Create a mock ThemeStore
@@ -77,17 +70,19 @@ const mockThemeStore = {
 
 describe('AppComponent', () => {
   let component: AppComponent;
-  let fixture: ComponentFixture<AppComponent>;  beforeEach(async () => {
+  let fixture: ComponentFixture<AppComponent>;
+
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [
-        { provide: QuestStore, useValue: mockQuestStore },
+        { provide: QuestFacadeService, useValue: mockQuestFacade },
         { provide: ThemeStore, useValue: mockThemeStore }
       ]
     }).compileComponents();
 
     // Reset the mock log before each test
-    mockQuestStore.log.set([]);
+    mockQuestFacade.log.set([]);
 
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
@@ -97,17 +92,9 @@ describe('AppComponent', () => {
   it('should create the app', () => {
     expect(component).toBeTruthy();
   });
-  it('should have a hero with correct default stats', () => {
-    expect(component.hero()).toEqual({
-      name: 'Adventurer',
-      health: 100,
-      attack: 12,
-      defense: 8,
-      luck: 5,
-      level: 1,
-      experience: 0,
-      gold: 0
-    });
+
+  it('should expose log from quest facade', () => {
+    expect(component.log).toBe(mockQuestFacade.log);
   });
 
   it('should add a log entry when embarking on a quest', () => {
@@ -117,8 +104,8 @@ describe('AppComponent', () => {
     // Call embarkOnQuest
     component.embarkOnQuest();
     
-    // Check if the quest store method was called
-    expect(mockQuestStore.embarkOnQuest).toHaveBeenCalled();
+    // Check if the quest facade method was called
+    expect(mockQuestFacade.embarkOnQuest).toHaveBeenCalled();
     
     // Verify log has an entry
     expect(component.log().length).toBe(1);
