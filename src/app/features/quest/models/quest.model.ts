@@ -1,4 +1,6 @@
 // Model for quest-related data in Nercana
+import { CombatResult } from './combat.model';
+import { Monster } from './monster.model';
 
 export enum QuestStepType {
   EXPLORATION = 'exploration',
@@ -13,6 +15,9 @@ export interface QuestStep {
   success: boolean;
   experienceGained: number;
   goldGained: number;
+  // For encounter steps that involve combat
+  monster?: Monster;
+  combatResult?: CombatResult;
 }
 
 export interface QuestResult {

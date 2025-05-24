@@ -1,11 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Hero } from '../../hero/models/hero.model';
 import { QuestResult, QuestStep, QuestStepType } from '../models/quest.model';
+import { CombatOutcome, CombatResult } from '../models/combat.model';
+import { MonsterService } from './monster.service';
+import { CombatService } from './combat.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class QuestDomainService {
+  constructor(
+    private monsterService: MonsterService,
+    private combatService: CombatService
+  ) {}
+  
   /**
    * Calculates the outcome of a quest based on hero stats,
    * generating 2-5 quest steps of different types
@@ -33,8 +41,7 @@ export class QuestDomainService {
       goldGained: totalGold,
       steps: steps
     };
-  }
-  /**
+  }  /**
    * Generates a specific number of quest steps with individual rewards
    */
   private generateQuestSteps(
@@ -78,13 +85,13 @@ export class QuestDomainService {
       }
     }
     
-    // Calculate base rewards
+    // Calculate base rewards (these are now only used for treasure steps)
     const baseExperience = this.calculateExperience(hero);
     const baseTreasureGold = this.calculateGoldReward(hero);
     
     // Second pass: create steps with appropriate rewards
     for (let i = 0; i < stepCount; i++) {
-      steps.push(this.createQuestStep(
+      const step = this.createQuestStep(
         stepTypes[i], 
         hero, 
         questSuccess, 
@@ -94,13 +101,22 @@ export class QuestDomainService {
         baseTreasureGold,
         encounterCount,
         treasureCount
-      ));
+      );
+      
+      steps.push(step);
+      
+      // For encounter steps with combat, update quest success based on combat outcome
+      if (step.type === QuestStepType.ENCOUNTER && step.combatResult) {
+        // If the hero was defeated, the overall quest can't be fully successful
+        if (step.combatResult.outcome === CombatOutcome.HERO_DEFEAT) {
+          questSuccess = false;
+        }
+      }
     }
   }
     /**
    * Creates a quest step of a specific type with appropriate rewards
-   */
-  private createQuestStep(
+   */  private createQuestStep(
     type: QuestStepType, 
     hero: Hero, 
     questSuccess: boolean, 
@@ -116,6 +132,8 @@ export class QuestDomainService {
     let success = questSuccess;
     let experienceGained = 0;
     let goldGained = 0;
+    let monster = undefined;
+    let combatResult = undefined;
     
     switch(type) {
       case QuestStepType.EXPLORATION:
@@ -125,21 +143,22 @@ export class QuestDomainService {
         break;
         
       case QuestStepType.ENCOUNTER:
-        message = this.generateEncounterMessage(questSuccess);
+        // Generate a monster appropriate for the hero's level
+        monster = this.monsterService.generateRandomMonster(hero.level);
         
-        // Experience from successful encounters
-        if (questSuccess) {
-          // Distribute experience across all encounters
-          experienceGained = Math.floor(baseExperience / Math.max(1, encounterCount));
-        } else {
-          // Failed encounters give reduced experience (learning from failure)
-          experienceGained = Math.floor((baseExperience * 0.2) / Math.max(1, encounterCount));
-        }
+        // Clone hero to avoid modifying the original during combat simulation
+        const heroCopy = { ...hero };
         
-        // Minor gold from encounters (successful ones)
-        if (questSuccess) {
-          goldGained = Math.floor(baseTreasureGold * 0.15); // 15% of treasure gold
-        }
+        // Simulate combat between hero and monster
+        combatResult = this.combatService.simulateCombat(heroCopy, monster);
+        
+        // Determine success based on combat outcome
+        success = combatResult.outcome === CombatOutcome.HERO_VICTORY;
+        
+        // Set rewards from combat (already scaled appropriately)
+        experienceGained = combatResult.experienceGained;
+        goldGained = combatResult.goldGained;        // Generate appropriate message based on combat outcome
+        message = this.generateEncounterMessageFromCombat(combatResult, monster);
         break;
         
       case QuestStepType.TREASURE:
@@ -157,7 +176,9 @@ export class QuestDomainService {
       success,
       timestamp: new Date(),
       experienceGained,
-      goldGained
+      goldGained,
+      monster,
+      combatResult
     };
   }
   
@@ -226,6 +247,43 @@ export class QuestDomainService {
         'Your hero must leave valuable loot behind during the hasty retreat.'
       ];
       return messages[Math.floor(Math.random() * messages.length)];
+    }
+  }  /**
+   * Generates message for encounter step based on combat result
+   */
+  private generateEncounterMessageFromCombat(combatResult: CombatResult, monster?: any): string {
+    const monsterName = monster?.name || "the enemy";
+    
+    switch (combatResult.outcome) {
+      case CombatOutcome.HERO_VICTORY:
+        const victoryMessages = [
+          `Your hero defeated ${monsterName} after an intense battle! ${combatResult.summary}`,
+          `${monsterName} was no match for your hero's combat prowess after a ${combatResult.rounds.length}-round fight!`,
+          `Victory! Your hero vanquished ${monsterName} with superior tactics!`,
+          `After a fierce struggle, your hero emerged victorious over ${monsterName}!`
+        ];
+        return victoryMessages[Math.floor(Math.random() * victoryMessages.length)];
+        
+      case CombatOutcome.HERO_DEFEAT:
+        const defeatMessages = [
+          `Your hero was overwhelmed by ${monsterName} but managed to escape with their life.`,
+          `Despite a valiant effort against ${monsterName}, your hero was forced to retreat after being wounded.`,
+          `${monsterName} proved too powerful, leaving your hero no choice but to withdraw from the battle.`,
+          `Your hero suffered defeat at the hands of ${monsterName} but lived to fight another day.`
+        ];
+        return defeatMessages[Math.floor(Math.random() * defeatMessages.length)];
+        
+      case CombatOutcome.HERO_FLED:
+        const fleeMessages = [
+          `Your hero made a tactical retreat when facing ${monsterName}, judging the odds unfavorable.`,
+          `Recognizing the danger posed by ${monsterName}, your hero wisely chose to flee the battle.`,
+          `Your hero managed to escape from a potentially deadly encounter with ${monsterName}.`,
+          `Facing ${monsterName}, your hero decided that discretion was the better part of valor.`
+        ];
+        return fleeMessages[Math.floor(Math.random() * fleeMessages.length)];
+        
+      default:
+        return `Your hero encountered ${monsterName}, but the outcome is unclear.`;
     }
   }
 

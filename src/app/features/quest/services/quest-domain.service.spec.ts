@@ -1,14 +1,61 @@
 import { TestBed } from '@angular/core/testing';
 import { QuestDomainService } from './quest-domain.service';
+import { MonsterService } from './monster.service';
+import { CombatService } from './combat.service';
 import { Hero } from '../../hero/models/hero.model';
 import { QuestStepType } from '../models/quest.model';
+import { CombatOutcome, CombatResult } from '../models/combat.model';
+import { Monster, MonsterType } from '../models/monster.model';
 
 describe('QuestDomainService', () => {
   let service: QuestDomainService;
-
+  let monsterServiceSpy: any;
+  let combatServiceSpy: any;
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    // Create Jest spy objects instead of Jasmine spies
+    const monsterSpy = {
+      generateRandomMonster: jest.fn()
+    };
+    
+    const combatSpy = {
+      simulateCombat: jest.fn()
+    };
+    
+    TestBed.configureTestingModule({
+      providers: [
+        QuestDomainService,
+        { provide: MonsterService, useValue: monsterSpy },
+        { provide: CombatService, useValue: combatSpy }
+      ]
+    });
+    
     service = TestBed.inject(QuestDomainService);
+    monsterServiceSpy = TestBed.inject(MonsterService);
+    combatServiceSpy = TestBed.inject(CombatService);
+      // Setup default return values for spies
+    const mockMonster: Monster = {
+      type: MonsterType.GOBLIN,
+      name: 'Test Goblin',
+      health: 30,
+      maxHealth: 30,
+      attack: 8,
+      defense: 5,
+      experienceReward: 20,
+      goldReward: 10,
+      description: 'A test goblin'
+    };
+    
+    monsterServiceSpy.generateRandomMonster.mockReturnValue(mockMonster);
+    
+    const mockCombatResult: CombatResult = {
+      outcome: CombatOutcome.HERO_VICTORY,
+      rounds: [],
+      experienceGained: 20,
+      goldGained: 10,
+      summary: 'Test combat summary'
+    };
+    
+    combatServiceSpy.simulateCombat.mockReturnValue(mockCombatResult);
   });
 
   it('should be created', () => {
@@ -144,6 +191,41 @@ describe('QuestDomainService', () => {
       expect(stepMessages[QuestStepType.EXPLORATION].size).toBeGreaterThan(0);
       expect(stepMessages[QuestStepType.ENCOUNTER].size).toBeGreaterThan(0);
       expect(stepMessages[QuestStepType.TREASURE].size).toBeGreaterThan(0);
+    });
+    
+    it('should include combat data for encounter steps', () => {
+      const hero: Hero = {
+        name: 'Test Hero',
+        health: 100,
+        attack: 12,
+        defense: 8,
+        luck: 5,
+        level: 1,
+        experience: 0,
+        gold: 0
+      };
+
+      const result = service.calculateQuestOutcome(hero);
+      
+      // Find encounter steps
+      const encounterSteps = result.steps.filter(step => step.type === QuestStepType.ENCOUNTER);
+      
+      // If there are encounter steps, they should have monster and combat data
+      if (encounterSteps.length > 0) {
+        encounterSteps.forEach(step => {
+          expect(step.monster).toBeDefined();
+          expect(step.combatResult).toBeDefined();
+          
+          if (step.monster && step.combatResult) {
+            expect(monsterServiceSpy.generateRandomMonster).toHaveBeenCalled();
+            expect(combatServiceSpy.simulateCombat).toHaveBeenCalled();
+            
+            // Verify combat rewards match step rewards
+            expect(step.experienceGained).toBe(step.combatResult.experienceGained);
+            expect(step.goldGained).toBe(step.combatResult.goldGained);
+          }
+        });
+      }
     });
   });
 });

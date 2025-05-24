@@ -58,6 +58,13 @@ Run the development server:
 ng serve
 ```
 
+The usual development environment is on Windows, using Powershell. So to start a script, commands can and should be chained like this:
+
+```bash
+cd d:\workspace\vscode\nercana; npm test
+cd d:\workspace\vscode\nercana; ng serve
+```
+
 Navigate to `http://localhost:4200/`.
 
 ## Building for Production

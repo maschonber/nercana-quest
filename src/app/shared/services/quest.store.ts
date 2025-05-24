@@ -6,6 +6,8 @@ import { LogEntry } from '../../models/log-entry.model';
 import { QuestDomainService } from '../../features/quest/services/quest-domain.service';
 import { HeroDomainService } from '../../features/hero/services/hero-domain.service';
 import { QuestStep } from '../../features/quest/models/quest.model';
+import { Monster } from '../../features/quest/models/monster.model';
+import { CombatResult } from '../../features/quest/models/combat.model';
 
 interface QuestState {
   hero: Hero;
@@ -71,15 +73,16 @@ export class QuestStore extends signalStore(
         }
         
         const currentStep = steps[currentIndex];
-        const currentState = getState(store);
-          // Create log entry for the current step
+        const currentState = getState(store);          // Create log entry for the current step
         const logEntry: LogEntry = {
           message: currentStep.message,
           timestamp: new Date(),
           success: currentStep.success,
           stepType: currentStep.type,
           experienceGained: currentStep.experienceGained,
-          goldGained: currentStep.goldGained
+          goldGained: currentStep.goldGained,
+          monster: currentStep.monster,
+          combatResult: currentStep.combatResult
         };
         
         // Apply any rewards from this step
@@ -136,7 +139,7 @@ export class QuestStore extends signalStore(
         // Process the next step after a delay
         setTimeout(() => {
           this.processQuestSteps(steps, currentIndex + 1, originalHero);
-        }, 200); // 200ms delay between steps
+        }, 500); // 500ms delay between steps
       }
     };
   })
