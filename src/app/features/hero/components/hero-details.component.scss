@@ -91,32 +91,3 @@
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
-
-.quest-btn {
-  background-color: var(--accent-primary);
-  color: var(--background-primary);
-  border: none;
-  border-radius: 4px;
-  padding: 0.6rem 1.5rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 1rem;
-  text-transform: uppercase;
-}
-
-.quest-btn:hover {
-  background-color: var(--accent-secondary);
-  box-shadow: 0 2px 6px var(--shadow-medium);
-  transform: translateY(-1px);
-}
-
-.quest-btn:active {
-  transform: translateY(0);
-}
-
-.quest-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--focus-ring);
-}

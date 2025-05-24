@@ -1,0 +1,11 @@
+<div class="hero-actions">
+  <div class="action-buttons">
+    <button 
+      class="quest-btn" 
+      (click)="onEmbarkOnQuest()" 
+      [disabled]="!canStartQuest()"
+      [class.quest-in-progress]="questInProgress()">
+      {{ buttonText() }}
+    </button>
+  </div>
+</div>

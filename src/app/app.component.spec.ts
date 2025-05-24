@@ -92,23 +92,11 @@ describe('AppComponent', () => {
   it('should create the app', () => {
     expect(component).toBeTruthy();
   });
-
   it('should expose log from quest facade', () => {
     expect(component.log).toBe(mockQuestFacade.log);
   });
 
-  it('should add a log entry when embarking on a quest', () => {
-    // Initial log should be empty
-    expect(component.log().length).toBe(0);
-    
-    // Call embarkOnQuest
-    component.embarkOnQuest();
-    
-    // Check if the quest facade method was called
-    expect(mockQuestFacade.embarkOnQuest).toHaveBeenCalled();
-    
-    // Verify log has an entry
-    expect(component.log().length).toBe(1);
-    expect(component.log()[0].message).toMatch(/Quest succeeded/);
+  it('should initialize theme on startup', () => {
+    expect(mockThemeStore.initializeTheme).toHaveBeenCalled();
   });
 });

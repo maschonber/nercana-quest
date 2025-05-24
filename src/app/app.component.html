@@ -5,13 +5,14 @@
       <app-theme-toggle></app-theme-toggle>
     </div>
     
-    <div class="content-section">      <app-hero-details 
-        (embarkOnQuest)="embarkOnQuest()">
-      </app-hero-details>
+    <div class="content-section">
+      <app-hero-details></app-hero-details>
       
       <app-quest-log 
         [log]="log()">
       </app-quest-log>
     </div>
+    
+    <app-hero-actions></app-hero-actions>
   </div>
 </main>

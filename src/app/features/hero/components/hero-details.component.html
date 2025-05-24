@@ -13,9 +13,7 @@
       <li><strong>Luck:</strong> {{ hero().luck }}</li>
     </ul>
   </div>
-
   <div class="hero-power">
-    <h3>Combat Readiness</h3>
     <p><strong>Power Level:</strong> {{ heroPower() }}</p>
     <div class="level-info">
       <p><strong>XP Progress:</strong></p>
@@ -26,7 +24,4 @@
       <p class="xp-next-level"><strong>XP to Level {{ hero().level + 1 }}:</strong> {{ experienceToNextLevel() }}</p>
     </div>
   </div>
-  <button class="quest-btn" (click)="onEmbarkOnQuest()" [disabled]="!isHeroReady()">
-    {{ isHeroReady() ? 'Embark on quest' : 'Hero not ready' }}
-  </button>
 </div>

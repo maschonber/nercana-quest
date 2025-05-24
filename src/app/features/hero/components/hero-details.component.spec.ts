@@ -24,7 +24,6 @@ describe('HeroDetailsComponent', () => {
     heroPower: signal<number>(25), // attack + defense
     experienceToNextLevel: signal<number>(100),
     experienceProgress: signal<number>(0),
-    isHeroReady: signal<boolean>(true),
     gainExperience: jest.fn(),
     gainGold: jest.fn(),
     takeDamage: jest.fn(),
@@ -58,17 +57,14 @@ describe('HeroDetailsComponent', () => {
     expect(compiled.textContent).toContain('10');
     expect(compiled.textContent).toContain('7');
   });
-  it('should emit embarkOnQuest event when button is clicked', () => {
-    jest.spyOn(component.embarkOnQuest, 'emit');
-    
-    const button = fixture.nativeElement.querySelector('.quest-btn');
-    button.click();
-    
-    expect(component.embarkOnQuest.emit).toHaveBeenCalled();
+
+  it('should display hero power correctly', () => {
+    const compiled = fixture.nativeElement;
+    expect(compiled.textContent).toContain('25'); // heroPower value
   });
 
-  it('should have correct button text', () => {
-    const button = fixture.nativeElement.querySelector('.quest-btn');
-    expect(button.textContent.trim()).toBe('Embark on quest');
+  it('should display experience progress correctly', () => {
+    const compiled = fixture.nativeElement;
+    expect(compiled.textContent).toContain('0 / 100 XP'); // experience and next level
   });
 });
