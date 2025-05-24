@@ -13,17 +13,22 @@
   flex-direction: row;
   gap: 1.5rem;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1280px; /* Increased for better space utilization */
   background-color: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   padding: 1.5rem;
+  overflow: hidden;
+  height: calc(100vh - 2rem); /* Use most of the viewport height */
+  max-height: 800px; /* Cap maximum height */
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1280px) {
   .nercana-container {
     flex-direction: column;
     padding: 1rem;
     gap: 1rem;
+    height: auto;
+    max-height: none;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LogEntry } from '../../../models/log-entry.model';
 
@@ -9,6 +9,42 @@ import { LogEntry } from '../../../models/log-entry.model';
   standalone: true,
   imports: [CommonModule, DatePipe]
 })
-export class QuestLogComponent {
+export class QuestLogComponent implements OnChanges {
   @Input() log!: LogEntry[];
+  
+  // Track the previous log length to identify new entries
+  private previousLogLength: number = 0;
+  private newEntryTimestamp: Date | null = null;
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['log'] && this.log && this.log.length > this.previousLogLength) {
+      // New entries are added at the beginning of the array
+      // Mark the timestamp of the newest entry
+      if (this.log.length > 0) {
+        this.newEntryTimestamp = this.log[0].timestamp;
+        
+        // Scroll to the top to show the new entry
+        setTimeout(() => {
+          const logContainer = document.querySelector('.log-view ul');
+          if (logContainer) {
+            logContainer.scrollTop = 0;
+          }
+        }, 100);
+        
+        // Reset new entry indicator after 3 seconds
+        setTimeout(() => {
+          this.newEntryTimestamp = null;
+          this.previousLogLength = this.log.length;
+        }, 3000);
+      }
+    } else {
+      this.previousLogLength = this.log ? this.log.length : 0;
+    }
+  }
+  
+  // Check if an entry is new based on its timestamp
+  isNewEntry(index: number): boolean {
+    if (!this.newEntryTimestamp || !this.log[index]) return false;
+    return this.log[index].timestamp.getTime() === this.newEntryTimestamp.getTime();
+  }
 }

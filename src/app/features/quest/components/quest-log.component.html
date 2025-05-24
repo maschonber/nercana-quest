@@ -1,10 +1,22 @@
 <div class="log-view">
-  <h2>Quest Log</h2>
-  <ul>
-    <li *ngFor="let entry of log">
-      <span [class.success]="entry.success" [class.fail]="!entry.success">
-        [{{ entry.timestamp | date:'shortTime' }}] {{ entry.message }}
-      </span>
-    </li>
-  </ul>
+  <div class="log-header">
+    <h2>Quest Log</h2>
+    <span class="log-counter" *ngIf="log.length > 0">{{ log.length }} entries</span>
+  </div>
+  
+  <div class="log-content">
+    <ng-container *ngIf="log.length > 0; else emptyLog">
+      <ul>
+        <li *ngFor="let entry of log; let i = index" [ngClass]="{'success-entry': entry.success, 'fail-entry': !entry.success, 'new-entry': isNewEntry(i)}">
+          <span class="entry-time">[{{ entry.timestamp | date:'shortTime' }}]</span>
+          <span class="entry-message">{{ entry.message }}</span>
+        </li>
+      </ul>
+    </ng-container>
+    <ng-template #emptyLog>
+      <div class="empty-log">
+        <p>No quests completed yet. Embark on a quest to see your adventures here!</p>
+      </div>
+    </ng-template>
+  </div>
 </div>

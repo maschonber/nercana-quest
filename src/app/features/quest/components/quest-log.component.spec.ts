@@ -41,22 +41,30 @@ describe('QuestLogComponent', () => {
     expect(compiled.textContent).toContain('Quest failed');
   });
 
-  it('should apply success class to successful quest entries', () => {
-    const successSpan = fixture.nativeElement.querySelector('.success');
-    expect(successSpan).toBeTruthy();
-    expect(successSpan.textContent).toContain('Quest succeeded');
-  });
-
-  it('should apply fail class to failed quest entries', () => {
-    const failSpan = fixture.nativeElement.querySelector('.fail');
-    expect(failSpan).toBeTruthy();
-    expect(failSpan.textContent).toContain('Quest failed');
+  it('should apply appropriate classes to log entries based on success', () => {
+    const successEntry = fixture.nativeElement.querySelector('li');
+    const failEntry = fixture.nativeElement.querySelectorAll('li')[1];
+    
+    // Check that the entries exist
+    expect(successEntry).toBeTruthy();
+    expect(failEntry).toBeTruthy();
+    
+    // Check classes are applied correctly
+    expect(successEntry.classList.contains('success-entry')).toBe(true);
+    expect(failEntry.classList.contains('fail-entry')).toBe(true);
+    
+    // Check content is correct
+    expect(successEntry.textContent).toContain('Quest succeeded');
+    expect(failEntry.textContent).toContain('Quest failed');
   });
 
   it('should display timestamps correctly', () => {
     const compiled = fixture.nativeElement;
+    const timeElements = compiled.querySelectorAll('.entry-time');
+    
+    expect(timeElements.length).toBe(mockLogEntries.length);
     // Check that timestamp formatting is present (basic check for bracket format)
-    expect(compiled.textContent).toMatch(/\[\d{1,2}:\d{2}\s?(AM|PM)?\]/);
+    expect(timeElements[0].textContent).toMatch(/\[\d{1,2}:\d{2}\s?(AM|PM)?\]/);
   });
 
   it('should handle empty log', () => {
@@ -65,5 +73,45 @@ describe('QuestLogComponent', () => {
     
     const listItems = fixture.nativeElement.querySelectorAll('li');
     expect(listItems.length).toBe(0);
+    
+    const emptyMessage = fixture.nativeElement.querySelector('.empty-log');
+    expect(emptyMessage).toBeTruthy();
+    expect(emptyMessage.textContent).toContain('No quests completed yet');
+  });
+  
+  it('should show log entry counter when entries exist', () => {
+    const counter = fixture.nativeElement.querySelector('.log-counter');
+    expect(counter).toBeTruthy();
+    expect(counter.textContent).toContain('2 entries');
+  });
+  
+  it('should mark new entries correctly', () => {
+    // Simulate a new entry being added
+    const newMockEntries = [
+      {
+        message: 'New quest completed!',
+        timestamp: new Date(),
+        success: true
+      },
+      ...mockLogEntries
+    ];
+    
+    component.log = newMockEntries;
+    
+    // Manually trigger the ngOnChanges lifecycle method
+    component.ngOnChanges({
+      log: {
+        currentValue: newMockEntries,
+        previousValue: mockLogEntries,
+        firstChange: false,
+        isFirstChange: () => false
+      }
+    });
+    
+    fixture.detectChanges();
+    
+    // The isNewEntry method should return true for the first entry
+    expect(component.isNewEntry(0)).toBeTruthy();
+    expect(component.isNewEntry(1)).toBeFalsy();
   });
 });
