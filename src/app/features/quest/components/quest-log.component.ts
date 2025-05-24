@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LogEntry } from '../../../models/log-entry.model';
+import { QuestStepType } from '../models/quest.model';
 
 @Component({
   selector: 'app-quest-log',
@@ -46,5 +47,36 @@ export class QuestLogComponent implements OnChanges {
   isNewEntry(index: number): boolean {
     if (!this.newEntryTimestamp || !this.log[index]) return false;
     return this.log[index].timestamp.getTime() === this.newEntryTimestamp.getTime();
+  }
+  
+  // Get the appropriate icon for each step type
+  getStepIcon(stepType?: QuestStepType): string {
+    if (!stepType) return '';
+    
+    switch (stepType) {
+      case QuestStepType.EXPLORATION:
+        return '🧭';
+      case QuestStepType.ENCOUNTER:
+        return '⚔️';
+      case QuestStepType.TREASURE:
+        return '💰';
+      default:
+        return '';
+    }
+  }
+  // Check if a log entry has any rewards to display
+  hasRewards(entry: LogEntry): boolean {
+    return (entry.experienceGained !== undefined && entry.experienceGained > 0) || 
+           (entry.goldGained !== undefined && entry.goldGained > 0);
+  }
+
+  // Get experience gained from a log entry
+  getExperienceFromEntry(entry: LogEntry): number {
+    return entry.experienceGained || 0;
+  }
+
+  // Get gold gained from a log entry
+  getGoldFromEntry(entry: LogEntry): number {
+    return entry.goldGained || 0;
   }
 }

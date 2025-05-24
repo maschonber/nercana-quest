@@ -11,6 +11,20 @@ Nercana is an auto battling text-based roleplaying game.
 
 This project implements a fantasy-themed auto-battling game where players control a hero who embarks on quests with randomized outcomes based on their stats.
 
+The application is hosted on github under https://github.com/maschonber/nercana-quest
+
+## Features
+
+### Multi-Step Quest System
+
+Quests consist of 2-5 sequential steps that unfold as short adventures:
+
+- **Exploration Steps**: Narrative discovery moments that set the scene without mechanical impact
+- **Encounter Steps**: Combat-focused events where the hero's stats are checked (future: detailed combat)
+- **Treasure Steps**: Reward moments where the hero gains gold
+
+Each step takes a short time (200ms) to complete and appears as a separate log entry, creating a more immersive questing experience.
+
 ## Getting Started
 
 ### Prerequisites
@@ -33,64 +47,6 @@ ng serve
 ```
 
 Navigate to `http://localhost:4200/`.
-
-## Project Structure
-
-- `src/app/models/` - Data models and interfaces
-- `src/app/services/` - Business logic and state management
-- `src/app/` - Components and application code
-
-## Testing
-
-### Unit Testing
-
-Nercana uses Jest for unit testing.
-
-```bash
-# Run all tests
-npm test
-```
-
-### End-to-End Testing with Playwright
-
-Nercana uses Playwright for end-to-end testing and MCP (Model Context Protocol) integration.
-
-```bash
-# Run Playwright tests
-npm run playwright:test
-
-# Open interactive UI for Playwright tests
-npm run playwright:ui
-
-# Run tests in watch mode (auto-rerun on file changes)
-npm run test:watch
-
-# Generate test coverage report
-npm run test:coverage
-```
-
-The test coverage report will be generated in the `coverage` directory.
-
-### End-to-End Testing with Playwright
-
-The project uses Playwright for end-to-end testing.
-
-```bash
-# Install Playwright browsers
-node scripts/install-browsers.js
-
-# Run Playwright tests
-npm run playwright:test
-
-# Run tests with UI mode
-npm run playwright:ui
-
-# View Playwright test report
-npm run playwright:report
-
-# Generate Playwright test code
-npm run playwright:codegen
-```
 
 ## Building for Production
 

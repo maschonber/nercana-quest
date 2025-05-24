@@ -101,6 +101,40 @@
   border-left-color: #ea4335 !important;
 }
 
+/* Quest step type styling */
+.exploration-entry {
+  background-color: rgba(230, 243, 255, 0.5);
+}
+
+.encounter-entry {
+  background-color: rgba(255, 232, 232, 0.5);
+}
+
+.treasure-entry {
+  background-color: rgba(255, 244, 189, 0.5);
+}
+
+/* Step icon styling */
+.entry-icon {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exploration-icon {
+  color: #1a73e8;
+}
+
+.encounter-icon {
+  color: #ea4335;
+}
+
+.treasure-icon {
+  color: #fbbc04;
+}
+
 .new-entry {
   animation: highlight 2s ease-out;
 }
@@ -144,4 +178,34 @@
   font-style: italic;
   background-color: #f9fafb;
   border-radius: 0.3rem;
+}
+
+/* Reward display styling */
+.entry-rewards {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.experience-reward,
+.gold-reward {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.experience-reward {
+  background-color: rgba(26, 115, 232, 0.1);
+  color: #1a73e8;
+  border: 1px solid rgba(26, 115, 232, 0.2);
+}
+
+.gold-reward {
+  background-color: rgba(251, 188, 4, 0.15);
+  color: #ea8600;
+  border: 1px solid rgba(251, 188, 4, 0.3);
 }
