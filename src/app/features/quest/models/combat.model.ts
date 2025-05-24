@@ -16,6 +16,11 @@ export enum CombatOutcome {
   IN_PROGRESS = 'in_progress'
 }
 
+export enum CombatantType {
+  HERO = 'hero',
+  MONSTER = 'monster'
+}
+
 export interface CombatAction {
   type: CombatActionType;
   description: string;
@@ -26,17 +31,28 @@ export interface CombatAction {
   success: boolean;
 }
 
-export interface CombatRound {
-  roundNumber: number;
-  heroAction: CombatAction;
-  monsterAction: CombatAction;
+export interface Combatant {
+  name: string;
+  health: number;
+  maxHealth: number;
+  attack: number;
+  defense: number;
+  type: CombatantType;
+}
+
+export interface CombatTurn {
+  turnNumber: number;
+  actor: CombatantType;
+  action: CombatAction;
+  actorHealthAfter: number;
+  targetHealthAfter: number;
   heroHealthAfter: number;
   monsterHealthAfter: number;
 }
 
 export interface CombatResult {
   outcome: CombatOutcome;
-  rounds: CombatRound[];
+  turns: CombatTurn[];
   experienceGained: number;
   goldGained: number;
   summary: string;
@@ -45,7 +61,7 @@ export interface CombatResult {
 export interface Combat {
   hero: Hero;
   monster: Monster;
-  rounds: CombatRound[];
-  currentRound: number;
+  turns: CombatTurn[];
+  currentTurn: number;
   outcome: CombatOutcome;
 }

@@ -46,10 +46,9 @@ describe('QuestDomainService', () => {
     };
     
     monsterServiceSpy.generateRandomMonster.mockReturnValue(mockMonster);
-    
-    const mockCombatResult: CombatResult = {
+      const mockCombatResult: CombatResult = {
       outcome: CombatOutcome.HERO_VICTORY,
-      rounds: [],
+      turns: [],
       experienceGained: 20,
       goldGained: 10,
       summary: 'Test combat summary'

@@ -41,11 +41,9 @@ describe('CombatService', () => {
         description: 'A small, green-skinned creature.'
       };
 
-      const result = service.simulateCombat(hero, monster);
-
-      // Result should have required properties
+      const result = service.simulateCombat(hero, monster);      // Result should have required properties
       expect(result).toHaveProperty('outcome');
-      expect(result).toHaveProperty('rounds');
+      expect(result).toHaveProperty('turns');
       expect(result).toHaveProperty('experienceGained');
       expect(result).toHaveProperty('goldGained');
       expect(result).toHaveProperty('summary');
@@ -53,16 +51,16 @@ describe('CombatService', () => {
       // Combat should have ended (not IN_PROGRESS)
       expect(result.outcome).not.toBe(CombatOutcome.IN_PROGRESS);
       
-      // Should have at least one round
-      expect(result.rounds.length).toBeGreaterThan(0);
+      // Should have at least one turn
+      expect(result.turns.length).toBeGreaterThan(0);
       
-      // Each round should have the required properties
-      result.rounds.forEach(round => {
-        expect(round).toHaveProperty('roundNumber');
-        expect(round).toHaveProperty('heroAction');
-        expect(round).toHaveProperty('monsterAction');
-        expect(round).toHaveProperty('heroHealthAfter');
-        expect(round).toHaveProperty('monsterHealthAfter');
+      // Each turn should have the required properties
+      result.turns.forEach(turn => {
+        expect(turn).toHaveProperty('turnNumber');
+        expect(turn).toHaveProperty('actor');
+        expect(turn).toHaveProperty('action');
+        expect(turn).toHaveProperty('heroHealthAfter');
+        expect(turn).toHaveProperty('monsterHealthAfter');
       });
     });
 

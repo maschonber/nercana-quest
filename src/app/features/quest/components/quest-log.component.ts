@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LogEntry } from '../../../models/log-entry.model';
 import { QuestStepType } from '../models/quest.model';
-import { CombatOutcome } from '../models/combat.model';
+import { CombatOutcome, CombatantType } from '../models/combat.model';
 
 @Component({
   selector: 'app-quest-log',
@@ -21,6 +21,9 @@ export class QuestLogComponent implements OnChanges {
   // Track expanded combat details
   expandedCombatEntries: Set<number> = new Set<number>();
   
+  // Expose enum for template
+  CombatantType = CombatantType;
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['log'] && this.log && this.log.length > this.previousLogLength) {
       // New entries are added at the beginning of the array
@@ -130,5 +133,22 @@ export class QuestLogComponent implements OnChanges {
   // Get health percentage for health bars
   getHealthPercentage(current: number, max: number): number {
     return Math.max(0, Math.min(100, (current / max) * 100));
+  }
+  // All combats now use the turn-based structure
+  hasNewTurnStructure(entry: LogEntry): boolean {
+    return true;
+  }
+
+  // Get actor name for a turn
+  getTurnActorName(turn: any, entry: LogEntry): string {
+    if (turn.actor === CombatantType.HERO) {
+      return 'You';
+    } else {
+      return entry.monster?.name || 'Monster';
+    }
+  }
+  // Get CSS class for turn based on actor type
+  getTurnActorClass(turn: any): string {
+    return turn.actor === CombatantType.HERO ? 'hero-turn' : 'monster-turn';
   }
 }

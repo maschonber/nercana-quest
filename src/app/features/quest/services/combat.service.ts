@@ -7,32 +7,33 @@ import {
   CombatActionType, 
   CombatOutcome,
   CombatResult,
-  CombatRound
+  CombatTurn,
+  Combatant,
+  CombatantType
 } from '../models/combat.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CombatService {
-  /**
+export class CombatService {  /**
    * Simulates a complete combat encounter between hero and monster
    * @param hero The hero participating in combat
    * @param monster The monster to fight
-   * @returns Complete combat result with rounds and outcome
+   * @returns Complete combat result with turns and outcome
    */
   simulateCombat(hero: Hero, monster: Monster): CombatResult {
     // Initialize combat
     const combat: Combat = {
       hero,
       monster: { ...monster }, // Clone monster to avoid modifying original
-      rounds: [],
-      currentRound: 0,
+      turns: [],
+      currentTurn: 0,
       outcome: CombatOutcome.IN_PROGRESS
     };
 
-    // Simulate rounds until combat ends (victory, defeat, or flee)
+    // Simulate turns until combat ends (victory, defeat, or flee)
     while (combat.outcome === CombatOutcome.IN_PROGRESS) {
-      this.simulateCombatRound(combat);
+      this.executeCombatTurn(combat);
     }
 
     // Create a summary based on the outcome
@@ -41,91 +42,59 @@ export class CombatService {
     // Return the final combat result
     return {
       outcome: combat.outcome,
-      rounds: combat.rounds,
+      turns: combat.turns,
       experienceGained: combat.outcome === CombatOutcome.HERO_VICTORY ? monster.experienceReward : Math.floor(monster.experienceReward * 0.2),
       goldGained: combat.outcome === CombatOutcome.HERO_VICTORY ? monster.goldReward : 0,
       summary
     };
-  }
-
-  /**
-   * Simulates a single round of combat
+  }  /**
+   * Executes a single combat turn
    */
-  private simulateCombatRound(combat: Combat): void {
+  private executeCombatTurn(combat: Combat): void {
     const { hero, monster } = combat;
-    combat.currentRound++;
+    combat.currentTurn++;
 
-    // Determine hero action (mostly attack, with chance of defend/special/flee)
-    const heroAction = this.determineHeroAction(hero, monster);
+    // Convert hero and monster to combatants for shared logic
+    const heroCombatant = this.toCombatant(hero, CombatantType.HERO);
+    const monsterCombatant = this.toCombatant(monster, CombatantType.MONSTER);
+
+    // Determine which combatant acts this turn based on initiative/speed
+    // We alternate turns, but the first actor is determined by speed
+    const isFirstTurn = combat.turns.length === 0;
     
-    // Determine monster action (mostly attack, with chance of defend)
-    const monsterAction = this.determineMonsterAction(monster, hero);
+    let actorType: CombatantType;
     
-    // Execute hero action
-    let heroDamageDealt = 0;
-    let heroHealing = 0;
+    if (isFirstTurn) {
+      // For the first turn, determine who goes first based on speed
+      actorType = this.determineFirstActor(heroCombatant, monsterCombatant, hero, monster);
+    } else {
+      // For subsequent turns, alternate between hero and monster
+      const lastTurn = combat.turns[combat.turns.length - 1];
+      actorType = lastTurn.actor === CombatantType.HERO ? CombatantType.MONSTER : CombatantType.HERO;
+    }
+
+    // Execute the appropriate turn based on actor type
+    let turn: CombatTurn;
     
-    if (heroAction.type === CombatActionType.ATTACK) {
-      heroDamageDealt = this.calculateDamage(hero.attack, monster.defense);
-      monster.health = Math.max(0, monster.health - heroDamageDealt);
-      heroAction.damage = heroDamageDealt;
-      heroAction.success = heroDamageDealt > 0;
-    } else if (heroAction.type === CombatActionType.DEFEND) {
-      // Defense increases for this round, handled in monster action
-      heroAction.success = true;
-    } else if (heroAction.type === CombatActionType.SPECIAL) {
-      // Special attacks deal more damage but have lower success chance
-      if (Math.random() < 0.6) { // 60% success rate
-        heroDamageDealt = this.calculateDamage(hero.attack * 1.5, monster.defense);
-        monster.health = Math.max(0, monster.health - heroDamageDealt);
-        heroAction.damage = heroDamageDealt;
-        heroAction.success = true;
-      } else {
-        heroAction.success = false;
-      }
-    } else if (heroAction.type === CombatActionType.FLEE) {
-      // Chance to flee based on luck
-      const fleeChance = 0.3 + (hero.luck / 50); // 30% base + luck bonus
-      heroAction.success = Math.random() < fleeChance;
+    if (actorType === CombatantType.HERO) {
+      turn = this.executeHeroTurn(combat.currentTurn, hero, monster);
       
-      if (heroAction.success) {
+      // Update health after turn
+      monster.health = turn.targetHealthAfter;
+      
+      // Check for flee attempt
+      if (turn.action.type === CombatActionType.FLEE && turn.action.success) {
         combat.outcome = CombatOutcome.HERO_FLED;
       }
+    } else {
+      turn = this.executeMonsterTurn(combat.currentTurn, monster, hero);
+      
+      // Update health after turn
+      hero.health = turn.targetHealthAfter;
     }
-    
-    // Execute monster action if hero didn't flee successfully
-    let monsterDamageDealt = 0;
-    
-    if (combat.outcome === CombatOutcome.IN_PROGRESS) {
-      if (monsterAction.type === CombatActionType.ATTACK) {
-        // If hero is defending, reduce damage
-        const defenseBonus = heroAction.type === CombatActionType.DEFEND ? 0.5 : 0;
-        const effectiveDefense = hero.defense * (1 + defenseBonus);
-        
-        monsterDamageDealt = this.calculateDamage(monster.attack, effectiveDefense);
-        monsterAction.damage = monsterDamageDealt;
-        monsterAction.success = monsterDamageDealt > 0;
-      } else if (monsterAction.type === CombatActionType.DEFEND) {
-        // Monster defense handled similarly to hero defense
-        monsterAction.success = true;
-      }
-    }
-    
-    // Update hero health if monster dealt damage
-    if (monsterDamageDealt > 0) {
-      hero.health = Math.max(0, hero.health - monsterDamageDealt);
-    }
-    
-    // Create combat round record
-    const round: CombatRound = {
-      roundNumber: combat.currentRound,
-      heroAction,
-      monsterAction,
-      heroHealthAfter: hero.health,
-      monsterHealthAfter: monster.health
-    };
-    
-    combat.rounds.push(round);
+
+    // Add the current turn to the combat's turns
+    combat.turns.push(turn);
     
     // Check if combat has ended
     if (monster.health <= 0) {
@@ -135,6 +104,116 @@ export class CombatService {
     }
   }
 
+  /**
+   * Determines which actor goes first in combat
+   */
+  private determineFirstActor(heroCombatant: Combatant, monsterCombatant: Combatant, hero: Hero, monster: Monster): CombatantType {
+    // For now, use attack stat + luck as speed/initiative. 
+    // Later can be expanded to include dedicated speed/agility stats
+    const heroSpeed = hero.attack + (hero.luck / 2);
+    const monsterSpeed = monster.attack;
+
+    if (heroSpeed >= monsterSpeed) {
+      return CombatantType.HERO;
+    } else {
+      return CombatantType.MONSTER;
+    }
+  }
+  /**
+   * Execute a hero's turn
+   */
+  private executeHeroTurn(turnNumber: number, hero: Hero, monster: Monster): CombatTurn {
+    const action = this.determineHeroAction(hero, monster);
+    const initialMonsterHealth = monster.health;
+
+    // Execute the action using shared logic
+    this.executeAction(action, hero, monster);
+
+    return {
+      turnNumber,
+      actor: CombatantType.HERO,
+      action,
+      actorHealthAfter: hero.health,
+      targetHealthAfter: monster.health,
+      heroHealthAfter: hero.health,
+      monsterHealthAfter: monster.health
+    };
+  }
+
+  /**
+   * Execute a monster's turn
+   */
+  private executeMonsterTurn(turnNumber: number, monster: Monster, hero: Hero): CombatTurn {
+    const action = this.determineMonsterAction(monster, hero);
+    const initialHeroHealth = hero.health;
+
+    // Execute the action using shared logic
+    this.executeAction(action, monster, hero);
+
+    return {
+      turnNumber,
+      actor: CombatantType.MONSTER,
+      action,
+      actorHealthAfter: monster.health,
+      targetHealthAfter: hero.health,
+      heroHealthAfter: hero.health,
+      monsterHealthAfter: monster.health
+    };
+  }
+  /**
+   * Shared action execution logic for both heroes and monsters
+   */
+  private executeAction(action: CombatAction, actor: Hero | Monster, target: Hero | Monster): void {
+    switch (action.type) {
+      case CombatActionType.ATTACK:
+        const damage = this.calculateDamage(actor.attack, target.defense);
+        target.health = Math.max(0, target.health - damage);
+        action.damage = damage;
+        action.success = damage > 0;
+        break;
+        
+      case CombatActionType.DEFEND:
+        // Defense is handled in damage calculation when target is defending
+        action.success = true;
+        break;
+        
+      case CombatActionType.SPECIAL:
+        // Special attacks deal more damage but have lower success chance
+        if (Math.random() < 0.6) { // 60% success rate
+          const specialDamage = this.calculateDamage(actor.attack * 1.5, target.defense);
+          target.health = Math.max(0, target.health - specialDamage);
+          action.damage = specialDamage;
+          action.success = true;
+        } else {
+          action.success = false;
+        }
+        break;
+        
+      case CombatActionType.FLEE:
+        // Only heroes can flee - this should be handled in the hero turn method
+        if ('luck' in actor) { // Check if it's a hero
+          const fleeChance = 0.3 + ((actor as Hero).luck / 50);
+          action.success = Math.random() < fleeChance;
+        } else {
+          action.success = false;
+        }
+        break;
+    }
+  }
+
+  /**
+   * Enhanced damage calculation that considers defensive actions
+   */
+  private calculateDamageWithDefense(attack: number, defense: number, targetDefending: boolean): number {
+    let effectiveDefense = defense;
+    
+    // If target is defending, increase their defense
+    if (targetDefending) {
+      effectiveDefense *= 1.5;
+    }
+    
+    return this.calculateDamage(attack, effectiveDefense);
+  }
   /**
    * Determine what action the hero will take
    */
@@ -159,6 +238,16 @@ export class CombatService {
       attackProb += 0.1;
       fleeProb -= 0.05;
       specialProb -= 0.05;
+    }
+    
+    // For testing: If hero is much stronger than the monster, never flee
+    const heroStrengthRatio = hero.attack / monster.defense;
+    if (heroStrengthRatio > 5 && hero.health > 50) {
+      // Hero is very strong compared to monster, remove flee probability
+      if (fleeProb > 0) {
+        attackProb += fleeProb;
+        fleeProb = 0;
+      }
     }
     
     // Select action based on probabilities
@@ -237,25 +326,38 @@ export class CombatService {
     
     return finalDamage;
   }
-
   /**
    * Generate a narrative summary of the combat encounter
    */
   private generateCombatSummary(combat: Combat): string {
-    const { hero, monster, outcome, rounds } = combat;
+    const { hero, monster, outcome, turns } = combat;
     
     switch (outcome) {
       case CombatOutcome.HERO_VICTORY:
-        return `After a ${rounds.length}-round battle, ${hero.name} emerged victorious against the ${monster.name}!`;
+        return `After ${turns.length} turns, ${hero.name} emerged victorious against the ${monster.name}!`;
         
       case CombatOutcome.HERO_DEFEAT:
-        return `After a ${rounds.length}-round battle, ${hero.name} was defeated by the ${monster.name}!`;
+        return `After ${turns.length} turns, ${hero.name} was defeated by the ${monster.name}!`;
         
       case CombatOutcome.HERO_FLED:
-        return `After ${rounds.length} rounds of combat, ${hero.name} managed to escape from the ${monster.name}.`;
+        return `After ${turns.length} turns of combat, ${hero.name} managed to escape from the ${monster.name}.`;
         
       default:
         return `The battle between ${hero.name} and ${monster.name} continues...`;
     }
+  }
+
+  /**
+   * Convert hero or monster to combatant interface
+   */
+  private toCombatant(entity: Hero | Monster, type: CombatantType): Combatant {
+    return {
+      name: entity.name,
+      health: entity.health,
+      maxHealth: type === CombatantType.HERO ? 100 : (entity as Monster).maxHealth, // Heroes have fixed max health
+      attack: entity.attack,
+      defense: entity.defense,
+      type
+    };
   }
 }

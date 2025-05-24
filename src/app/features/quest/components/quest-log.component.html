@@ -65,47 +65,44 @@
                   <span class="stat-value">{{ entry.monster.defense }}</span>
                 </div>
               </div>
-            </div>
-            
-            <!-- Combat rounds -->
-            <div class="combat-rounds">
+            </div>            <!-- Combat turns -->
+            <div class="combat-turns">
               <h4>Combat Summary</h4>
-              <div class="combat-round" *ngFor="let round of entry.combatResult.rounds">
-                <div class="round-header">Round {{ round.roundNumber }}</div>
-                
-                <!-- Hero action -->
-                <div class="combat-action hero-action">
-                  <span class="action-label">You</span>
-                  <span class="action-description">{{ round.heroAction.description }}</span>
-                  <span *ngIf="round.heroAction.damage" class="damage-indicator">
-                    {{ round.heroAction.damage }} damage
+              <div class="combat-turn" *ngFor="let turn of entry.combatResult.turns" [ngClass]="getTurnActorClass(turn)">
+                <div class="turn-info">
+                  <span class="turn-number">Turn {{ turn.turnNumber }}</span>
+                  <span class="turn-actor">{{ getTurnActorName(turn, entry) }}</span>
+                </div>
+                <div class="turn-action">
+                  <span class="action-description">{{ turn.action.description }}</span>
+                  <span *ngIf="turn.action.damage" class="damage-indicator">
+                    {{ turn.action.damage }} damage
+                  </span>
+                  <span *ngIf="!turn.action.success" class="action-failed">
+                    (Failed)
                   </span>
                 </div>
-                
-                <!-- Monster action -->
-                <div class="combat-action monster-action">
-                  <span class="action-label">{{ entry.monster?.name }}</span>
-                  <span class="action-description">{{ round.monsterAction.description }}</span>
-                  <span *ngIf="round.monsterAction.damage" class="damage-indicator">
-                    {{ round.monsterAction.damage }} damage
-                  </span>
-                </div>
-                
-                <!-- Health status after the round -->
-                <div class="health-status">
-                  <div class="health-bar-container">
-                    <span class="health-label">You: {{ round.heroHealthAfter }} HP</span>
-                    <div class="health-bar">
-                      <div class="health-fill hero-health" 
-                           [style.width.%]="getHealthPercentage(round.heroHealthAfter, entry.combatResult.rounds[0].heroHealthAfter)">
+                <!-- Health status after the turn -->
+                <div class="turn-health-status">
+                  <div class="health-info">
+                    <span class="health-label">You: {{ turn.heroHealthAfter }} HP</span>
+                    <span class="health-label">{{ entry.monster?.name }}: {{ turn.monsterHealthAfter }} HP</span>
+                  </div>
+                  
+                  <!-- Health bars -->
+                  <div class="health-bars">
+                    <div class="health-bar-container">
+                      <div class="health-bar">
+                        <div class="health-fill hero-health" 
+                             [style.width.%]="getHealthPercentage(turn.heroHealthAfter, entry.combatResult.turns[0].heroHealthAfter)">
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="health-bar-container">
-                    <span class="health-label">{{ entry.monster?.name }}: {{ round.monsterHealthAfter }} HP</span>
-                    <div class="health-bar">
-                      <div class="health-fill monster-health" 
-                           [style.width.%]="getHealthPercentage(round.monsterHealthAfter, entry.monster?.maxHealth || 100)">
+                    <div class="health-bar-container">
+                      <div class="health-bar">
+                        <div class="health-fill monster-health" 
+                             [style.width.%]="getHealthPercentage(turn.monsterHealthAfter, entry.monster?.maxHealth || 100)">
+                        </div>
                       </div>
                     </div>
                   </div>

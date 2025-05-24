@@ -255,10 +255,9 @@ export class QuestDomainService {
     const monsterName = monster?.name || "the enemy";
     
     switch (combatResult.outcome) {
-      case CombatOutcome.HERO_VICTORY:
-        const victoryMessages = [
+      case CombatOutcome.HERO_VICTORY:        const victoryMessages = [
           `Your hero defeated ${monsterName} after an intense battle! ${combatResult.summary}`,
-          `${monsterName} was no match for your hero's combat prowess after a ${combatResult.rounds.length}-round fight!`,
+          `${monsterName} was no match for your hero's combat prowess after a ${combatResult.turns.length}-turn fight!`,
           `Victory! Your hero vanquished ${monsterName} with superior tactics!`,
           `After a fierce struggle, your hero emerged victorious over ${monsterName}!`
         ];
