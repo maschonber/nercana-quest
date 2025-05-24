@@ -1,0 +1,24 @@
+<div class="hero-details">
+  <h2>Hero Details</h2>
+  <div class="hero-stats">
+    <h3>Basic Stats</h3>
+    <ul>
+      <li><strong>Name:</strong> {{ hero.name }}</li>
+      <li><strong>Level:</strong> {{ hero.level }}</li>
+      <li><strong>Experience:</strong> {{ hero.experience }}</li>
+      <li><strong>Gold:</strong> {{ hero.gold }}</li>
+      <li><strong>Health:</strong> {{ hero.health }}</li>
+      <li><strong>Attack:</strong> {{ hero.attack }}</li>
+      <li><strong>Defense:</strong> {{ hero.defense }}</li>
+      <li><strong>Luck:</strong> {{ hero.luck }}</li>
+    </ul>
+  </div>
+  <div class="hero-power">
+    <h3>Combat Readiness</h3>
+    <p><strong>Power Level:</strong> {{ heroPower }}</p>
+    <p><strong>XP to Next Level:</strong> {{ experienceToNextLevel }}</p>
+  </div>
+  <button class="quest-btn" (click)="onEmbarkOnQuest()" [disabled]="!isHeroReady">
+    {{ isHeroReady ? 'Embark on quest' : 'Hero not ready' }}
+  </button>
+</div>

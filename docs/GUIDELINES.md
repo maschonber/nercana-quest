@@ -44,4 +44,12 @@ Follow this systematic approach for any code changes:
 - Use Angular TestBed sparingly, only for integration tests
 - Maintain clean test setup/teardown
 
+## Development Lifecycle
+
+### Pre-Production Guidelines
+- **No Legacy Compatibility Required**: Since the application is not yet in production, prioritize clean, simplified data structures over backward compatibility
+- **Breaking Changes Allowed**: Feel free to make breaking changes to improve architecture and code quality
+- **Data Structure Evolution**: Update models and interfaces freely to reflect the best design for current requirements
+- **Migration Strategy**: Focus on forward-looking design rather than maintaining deprecated patterns
+
 Following these guidelines ensures consistent, maintainable code that integrates well with the existing codebase.

@@ -1,17 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HeroDetailsComponent } from './hero-details.component';
 import { Hero } from '../models/hero.model';
+import { HeroDomainService } from '../services/hero-domain.service';
 
 describe('HeroDetailsComponent', () => {
   let component: HeroDetailsComponent;
   let fixture: ComponentFixture<HeroDetailsComponent>;
-
   const mockHero: Hero = {
     name: 'Test Hero',
     health: 100,
     attack: 15,
     defense: 10,
-    luck: 7
+    luck: 7,
+    level: 1,
+    experience: 0,
+    gold: 0
   };
 
   beforeEach(async () => {

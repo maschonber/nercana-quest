@@ -1,6 +1,6 @@
 # Jest Testing Guide for Nercana
 
-This guide covers how to write and run tests for the Nercana project using Jest.
+This guide covers how to write and run tests for the Nercana project.
 
 ## Running Tests
 
@@ -185,10 +185,6 @@ In addition to Jest for unit testing, Nercana uses Playwright for end-to-end tes
 
 ## Running Playwright Tests
 
-```bash
-# Install Playwright browsers (if not already installed)
-node scripts/install-browsers.js
-
 # Run all Playwright tests
 npm run playwright:test
 
@@ -217,39 +213,3 @@ test('basic test', async ({ page }) => {
   await expect(page.locator('.quest-results')).toBeVisible();
 });
 ```
-
-## Model Context Protocol (MCP) Integration
-
-Nercana integrates the Playwright Model Context Protocol (MCP), which allows AI assistants to interact with the application through browser automation.
-
-### Starting MCP Server
-
-```bash
-npm run mcp:start
-```
-
-### MCP Configuration
-
-The MCP configuration is stored in `.vscode/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "@playwright/mcp@latest"
-      ]
-    }
-  }
-}
-```
-
-### Using MCP with GitHub Copilot
-
-When using GitHub Copilot in VS Code with this project, it can automatically interact with the application through the MCP server to help with testing, debugging, and exploring app behavior.
-
-## Learning Resources
-
-- [Playwright Documentation](https://playwright.dev/docs/intro)
-- [Playwright MCP GitHub Repository](https://github.com/microsoft/playwright-mcp)

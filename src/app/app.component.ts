@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { QuestStore } from './services/quest.store';
-import { Hero } from './models/hero.model';
+import { Hero } from './features/hero/models/hero.model';
 import { LogEntry } from './models/log-entry.model';
-import { HeroDetailsComponent } from './components/hero-details.component';
-import { QuestLogComponent } from './components/quest-log.component';
+import { HeroDetailsComponent } from './features/hero/components/hero-details.component';
+import { QuestLogComponent } from './features/quest/components/quest-log.component';
 
 @Component({
   selector: 'app-root',

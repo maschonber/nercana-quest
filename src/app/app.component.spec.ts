@@ -2,20 +2,22 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { QuestStore } from './services/quest.store';
 import { LogEntry } from './models/log-entry.model';
-import { Hero } from './models/hero.model';
-import { HeroDetailsComponent } from './components/hero-details.component';
-import { QuestLogComponent } from './components/quest-log.component';
+import { Hero } from './features/hero/models/hero.model';
+import { HeroDetailsComponent } from './features/hero/components/hero-details.component';
+import { QuestLogComponent } from './features/quest/components/quest-log.component';
 import { signal } from '@angular/core';
 
 // Create a mock QuestStore
-const mockQuestStore = {
-  // Mock the hero and log signals
+const mockQuestStore = {  // Mock the hero and log signals
   hero: signal<Hero>({
     name: 'Adventurer',
     health: 100,
     attack: 12,
     defense: 8,
-    luck: 5
+    luck: 5,
+    level: 1,
+    experience: 0,
+    gold: 0
   }),
   
   log: signal<LogEntry[]>([]),
@@ -57,14 +59,16 @@ describe('AppComponent', () => {
   it('should create the app', () => {
     expect(component).toBeTruthy();
   });
-
   it('should have a hero with correct default stats', () => {
     expect(component.hero()).toEqual({
       name: 'Adventurer',
       health: 100,
       attack: 12,
       defense: 8,
-      luck: 5
+      luck: 5,
+      level: 1,
+      experience: 0,
+      gold: 0
     });
   });
 

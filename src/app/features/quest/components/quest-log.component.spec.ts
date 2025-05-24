@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { QuestLogComponent } from './quest-log.component';
-import { LogEntry } from '../models/log-entry.model';
+import { LogEntry } from '../../../models/log-entry.model';
 
 describe('QuestLogComponent', () => {
   let component: QuestLogComponent;

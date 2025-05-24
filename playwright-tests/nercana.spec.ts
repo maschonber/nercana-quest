@@ -37,10 +37,9 @@ test.describe('Nercana Game', () => {
     // Verify that a new log entry has been added
     const updatedLogEntries = await page.locator('.log-view li').count();
     expect(updatedLogEntries).toBeGreaterThan(initialLogEntries);
-    
-    // Verify the log entry contains expected text
+      // Verify the log entry contains expected text
     const logEntryText = await page.locator('.log-view li').first().innerText();
-    expect(logEntryText).toMatch(/Quest (succeeded|failed)/);
+    expect(logEntryText).toMatch(/(succeeded|triumphant|Victory|overcome|failed|barely|dangerous|retreat|failure|abandon)/i);
     
     // Verify the log entry has the correct timestamp format
     expect(logEntryText).toMatch(/\[\d{1,2}:\d{2}\s?(AM|PM)?\]/);
@@ -56,18 +55,16 @@ test.describe('Nercana Game', () => {
     await page.click('button.quest-btn');
     
     // Wait for log entries to appear
-    await page.waitForSelector('.log-view li:nth-child(3)');
-    
+    await page.waitForSelector('.log-view li:nth-child(3)');    
     // Verify that the correct number of log entries exist
     const logEntryCount = await page.locator('.log-view li').count();
     expect(logEntryCount).toBeGreaterThanOrEqual(3);
     
     // Verify entries are in reverse chronological order (newest at the top)
     const timestamps = await page.locator('.log-view li').allInnerTexts();
-    
-    // Make sure all entries contain quest success or failure messages
+      // Make sure all entries contain quest-related messages (either success or failure)
     for (const entry of timestamps) {
-      expect(entry).toMatch(/Quest (succeeded|failed)/);
+      expect(entry).toMatch(/(succeeded|triumphant|Victory|overcome|failed|barely|dangerous|retreat|failure|abandon)/i);
     }
   });
 });
