@@ -58,7 +58,6 @@ export class HeroDomainService {
     const newLevel = this.calculateLevel(newExperience);
     return newLevel > oldLevel;
   }
-
   /**
    * Applies stat increases when hero levels up
    * @param hero Hero to level up
@@ -69,10 +68,11 @@ export class HeroDomainService {
     let updatedHero = { ...hero };
     
     // Apply stat increases for each level gained
-    for (let i = 0; i < levels; i++) {
+    for (let i = 0; i < levels; i++) {      const healthIncrease = 5;
       updatedHero = {
         ...updatedHero,
-        health: updatedHero.health + 5,
+        health: updatedHero.health + healthIncrease,
+        maxHealth: updatedHero.maxHealth + healthIncrease,
         attack: updatedHero.attack + 2,
         defense: updatedHero.defense + 2,
         luck: updatedHero.luck + 1

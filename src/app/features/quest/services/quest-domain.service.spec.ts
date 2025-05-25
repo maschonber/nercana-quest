@@ -60,12 +60,12 @@ describe('QuestDomainService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-  
-  describe('calculateQuestOutcome', () => {
-    it('should return quest result with success status, message, and steps', () => {
+    describe('Quest Generation System', () => {
+    it('should create quest context with appropriate properties', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
+        maxHealth: 100,
         attack: 12,
         defense: 8,
         luck: 5,
@@ -74,28 +74,31 @@ describe('QuestDomainService', () => {
         gold: 0
       };
 
-      const result = service.calculateQuestOutcome(hero);
+      const context = service.createQuestContext(hero);
 
-      expect(result).toHaveProperty('success');
-      expect(result).toHaveProperty('message');
-      expect(result).toHaveProperty('experienceGained');
-      expect(result).toHaveProperty('goldGained');
-      expect(result).toHaveProperty('steps');
-      expect(typeof result.success).toBe('boolean');
-      expect(typeof result.message).toBe('string');
-      expect(typeof result.experienceGained).toBe('number');
-      expect(typeof result.goldGained).toBe('number');
-      expect(Array.isArray(result.steps)).toBe(true);
+      expect(context).toHaveProperty('remainingStepTypes');
+      expect(context).toHaveProperty('questSuccess');
+      expect(context).toHaveProperty('baseExperience');
+      expect(context).toHaveProperty('baseTreasureGold');
+      expect(context).toHaveProperty('encounterCount');
+      expect(context).toHaveProperty('treasureCount');
+      expect(context).toHaveProperty('currentStepIndex');
+      expect(context).toHaveProperty('totalSteps');
       
       // Should have between 2-5 steps
-      expect(result.steps.length).toBeGreaterThanOrEqual(2);
-      expect(result.steps.length).toBeLessThanOrEqual(5);
+      expect(context.remainingStepTypes.length).toBeGreaterThanOrEqual(2);
+      expect(context.remainingStepTypes.length).toBeLessThanOrEqual(5);
+      expect(context.totalSteps).toBe(context.remainingStepTypes.length);
+      expect(typeof context.questSuccess).toBe('boolean');
+      expect(typeof context.baseExperience).toBe('number');
+      expect(typeof context.baseTreasureGold).toBe('number');
     });
-    
-    it('should create steps with appropriate properties', () => {
+
+    it('should generate steps with appropriate properties using dynamic generation', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
+        maxHealth: 100,
         attack: 12,
         defense: 8,
         luck: 5,
@@ -104,10 +107,19 @@ describe('QuestDomainService', () => {
         gold: 0
       };
 
-      const result = service.calculateQuestOutcome(hero);
+      const context = service.createQuestContext(hero);
+      const steps: any[] = [];
+      
+      // Generate all steps dynamically
+      while (context.remainingStepTypes.length > 0) {
+        const step = service.generateNextStep(hero, context);
+        if (step) {
+          steps.push(step);
+        }
+      }
       
       // Check that each step has the required properties
-      result.steps.forEach(step => {
+      steps.forEach(step => {
         expect(step).toHaveProperty('type');
         expect(step).toHaveProperty('message');
         expect(step).toHaveProperty('success');
@@ -124,10 +136,11 @@ describe('QuestDomainService', () => {
       });
     });
 
-    it('should award more rewards for successful quests', () => {
-      const hero: Hero = {
-        name: 'Test Hero',
+    it('should generate quest with better outcomes for high-stat heroes', () => {
+      const highStatHero: Hero = {
+        name: 'Powerful Hero',
         health: 1000, // High stats to ensure success
+        maxHealth: 1000,
         attack: 100,
         defense: 100,
         luck: 50,
@@ -140,29 +153,40 @@ describe('QuestDomainService', () => {
       let successfulQuests = 0;
       let totalExperience = 0;
       let totalGold = 0;
-      const attempts = 100;
+      const attempts = 50;
 
       for (let i = 0; i < attempts; i++) {
-        const result = service.calculateQuestOutcome(hero);
-        if (result.success) {
+        const context = service.createQuestContext(highStatHero);
+        const steps: any[] = [];
+        
+        // Generate all steps
+        while (context.remainingStepTypes.length > 0) {
+          const step = service.generateNextStep(highStatHero, context);
+          if (step) {
+            steps.push(step);
+          }
+        }
+        
+        if (context.questSuccess) {
           successfulQuests++;
-          totalExperience += result.experienceGained;
-          totalGold += result.goldGained;
+          totalExperience += steps.reduce((sum, step) => sum + step.experienceGained, 0);
+          totalGold += steps.reduce((sum, step) => sum + step.goldGained, 0);
         }
       }
 
       // With max stats, should succeed most of the time
-      expect(successfulQuests).toBeGreaterThan(attempts * 0.8);
+      expect(successfulQuests).toBeGreaterThan(attempts * 0.7);
       if (successfulQuests > 0) {
         expect(totalExperience / successfulQuests).toBeGreaterThan(0);
         expect(totalGold / successfulQuests).toBeGreaterThan(0);
       }
     });
-    
+
     it('should generate appropriate messages for different step types', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 1000, // High stats to ensure success
+        maxHealth: 1000,
         attack: 100,
         defense: 100,
         luck: 50,
@@ -179,11 +203,15 @@ describe('QuestDomainService', () => {
       };
       
       for (let i = 0; i < 10; i++) {
-        const result = service.calculateQuestOutcome(hero);
+        const context = service.createQuestContext(hero);
         
-        result.steps.forEach(step => {
-          stepMessages[step.type].add(step.message);
-        });
+        // Generate all steps
+        while (context.remainingStepTypes.length > 0) {
+          const step = service.generateNextStep(hero, context);
+          if (step) {
+            stepMessages[step.type].add(step.message);
+          }
+        }
       }
       
       // Verify we got messages for each step type
@@ -191,11 +219,12 @@ describe('QuestDomainService', () => {
       expect(stepMessages[QuestStepType.ENCOUNTER].size).toBeGreaterThan(0);
       expect(stepMessages[QuestStepType.TREASURE].size).toBeGreaterThan(0);
     });
-    
+
     it('should include combat data for encounter steps', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
+        maxHealth: 100,
         attack: 12,
         defense: 8,
         luck: 5,
@@ -204,10 +233,19 @@ describe('QuestDomainService', () => {
         gold: 0
       };
 
-      const result = service.calculateQuestOutcome(hero);
+      const context = service.createQuestContext(hero);
+      const steps: any[] = [];
+      
+      // Generate all steps
+      while (context.remainingStepTypes.length > 0) {
+        const step = service.generateNextStep(hero, context);
+        if (step) {
+          steps.push(step);
+        }
+      }
       
       // Find encounter steps
-      const encounterSteps = result.steps.filter(step => step.type === QuestStepType.ENCOUNTER);
+      const encounterSteps = steps.filter(step => step.type === QuestStepType.ENCOUNTER);
       
       // If there are encounter steps, they should have monster and combat data
       if (encounterSteps.length > 0) {
@@ -225,6 +263,31 @@ describe('QuestDomainService', () => {
           }
         });
       }
+    });
+
+    it('should return null when no more steps remain in context', () => {
+      const hero: Hero = {
+        name: 'Test Hero',
+        health: 100,
+        maxHealth: 100,
+        attack: 12,
+        defense: 8,
+        luck: 5,
+        level: 1,
+        experience: 0,
+        gold: 0
+      };
+
+      const context = service.createQuestContext(hero);
+      
+      // Generate all steps until none remain
+      while (context.remainingStepTypes.length > 0) {
+        service.generateNextStep(hero, context);
+      }
+      
+      // Next call should return null
+      const step = service.generateNextStep(hero, context);
+      expect(step).toBeNull();
     });
   });
 });

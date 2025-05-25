@@ -17,4 +17,9 @@ export class HeroDetailsComponent {
   heroPower = this.heroFacade.heroPower;
   experienceToNextLevel = this.heroFacade.experienceToNextLevel;
   experienceProgress = this.heroFacade.experienceProgress;
+  
+  // Health-related computed signals
+  healthPercentage = this.heroFacade.healthPercentage;
+  isFullHealth = this.heroFacade.isFullHealth;
+  isLowHealth = this.heroFacade.isLowHealth;
 }

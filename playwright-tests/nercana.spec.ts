@@ -49,15 +49,35 @@ test.describe('Nercana Quest Application', () => {
     
     // At least one type of step should be present
     expect(hasExplorationSteps || hasEncounterSteps || hasTreasureSteps).toBeTruthy();
-  });
-
-  test('multiple quests can be completed and logged', async ({ page }) => {    // Click the "Embark on quest" button and wait for steps to complete
+  });  test('multiple quests can be completed and logged', async ({ page }) => {    // Click the "Embark on quest" button and wait for steps to complete
     await page.click('button.quest-btn');
     await page.waitForTimeout(2000); // Wait for all quest steps to complete
+    
+    // Heal the hero after first quest
+    await page.evaluate(() => {
+      const appRoot = document.querySelector('app-root');
+      if (appRoot && 'ngComponentRef' in appRoot) {
+        const instance = (appRoot as any).ngComponentRef.instance;
+        if (instance && instance.heroFacade) {
+          instance.heroFacade.fullHeal();
+        }
+      }
+    });
     
     // Click again for second quest
     await page.click('button.quest-btn');
     await page.waitForTimeout(2000); // Wait for all quest steps to complete
+    
+    // Heal the hero after second quest
+    await page.evaluate(() => {
+      const appRoot = document.querySelector('app-root');
+      if (appRoot && 'ngComponentRef' in appRoot) {
+        const instance = (appRoot as any).ngComponentRef.instance;
+        if (instance && instance.heroFacade) {
+          instance.heroFacade.fullHeal();
+        }
+      }
+    });
     
     // Click again for third quest
     await page.click('button.quest-btn');
@@ -136,11 +156,21 @@ test.describe('Nercana Quest Application', () => {
     const container = page.locator('.nercana-container');
     const heroDetails = page.locator('.hero-details');
     const questLog = page.locator('.log-view');
-    
-    // Verify containers are visible and properly styled
+      // Verify containers are visible and properly styled
     await expect(container).toBeVisible();
     await expect(heroDetails).toBeVisible();
     await expect(questLog).toBeVisible();
+    
+    // Make sure hero is at full health
+    await page.evaluate(() => {
+      const appRoot = document.querySelector('app-root');
+      if (appRoot && 'ngComponentRef' in appRoot) {
+        const instance = (appRoot as any).ngComponentRef.instance;
+        if (instance && instance.heroFacade) {
+          instance.heroFacade.fullHeal();
+        }
+      }
+    });
     
     // Verify quest functionality still works in dark mode
     const questButton = page.locator('.quest-btn');

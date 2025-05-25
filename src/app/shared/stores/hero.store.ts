@@ -12,6 +12,7 @@ const initialState: HeroState = {
   hero: {
     name: 'Adventurer',
     health: 100,
+    maxHealth: 100,
     attack: 12,
     defense: 8,
     luck: 5,
@@ -59,15 +60,56 @@ export const HeroStore = signalStore(
         
         patchState(store, { hero: updatedHero });
         return levelUpMessage;
-      },
-
-      /**
+      },      /**
        * Adds gold to hero's inventory
        */
       addGold(gold: number): void {
         const currentHero = store.hero();
         patchState(store, { 
           hero: { ...currentHero, gold: currentHero.gold + gold }
+        });
+      },
+
+      /**
+       * Applies damage to hero's health
+       */
+      takeDamage(damage: number): void {
+        const currentHero = store.hero();
+        const newHealth = Math.max(0, currentHero.health - damage);
+        patchState(store, { 
+          hero: { ...currentHero, health: newHealth }
+        });
+      },
+
+      /**
+       * Heals hero's health (cannot exceed maxHealth)
+       */
+      heal(healAmount: number): void {
+        const currentHero = store.hero();
+        const newHealth = Math.min(currentHero.maxHealth, currentHero.health + healAmount);
+        patchState(store, { 
+          hero: { ...currentHero, health: newHealth }
+        });
+      },
+
+      /**
+       * Fully restores hero's health to maxHealth
+       */
+      fullHeal(): void {
+        const currentHero = store.hero();
+        patchState(store, { 
+          hero: { ...currentHero, health: currentHero.maxHealth }
+        });
+      },
+
+      /**
+       * Sets hero's health directly (used by combat system)
+       */
+      setHealth(health: number): void {
+        const currentHero = store.hero();
+        const clampedHealth = Math.max(0, Math.min(currentHero.maxHealth, health));
+        patchState(store, { 
+          hero: { ...currentHero, health: clampedHealth }
         });
       },
 

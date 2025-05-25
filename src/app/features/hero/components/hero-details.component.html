@@ -7,7 +7,22 @@
       <li><strong>Level:</strong> {{ hero().level }}</li>
       <li><strong>Experience:</strong> {{ hero().experience }}</li>
       <li><strong>Gold:</strong> {{ hero().gold }}</li>
-      <li><strong>Health:</strong> {{ hero().health }}</li>
+      <li class="health-stat">
+        <div class="health-info">
+          <strong>Health:</strong> {{ hero().health }} / {{ hero().maxHealth }}
+          <span class="health-percentage" [ngClass]="{'low-health': isLowHealth(), 'full-health': isFullHealth()}">
+            ({{ healthPercentage() }}%)
+          </span>
+        </div>
+        <div class="health-bar-container">
+          <div class="health-bar">
+            <div class="health-fill" 
+                 [style.width.%]="healthPercentage()"
+                 [ngClass]="{'low-health-bar': isLowHealth(), 'full-health-bar': isFullHealth()}">
+            </div>
+          </div>
+        </div>
+      </li>
       <li><strong>Attack:</strong> {{ hero().attack }}</li>
       <li><strong>Defense:</strong> {{ hero().defense }}</li>
       <li><strong>Luck:</strong> {{ hero().luck }}</li>

@@ -16,11 +16,11 @@ describe('CombatService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('simulateCombat', () => {
-    it('should simulate complete combat and return valid result', () => {
+  describe('simulateCombat', () => {    it('should simulate complete combat and return valid result', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
+        maxHealth: 100,
         attack: 15,
         defense: 10,
         luck: 5,
@@ -64,11 +64,11 @@ describe('CombatService', () => {
       });
     });
 
-    it('should give full rewards for victory and reduced rewards for defeat', () => {
-      // Setup a very strong hero for guaranteed victory
+    it('should give full rewards for victory and reduced rewards for defeat', () => {      // Setup a very strong hero for guaranteed victory
       const strongHero: Hero = {
         name: 'Strong Hero',
         health: 200,
+        maxHealth: 200,
         attack: 50,
         defense: 30,
         luck: 20,
@@ -97,12 +97,11 @@ describe('CombatService', () => {
       
       // Should get full rewards
       expect(victoryResult.experienceGained).toBe(weakMonster.experienceReward);
-      expect(victoryResult.goldGained).toBe(weakMonster.goldReward);
-
-      // Setup a very weak hero for guaranteed defeat
+      expect(victoryResult.goldGained).toBe(weakMonster.goldReward);      // Setup a very weak hero for guaranteed defeat
       const weakHero: Hero = {
         name: 'Weak Hero',
         health: 20,
+        maxHealth: 20,
         attack: 5,
         defense: 3,
         luck: 1,

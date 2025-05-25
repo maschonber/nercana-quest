@@ -5,6 +5,28 @@ import { CombatOutcome, CombatResult } from '../models/combat.model';
 import { MonsterService } from './monster.service';
 import { CombatService } from './combat.service';
 
+/**
+ * Context for tracking quest progress during dynamic step generation
+ */
+export interface QuestContext {
+  /** Remaining step types to be generated */
+  remainingStepTypes: QuestStepType[];
+  /** Overall quest success prediction */
+  questSuccess: boolean;
+  /** Base experience reward for treasure steps */
+  baseExperience: number;
+  /** Base gold reward for treasure steps */
+  baseTreasureGold: number;
+  /** Total number of encounter steps planned */
+  encounterCount: number;
+  /** Total number of treasure steps planned */
+  treasureCount: number;
+  /** Current step index */
+  currentStepIndex: number;
+  /** Total number of steps in the quest */
+  totalSteps: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -13,42 +35,77 @@ export class QuestDomainService {
   private readonly combatService = inject(CombatService);
   
   /**
-   * Calculates the outcome of a quest based on hero stats,
-   * generating 2-5 quest steps of different types
+   * Creates initial quest context for dynamic step generation
    */
-  calculateQuestOutcome(hero: Hero): QuestResult {
+  createQuestContext(hero: Hero): QuestContext {
     const stepCount = Math.floor(Math.random() * 4) + 2; // 2-5 steps
-    const steps: QuestStep[] = [];
     
     // Determine overall quest success first
     const successChance = this.calculateSuccessChance(hero);
-    const isSuccess = Math.random() < successChance;
+    const questSuccess = Math.random() < successChance;
     
-    // Generate steps with individual rewards
-    this.generateQuestSteps(hero, stepCount, isSuccess, steps);
+    // Generate step types
+    const stepTypes = this.generateStepTypes(stepCount, questSuccess);
     
-    // Calculate total rewards from all steps
-    const totalExperience = steps.reduce((sum, step) => sum + step.experienceGained, 0);
-    const totalGold = steps.reduce((sum, step) => sum + step.goldGained, 0);
+    // Count encounters and treasures
+    const encounterCount = stepTypes.filter(type => type === QuestStepType.ENCOUNTER).length;
+    const treasureCount = stepTypes.filter(type => type === QuestStepType.TREASURE).length;
+    
+    // Calculate base rewards
+    const baseExperience = this.calculateExperience(hero);
+    const baseTreasureGold = this.calculateGoldReward(hero);
     
     return {
-      success: isSuccess,
-      message: this.generateQuestMessage(isSuccess),
-      timestamp: new Date(),
-      experienceGained: totalExperience,
-      goldGained: totalGold,
-      steps: steps
+      remainingStepTypes: [...stepTypes],
+      questSuccess,
+      baseExperience,
+      baseTreasureGold,
+      encounterCount,
+      treasureCount,
+      currentStepIndex: 0,
+      totalSteps: stepCount
     };
-  }  /**
-   * Generates a specific number of quest steps with individual rewards
+  }
+  
+  /**
+   * Generates the next quest step using current hero state
    */
-  private generateQuestSteps(
-    hero: Hero, 
-    stepCount: number, 
-    questSuccess: boolean, 
-    steps: QuestStep[]
-  ): void {
-    // Count encounters for experience distribution
+  generateNextStep(hero: Hero, context: QuestContext): QuestStep | null {
+    if (context.remainingStepTypes.length === 0) {
+      return null; // No more steps
+    }
+    
+    const stepType = context.remainingStepTypes.shift()!;
+    
+    const step = this.createQuestStep(
+      stepType,
+      hero, // Use current hero state with updated health
+      context.questSuccess,
+      context.currentStepIndex,
+      context.totalSteps,
+      context.baseExperience,
+      context.baseTreasureGold,
+      context.encounterCount,
+      context.treasureCount
+    );
+    
+    // Update context for next step
+    context.currentStepIndex++;
+    
+    // If hero was defeated in combat, mark quest as failed
+    if (step.type === QuestStepType.ENCOUNTER && 
+        step.combatResult && 
+        step.combatResult.outcome === CombatOutcome.HERO_DEFEAT) {
+      context.questSuccess = false;
+    }
+    
+    return step;
+  }
+  
+  /**
+   * Generates step types for a quest
+   */
+  private generateStepTypes(stepCount: number, questSuccess: boolean): QuestStepType[] {
     let encounterCount = 0;
     let treasureCount = 0;
     
@@ -83,34 +140,7 @@ export class QuestDomainService {
       }
     }
     
-    // Calculate base rewards (these are now only used for treasure steps)
-    const baseExperience = this.calculateExperience(hero);
-    const baseTreasureGold = this.calculateGoldReward(hero);
-    
-    // Second pass: create steps with appropriate rewards
-    for (let i = 0; i < stepCount; i++) {
-      const step = this.createQuestStep(
-        stepTypes[i], 
-        hero, 
-        questSuccess, 
-        i, 
-        stepCount,
-        baseExperience,
-        baseTreasureGold,
-        encounterCount,
-        treasureCount
-      );
-      
-      steps.push(step);
-      
-      // For encounter steps with combat, update quest success based on combat outcome
-      if (step.type === QuestStepType.ENCOUNTER && step.combatResult) {
-        // If the hero was defeated, the overall quest can't be fully successful
-        if (step.combatResult.outcome === CombatOutcome.HERO_DEFEAT) {
-          questSuccess = false;
-        }
-      }
-    }
+    return stepTypes;
   }
     /**
    * Creates a quest step of a specific type with appropriate rewards

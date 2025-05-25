@@ -6,10 +6,10 @@ import { signal } from '@angular/core';
 
 describe('HeroDetailsComponent', () => {
   let component: HeroDetailsComponent;
-  let fixture: ComponentFixture<HeroDetailsComponent>;
-  const mockHero: Hero = {
+  let fixture: ComponentFixture<HeroDetailsComponent>;  const mockHero: Hero = {
     name: 'Test Hero',
     health: 100,
+    maxHealth: 100,
     attack: 15,
     defense: 10,
     luck: 7,
@@ -17,13 +17,15 @@ describe('HeroDetailsComponent', () => {
     experience: 0,
     gold: 0
   };
-
   // Create a mock HeroFacadeService
   const mockHeroFacade = {
     hero: signal<Hero>(mockHero),
     heroPower: signal<number>(25), // attack + defense
     experienceToNextLevel: signal<number>(100),
     experienceProgress: signal<number>(0),
+    healthPercentage: signal<number>(100),
+    isFullHealth: signal<boolean>(true),
+    isLowHealth: signal<boolean>(false),
     gainExperience: jest.fn(),
     gainGold: jest.fn(),
     takeDamage: jest.fn(),

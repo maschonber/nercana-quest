@@ -2,6 +2,7 @@
 export interface Hero {
   name: string;
   health: number;
+  maxHealth: number;
   attack: number;
   defense: number;
   luck: number;

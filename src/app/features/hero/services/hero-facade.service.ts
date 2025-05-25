@@ -26,15 +26,24 @@ export class HeroFacadeService {
   experienceProgress = computed(() => {
     const hero = this.hero();
     const currentLevel = hero.level;
-    const expForCurrentLevel = this.heroDomainService.getExperienceForLevel(currentLevel);
-    const expForNextLevel = this.heroDomainService.getExperienceForLevel(currentLevel + 1);
+    const expForCurrentLevel = this.heroDomainService.getExperienceForLevel(currentLevel);    const expForNextLevel = this.heroDomainService.getExperienceForLevel(currentLevel + 1);
     const expInCurrentLevel = hero.experience - expForCurrentLevel;
     const expRequiredForLevel = expForNextLevel - expForCurrentLevel;
     
     return Math.floor((expInCurrentLevel / expRequiredForLevel) * 100);
   });
 
-  isHeroReady = computed(() => this.heroDomainService.validateHeroStats(this.hero()));
+  isHeroReady = computed(() => this.heroDomainService.validateHeroStats(this.hero()) && this.hero().health > 0);
+
+  // Computed health properties
+  healthPercentage = computed(() => {
+    const hero = this.hero();
+    return Math.floor((hero.health / hero.maxHealth) * 100);
+  });
+
+  isFullHealth = computed(() => this.hero().health >= this.hero().maxHealth);
+  
+  isLowHealth = computed(() => this.hero().health <= this.hero().maxHealth * 0.25);
 
   // Hero management methods
   addExperience(experience: number): string {
@@ -43,6 +52,23 @@ export class HeroFacadeService {
 
   addGold(gold: number): void {
     this.heroStore.addGold(gold);
+  }
+
+  // Health management methods
+  takeDamage(damage: number): void {
+    this.heroStore.takeDamage(damage);
+  }
+
+  heal(healAmount: number): void {
+    this.heroStore.heal(healAmount);
+  }
+
+  fullHeal(): void {
+    this.heroStore.fullHeal();
+  }
+
+  setHealth(health: number): void {
+    this.heroStore.setHealth(health);
   }
 
   resetHero(): void {
