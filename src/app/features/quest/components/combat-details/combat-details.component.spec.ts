@@ -27,15 +27,15 @@ describe('CombatDetailsComponent', () => {
   const mockHeroFacade = {
     hero: signal<Hero>(mockHero)
   };
-
   const mockLogEntry: LogEntry = {
     timestamp: new Date('2024-01-15T10:30:00Z'),
-    message: 'You encountered a fierce Dragon!',
+    message: 'You encountered a fierce Void Entity!',
     success: true,
-    stepType: QuestStepType.ENCOUNTER,    monster: {
-      name: 'Ancient Dragon',
-      type: MonsterType.DRAGON,
-      description: 'A massive ancient dragon with scales that gleam like obsidian.',
+    stepType: QuestStepType.ENCOUNTER,
+    monster: {
+      name: 'Ancient Void Entity',
+      type: MonsterType.VOID_ENTITY,
+      description: 'A massive void entity that defies conventional understanding.',
       health: 0,
       maxHealth: 120,
       attack: 25,
@@ -121,11 +121,10 @@ describe('CombatDetailsComponent', () => {
   });
 
   it('should get correct turn actor names', () => {
-    const heroTurn = { actor: CombatantType.HERO };
-    const monsterTurn = { actor: CombatantType.MONSTER };
+    const heroTurn = { actor: CombatantType.HERO };    const monsterTurn = { actor: CombatantType.MONSTER };
     
     expect(component.getTurnActorName(heroTurn)).toBe('You');
-    expect(component.getTurnActorName(monsterTurn)).toBe('Ancient Dragon');
+    expect(component.getTurnActorName(monsterTurn)).toBe('Ancient Void Entity');
   });
 
   it('should get correct CSS classes for turn actors', () => {
@@ -135,12 +134,11 @@ describe('CombatDetailsComponent', () => {
     expect(component.getTurnActorClass(heroTurn)).toBe('hero-turn');
     expect(component.getTurnActorClass(monsterTurn)).toBe('monster-turn');
   });
-
   it('should render monster information', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Ancient Dragon');
-    expect(compiled.textContent).toContain('Dragon');
-    expect(compiled.textContent).toContain('A massive ancient dragon');
+    expect(compiled.textContent).toContain('Ancient Void Entity');
+    expect(compiled.textContent).toContain('Void Entity');
+    expect(compiled.textContent).toContain('A massive void entity that defies');
   });
 
   it('should render combat turns', () => {

@@ -40,32 +40,29 @@ describe('HeroActionsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-  it('should enable quest button when hero is ready and no quest in progress', () => {
+  });  it('should enable quest button when hero is ready and no quest in progress', () => {
     isHeroReadySignal.set(true);
     questInProgressSignal.set(false);
     fixture.detectChanges();
 
     expect(component.canStartQuest()).toBe(true);
-    expect(component.buttonText()).toBe('Embark on quest');
+    expect(component.buttonText()).toBe('Deploy on mission');
   });
-
   it('should disable quest button when hero is not ready', () => {
     isHeroReadySignal.set(false);
     questInProgressSignal.set(false);
     fixture.detectChanges();
 
     expect(component.canStartQuest()).toBe(false);
-    expect(component.buttonText()).toBe('Hero not ready');
+    expect(component.buttonText()).toBe('Clone expired');
   });
-
   it('should disable quest button when quest is in progress', () => {
     isHeroReadySignal.set(true);
     questInProgressSignal.set(true);
     fixture.detectChanges();
 
     expect(component.canStartQuest()).toBe(false);
-    expect(component.buttonText()).toBe('Quest in progress...');
+    expect(component.buttonText()).toBe('Mission in progress...');
   });
 
   it('should call questFacade.embarkOnQuest when button is clicked and quest can start', () => {
@@ -87,7 +84,6 @@ describe('HeroActionsComponent', () => {
 
     expect(mockQuestFacade.embarkOnQuest).not.toHaveBeenCalled();
   });
-
   it('should display correct button text based on state', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const button = compiled.querySelector('.quest-btn');
@@ -96,19 +92,19 @@ describe('HeroActionsComponent', () => {
     isHeroReadySignal.set(true);
     questInProgressSignal.set(false);
     fixture.detectChanges();
-    expect(button?.textContent?.trim()).toBe('Embark on quest');
+    expect(button?.textContent?.trim()).toBe('Deploy on mission');
 
     // Hero not ready
     isHeroReadySignal.set(false);
     questInProgressSignal.set(false);
     fixture.detectChanges();
-    expect(button?.textContent?.trim()).toBe('Hero not ready');
+    expect(button?.textContent?.trim()).toBe('Clone expired');
 
     // Quest in progress
     isHeroReadySignal.set(true);
     questInProgressSignal.set(true);
     fixture.detectChanges();
-    expect(button?.textContent?.trim()).toBe('Quest in progress...');
+    expect(button?.textContent?.trim()).toBe('Mission in progress...');
   });
 
   it('should add quest-in-progress class when quest is in progress', () => {

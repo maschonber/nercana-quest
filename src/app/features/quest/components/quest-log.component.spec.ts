@@ -21,15 +21,14 @@ describe('QuestLogComponent', () => {
       timestamp: new Date('2024-01-01T11:30:00'),
       success: false,
       stepType: QuestStepType.EXPLORATION
-    },
-    {
-      message: 'You encountered a fierce Dragon in the mountains!',
+    },    {
+      message: 'You encountered a fierce Xriit Commander in the station!',
       timestamp: new Date('2024-01-01T11:00:00'),
       success: true,
       stepType: QuestStepType.ENCOUNTER,      monster: {
-        name: 'Ancient Dragon',
-        type: MonsterType.DRAGON,
-        description: 'A massive dragon with gleaming scales.',
+        name: 'Xriit Commander',
+        type: MonsterType.XRIIT_COMMANDER,
+        description: 'A strategic alien commander with advanced weaponry.',
         health: 0,
         maxHealth: 120,
         attack: 25,
@@ -193,44 +192,6 @@ describe('QuestLogComponent', () => {
     encounterEntry.click();
     expect(component.isEntryExpanded(2)).toBe(false);
   });
-
-  it('should format messages with monster name highlighting', () => {
-    const testEntry: LogEntry = {
-      message: 'You encountered a Dragon in the forest!',
-      timestamp: new Date(),
-      success: true,
-      stepType: QuestStepType.ENCOUNTER
-    };
-    
-    const result = component.formatMessageWithMonsterHighlight(testEntry);
-    expect(result).toContain('<span class="monster-name-highlight">Dragon</span>');
-  });
-
-  it('should highlight monster names from entry data first', () => {
-    const testEntry: LogEntry = {
-      message: 'You encountered an Ancient Dragon!',
-      timestamp: new Date(),
-      success: true,
-      stepType: QuestStepType.ENCOUNTER,
-      monster: {
-        name: 'Ancient Dragon',
-        type: MonsterType.DRAGON,
-        description: 'A fearsome beast',
-        health: 100,
-        maxHealth: 100,
-        attack: 20,
-        defense: 15,
-        experienceReward: 50,
-        goldReward: 25
-      }
-    };
-    
-    const result = component.formatMessageWithMonsterHighlight(testEntry);
-    expect(result).toContain('<span class="monster-name-highlight">Ancient Dragon</span>');
-    // Should not double-highlight the word "Dragon" separately
-    expect(result).not.toMatch(/Ancient <span[^>]*>Dragon<\/span>/);
-  });
-
   it('should display reward information correctly', () => {
     const compiled = fixture.nativeElement;
     const encounterEntry = compiled.querySelectorAll('li')[2];

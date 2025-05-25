@@ -1,21 +1,22 @@
-// Model for monsters/enemies in Nercana combat system
+// Model for space enemies in Nercana combat system
 export enum MonsterType {
-  GOBLIN = 'GOBLIN',
-  TROLL = 'TROLL',
-  BANDIT = 'BANDIT',
-  WOLF = 'WOLF',
-  SPIDER = 'SPIDER',
-  SKELETON = 'SKELETON',
-  ZOMBIE = 'ZOMBIE',
-  DRAGON = 'DRAGON',
-  RAT = "RAT",
-  ORC = "ORC",
-  BEAR = "BEAR",
-  GARGOYLE = "GARGOYLE",
-  WRAITH = "WRAITH",
-  MINOTAUR = "MINOTAUR",
-  DEMON = "DEMON",
-  LICH = "LICH"
+  SPACE_SLUG = 'SPACE_SLUG',
+  XRIIT = 'XRIIT',
+  MOGGO = 'MOGGO',
+  CRITTER = 'CRITTER',
+  SPACE_MERC = 'SPACE_MERC',
+  // Variations for different difficulty tiers
+  SLUG_SWARM = 'SLUG_SWARM',
+  XRIIT_SCOUT = 'XRIIT_SCOUT',
+  XRIIT_COMMANDER = 'XRIIT_COMMANDER',
+  MOGGO_BRUTE = 'MOGGO_BRUTE',
+  MOGGO_PACK = 'MOGGO_PACK',
+  CRITTER_NEST = 'CRITTER_NEST',
+  MERC_RAIDER = 'MERC_RAIDER',
+  MERC_CAPTAIN = 'MERC_CAPTAIN',
+  STATION_DEFENSE = 'STATION_DEFENSE',
+  ROGUE_AI = 'ROGUE_AI',
+  VOID_ENTITY = 'VOID_ENTITY'
 }
 
 export interface Monster {
@@ -32,19 +33,19 @@ export interface Monster {
 
 // Monster difficulty tiers for appropriate challenges
 export enum MonsterTier {
-  EASY = 'easy',     // For low-level heroes
-  MEDIUM = 'medium', // For mid-level heroes
-  HARD = 'hard',     // For high-level heroes
+  EASY = 'easy',     // For low-level clones
+  MEDIUM = 'medium', // For mid-level clones
+  HARD = 'hard',     // For high-level clones
   BOSS = 'boss'      // Special encounters
 }
 
-// Function to determine appropriate monster tier based on hero level
-export function getAppropriateMonsterTier(heroLevel: number): MonsterTier {
-  if (heroLevel <= 3) {
+// Function to determine appropriate monster tier based on clone level
+export function getAppropriateMonsterTier(cloneLevel: number): MonsterTier {
+  if (cloneLevel <= 3) {
     return MonsterTier.EASY;
-  } else if (heroLevel <= 6) {
+  } else if (cloneLevel <= 6) {
     return MonsterTier.MEDIUM;
-  } else if (heroLevel <= 9) {
+  } else if (cloneLevel <= 9) {
     return MonsterTier.HARD;
   } else {
     return MonsterTier.BOSS;

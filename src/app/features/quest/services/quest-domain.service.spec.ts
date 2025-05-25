@@ -31,22 +31,22 @@ describe('QuestDomainService', () => {
     
     service = TestBed.inject(QuestDomainService);
     monsterServiceSpy = TestBed.inject(MonsterService);
-    combatServiceSpy = TestBed.inject(CombatService);
-      // Setup default return values for spies
+    combatServiceSpy = TestBed.inject(CombatService);    // Setup default return values for spies
     const mockMonster: Monster = {
-      type: MonsterType.GOBLIN,
-      name: 'Test Goblin',
+      type: MonsterType.SPACE_SLUG,
+      name: 'Test Space Slug',
       health: 30,
       maxHealth: 30,
       attack: 8,
       defense: 5,
       experienceReward: 20,
       goldReward: 10,
-      description: 'A test goblin'
+      description: 'A test space slug'
     };
     
     monsterServiceSpy.generateRandomMonster.mockReturnValue(mockMonster);
-      const mockCombatResult: CombatResult = {
+    
+    const mockCombatResult: CombatResult = {
       outcome: CombatOutcome.HERO_VICTORY,
       turns: [],
       experienceGained: 20,

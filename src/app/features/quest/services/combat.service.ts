@@ -254,19 +254,18 @@ export class CombatService {  /**
     const roll = Math.random();
     let actionType: CombatActionType;
     let description: string;
-    
-    if (roll < attackProb) {
+      if (roll < attackProb) {
       actionType = CombatActionType.ATTACK;
-      description = `${hero.name} attacks ${monster.name}!`;
+      description = `${hero.name} fires at ${monster.name}!`;
     } else if (roll < attackProb + defendProb) {
       actionType = CombatActionType.DEFEND;
-      description = `${hero.name} takes a defensive stance.`;
+      description = `${hero.name} activates defensive systems.`;
     } else if (roll < attackProb + defendProb + specialProb) {
       actionType = CombatActionType.SPECIAL;
-      description = `${hero.name} attempts a powerful strike against ${monster.name}!`;
+      description = `${hero.name} attempts a charged energy blast against ${monster.name}!`;
     } else {
       actionType = CombatActionType.FLEE;
-      description = `${hero.name} attempts to flee from the battle!`;
+      description = `${hero.name} attempts to disengage from combat!`;
     }
     
     return {
@@ -287,13 +286,12 @@ export class CombatService {  /**
     
     let actionType: CombatActionType;
     let description: string;
-    
-    if (Math.random() < attackProb) {
+      if (Math.random() < attackProb) {
       actionType = CombatActionType.ATTACK;
-      description = `${monster.name} attacks ${hero.name}!`;
+      description = `${monster.name} strikes at ${hero.name}!`;
     } else {
       actionType = CombatActionType.DEFEND;
-      description = `${monster.name} takes a defensive stance.`;
+      description = `${monster.name} prepares defensive maneuvers.`;
     }
     
     return {

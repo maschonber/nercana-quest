@@ -13,27 +13,24 @@ import { QuestFacadeService } from '../../quest/services/quest-facade.service';
 export class HeroActionsComponent {
   private readonly heroFacade = inject(HeroFacadeService);
   private readonly questFacade = inject(QuestFacadeService);
-
   // Hero readiness state from hero facade
   isHeroReady = this.heroFacade.isHeroReady;
   
-  // Quest progress state from quest facade
+  // Mission progress state from quest facade
   questInProgress = this.questFacade.questInProgress;
 
-  // Combined state: button is enabled only when hero is ready AND no quest in progress
+  // Combined state: button is enabled only when clone is ready AND no mission in progress
   canStartQuest = computed(() => this.isHeroReady() && !this.questInProgress());
-
   // Button text based on current state
   buttonText = computed(() => {
     if (!this.isHeroReady()) {
-      return 'Hero not ready';
+      return 'Clone expired';
     }
     if (this.questInProgress()) {
-      return 'Quest in progress...';
+      return 'Mission in progress...';
     }
-    return 'Embark on quest';
+    return 'Deploy on mission';
   });
-
   onEmbarkOnQuest(): void {
     if (this.canStartQuest()) {
       this.questFacade.embarkOnQuest();

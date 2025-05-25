@@ -201,74 +201,72 @@ export class QuestDomainService {
       monster,
       combatResult
     };
-  }
-    /**
+  }  /**
    * Generates message for exploration step
    */
   private generateExplorationMessage(): string {
     const messages = [
-      'Your hero explores a forgotten ruin, discovering ancient inscriptions.',
-      'A hidden forest path reveals beautiful scenery and rare plants.',
-      'Your hero scales a tall cliff, gaining a breathtaking view of the land.',
-      'An abandoned mineshaft holds mysteries from a bygone era.',
-      'Your hero encounters dense fog, making navigation challenging.',
-      'The swampy terrain requires careful navigation.',
-      'A sudden rainstorm forces your hero to seek temporary shelter.',
-      'Your hero discovers an interesting landmark along the journey.'
+      'Your clone scans an abandoned station sector, discovering valuable data logs.',
+      'A maintenance corridor reveals hidden passages and interesting machinery.',
+      'Your clone accesses an observation deck, gaining a view of the nebula.',
+      'An abandoned cargo bay holds mysteries from previous station operations.',
+      'Your clone encounters sensor interference, making navigation challenging.',
+      'The zero-gravity sectors require careful maneuvering through debris.',
+      'A sudden system malfunction forces your clone to find an alternate route.',
+      'Your clone discovers an interesting piece of station infrastructure.'
     ];
     return messages[Math.floor(Math.random() * messages.length)];
   }
-  
-    /**
+  /**
    * Generates message for treasure step
    */
   private generateTreasureMessage(): string {
     const messages = [
-      'Your hero discovers a hidden chest filled with gold!',
-      'Ancient coins and gems are recovered from a forgotten vault!',
-      'Your hero finds valuable artifacts hidden in the ruins!',
-      'A grateful merchant rewards your hero with treasure!',
-      'Your hero uncovers a small cache of valuable items.',
-      'A hidden compartment reveals some coins and trinkets.',
-      'Your hero finds a few valuable gems among the rubble.',
-      'Some interesting artifacts are discovered along the way.'
+      'Your clone discovers a salvage cache filled with valuable tech parts!',
+      'Ancient data cores and metal scraps are recovered from a storage compartment!',
+      'Your clone finds valuable equipment hidden in the maintenance bay!',
+      'A grateful station AI rewards your clone with useful components!',
+      'Your clone uncovers a small stash of valuable salvage.',
+      'A hidden panel reveals some tech parts and metal fragments.',
+      'Your clone finds a few energy cells among the station debris.',
+      'Some interesting components are discovered along the way.'
     ];
     return messages[Math.floor(Math.random() * messages.length)];
   }/**
    * Generates message for encounter step based on combat result
    */
   private generateEncounterMessageFromCombat(combatResult: CombatResult, monster?: any): string {
-    const monsterName = monster?.name || "the enemy";
+    const monsterName = monster?.name || "the hostile entity";
     
     switch (combatResult.outcome) {
-      case CombatOutcome.HERO_VICTORY:        const victoryMessages = [
-          `Your hero defeated ${monsterName} after an intense battle! ${combatResult.summary}`,
-          `${monsterName} was no match for your hero's combat prowess after a ${combatResult.turns.length}-turn fight!`,
-          `Victory! Your hero vanquished ${monsterName} with superior tactics!`,
-          `After a fierce struggle, your hero emerged victorious over ${monsterName}!`
+      case CombatOutcome.HERO_VICTORY:
+        const victoryMessages = [
+          `Your clone defeated ${monsterName} after an intense firefight! ${combatResult.summary}`,
+          `${monsterName} was no match for your clone's tactical prowess after a ${combatResult.turns.length}-turn engagement!`,
+          `Victory! Your clone neutralized ${monsterName} with superior technology!`,
+          `After a fierce struggle, your clone emerged victorious over ${monsterName}!`
         ];
         return victoryMessages[Math.floor(Math.random() * victoryMessages.length)];
-        
-      case CombatOutcome.HERO_DEFEAT:
+          case CombatOutcome.HERO_DEFEAT:
         const defeatMessages = [
-          `Your hero was overwhelmed by ${monsterName} but managed to escape with their life.`,
-          `Despite a valiant effort against ${monsterName}, your hero was forced to retreat after being wounded.`,
-          `${monsterName} proved too powerful, leaving your hero no choice but to withdraw from the battle.`,
-          `Your hero suffered defeat at the hands of ${monsterName} but lived to fight another day.`
+          `Your clone was destroyed by ${monsterName} in a devastating firefight. Clone termination confirmed.`,
+          `Despite valiant resistance, ${monsterName} eliminated your clone with overwhelming force. Time for a new clone.`,
+          `${monsterName} proved too powerful - your clone didn't survive the encounter. Mission failure, clone lost.`,
+          `Fatal encounter: Your clone was killed by ${monsterName}. Emergency clone replacement protocols are advised.`
         ];
         return defeatMessages[Math.floor(Math.random() * defeatMessages.length)];
         
       case CombatOutcome.HERO_FLED:
         const fleeMessages = [
-          `Your hero made a tactical retreat when facing ${monsterName}, judging the odds unfavorable.`,
-          `Recognizing the danger posed by ${monsterName}, your hero wisely chose to flee the battle.`,
-          `Your hero managed to escape from a potentially deadly encounter with ${monsterName}.`,
-          `Facing ${monsterName}, your hero decided that discretion was the better part of valor.`
+          `Your clone made a tactical retreat when facing ${monsterName}, judging the odds unfavorable.`,
+          `Recognizing the threat posed by ${monsterName}, your clone cowardly chose to disengage from combat.`,
+          `Your clone managed to escape from a potentially deadly encounter with ${monsterName}.`,
+          `Facing ${monsterName}, your clone foolishly decided to put its own safety above the mission.`
         ];
         return fleeMessages[Math.floor(Math.random() * fleeMessages.length)];
         
       default:
-        return `Your hero encountered ${monsterName}, but the outcome is unclear.`;
+        return `Your clone encountered ${monsterName}, but the outcome is unclear.`;
     }
   }
 

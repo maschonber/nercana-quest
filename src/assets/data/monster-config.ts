@@ -2,281 +2,273 @@ import { MonsterType, MonsterTier } from '../../app/features/quest/models/monste
 import { MonsterConfig, MonsterData, TierData } from '../../app/features/quest/models/monster-data.model';
 
 /**
- * Type-safe monster configuration
+ * Type-safe space enemy configuration
  * This file provides compile-time type checking while keeping data separate from logic
  */
 
 const monsters: Record<MonsterType, MonsterData> = {
-  [MonsterType.GOBLIN]: {
-    baseHealth: 20,
-    baseAttack: 8,
-    baseDefense: 5,
-    baseExpReward: 15,
-    baseGoldReward: 8,
-    name: 'Goblin',
-    description: 'A small, green-skinned creature with a knack for mischief.',
+  [MonsterType.SPACE_SLUG]: {
+    baseHealth: 18,
+    baseAttack: 6,
+    baseDefense: 4,
+    baseExpReward: 12,
+    baseGoldReward: 6,
+    name: 'Space Slug',
+    description: 'A gelatinous mollusk that feeds on asteroid minerals and station debris.',
     tierNames: {
-      [MonsterTier.EASY]: 'Goblin Scavenger',
-      [MonsterTier.MEDIUM]: 'Goblin Warrior',
-      [MonsterTier.HARD]: 'Goblin Chieftain',
-      [MonsterTier.BOSS]: 'Goblin King'
+      [MonsterTier.EASY]: 'Juvenile Slug',
+      [MonsterTier.MEDIUM]: 'Space Slug',
+      [MonsterTier.HARD]: 'Acidic Slug',
+      [MonsterTier.BOSS]: 'Slug Queen'
     }
   },
-  [MonsterType.TROLL]: {
-    baseHealth: 40,
+  [MonsterType.XRIIT]: {
+    baseHealth: 28,
     baseAttack: 12,
     baseDefense: 8,
-    baseExpReward: 25,
-    baseGoldReward: 15,
-    name: 'Troll',
-    description: 'A large, brutish creature with regenerative abilities.',
-    tierNames: {
-      [MonsterTier.EASY]: 'Cave Troll',
-      [MonsterTier.MEDIUM]: 'Mountain Troll',
-      [MonsterTier.HARD]: 'Elder Troll',
-      [MonsterTier.BOSS]: 'Troll Overlord'
-    }
-  },
-  [MonsterType.BANDIT]: {
-    baseHealth: 25,
-    baseAttack: 10,
-    baseDefense: 6,
-    baseExpReward: 18,
-    baseGoldReward: 20,
-    name: 'Bandit',
-    description: 'A human outlaw lurking in the wilds.',
-    tierNames: {
-      [MonsterTier.EASY]: 'Bandit Footpad',
-      [MonsterTier.MEDIUM]: 'Bandit Cutthroat',
-      [MonsterTier.HARD]: 'Bandit Captain',
-      [MonsterTier.BOSS]: 'Bandit Lord'
-    }
-  },
-  [MonsterType.WOLF]: {
-    baseHealth: 22,
-    baseAttack: 11,
-    baseDefense: 4,
-    baseExpReward: 16,
-    baseGoldReward: 5,
-    name: 'Wolf',
-    description: 'A fierce predator hunting in packs.',
-    tierNames: {
-      [MonsterTier.EASY]: 'Wolf Pup',
-      [MonsterTier.MEDIUM]: 'Gray Wolf',
-      [MonsterTier.HARD]: 'Dire Wolf',
-      [MonsterTier.BOSS]: 'Wolf Alpha'
-    }
-  },
-  [MonsterType.SPIDER]: {
-    baseHealth: 18,
-    baseAttack: 9,
-    baseDefense: 5,
-    baseExpReward: 14,
-    baseGoldReward: 7,
-    name: 'Giant Spider',
-    description: 'A venomous arachnid the size of a dog.',
-    tierNames: {
-      [MonsterTier.EASY]: 'Web Spider',
-      [MonsterTier.MEDIUM]: 'Hunting Spider',
-      [MonsterTier.HARD]: 'Venomous Spider',
-      [MonsterTier.BOSS]: 'Spider Queen'
-    }
-  },
-  [MonsterType.SKELETON]: {
-    baseHealth: 28,
-    baseAttack: 9,
-    baseDefense: 7,
     baseExpReward: 20,
-    baseGoldReward: 10,
-    name: 'Skeleton Warrior',
-    description: 'An animated skeleton clutching rusty weapons.',
+    baseGoldReward: 15,
+    name: 'Xriit',
+    description: 'Cunning alien strategists with advanced technology and tactical prowess.',
     tierNames: {
-      [MonsterTier.EASY]: 'Brittle Skeleton',
-      [MonsterTier.MEDIUM]: 'Skeleton Warrior',
-      [MonsterTier.HARD]: 'Skeleton Champion',
-      [MonsterTier.BOSS]: 'Bone Lord'
+      [MonsterTier.EASY]: 'Xriit Scout',
+      [MonsterTier.MEDIUM]: 'Xriit Warrior',
+      [MonsterTier.HARD]: 'Xriit Tactician',
+      [MonsterTier.BOSS]: 'Xriit Overlord'
     }
   },
-  [MonsterType.ZOMBIE]: {
-    baseHealth: 32,
-    baseAttack: 8,
-    baseDefense: 5,
-    baseExpReward: 17,
-    baseGoldReward: 8,
-    name: 'Zombie',
-    description: 'A shambling undead creature hungry for flesh.',
-    tierNames: {
-      [MonsterTier.EASY]: 'Rotting Corpse',
-      [MonsterTier.MEDIUM]: 'Shambling Zombie',
-      [MonsterTier.HARD]: 'Plague Zombie',
-      [MonsterTier.BOSS]: 'Zombie Hulk'
-    }
-  },
-  [MonsterType.DRAGON]: {
-    baseHealth: 80,
-    baseAttack: 18,
-    baseDefense: 15,
-    baseExpReward: 50,
-    baseGoldReward: 100,
-    name: 'Dragon',
-    description: 'A fearsome reptilian beast with scales and fire breath.',
-    tierNames: {
-      [MonsterTier.EASY]: 'Dragon Wyrmling',
-      [MonsterTier.MEDIUM]: 'Young Dragon',
-      [MonsterTier.HARD]: 'Adult Dragon',
-      [MonsterTier.BOSS]: 'Ancient Dragon'
-    }
-  },
-  [MonsterType.RAT]: {
-    baseHealth: 12,
-    baseAttack: 5,
-    baseDefense: 2,
-    baseExpReward: 8,
-    baseGoldReward: 3,
-    name: 'Giant Rat',
-    description: 'A disease-ridden rodent grown to unusual size.',
-    tierNames: {
-      [MonsterTier.EASY]: 'Sewer Rat',
-      [MonsterTier.MEDIUM]: 'Giant Rat',
-      [MonsterTier.HARD]: 'Plague Rat',
-      [MonsterTier.BOSS]: 'Rat King'
-    }
-  },
-  [MonsterType.ORC]: {
+  [MonsterType.MOGGO]: {
     baseHealth: 35,
     baseAttack: 14,
-    baseDefense: 8,
+    baseDefense: 6,
+    baseExpReward: 18,
+    baseGoldReward: 10,
+    name: 'Moggo',
+    description: 'Aggressive, thick-furred brutes that rely on overwhelming strength and pack tactics.',
+    tierNames: {
+      [MonsterTier.EASY]: 'Moggo Youngling',
+      [MonsterTier.MEDIUM]: 'Moggo Brute',
+      [MonsterTier.HARD]: 'Moggo Alpha',
+      [MonsterTier.BOSS]: 'Moggo Warchief'
+    }
+  },
+  [MonsterType.CRITTER]: {
+    baseHealth: 8,
+    baseAttack: 4,
+    baseDefense: 2,
+    baseExpReward: 6,
+    baseGoldReward: 3,
+    name: 'Critter',
+    description: 'Small vermin infesting maintenance shafts and abandoned station sectors.',
+    tierNames: {
+      [MonsterTier.EASY]: 'Station Vermin',
+      [MonsterTier.MEDIUM]: 'Mutant Critter',
+      [MonsterTier.HARD]: 'Critter Swarm',
+      [MonsterTier.BOSS]: 'Hive Mother'
+    }
+  },
+  [MonsterType.SPACE_MERC]: {
+    baseHealth: 32,
+    baseAttack: 11,
+    baseDefense: 9,
     baseExpReward: 22,
-    baseGoldReward: 12,
-    name: 'Orc Warrior',
-    description: 'A savage humanoid with tusks and crude weapons.',
+    baseGoldReward: 25,
+    name: 'Space Merc',
+    description: 'Zealous humanoid raiders equipped with stolen tech, pursuing glory and salvage.',
     tierNames: {
-      [MonsterTier.EASY]: 'Orc Grunt',
-      [MonsterTier.MEDIUM]: 'Orc Warrior',
-      [MonsterTier.HARD]: 'Orc Berserker',
-      [MonsterTier.BOSS]: 'Orc Warlord'
+      [MonsterTier.EASY]: 'Merc Recruit',
+      [MonsterTier.MEDIUM]: 'Space Raider',
+      [MonsterTier.HARD]: 'Merc Veteran',
+      [MonsterTier.BOSS]: 'Merc Captain'
     }
   },
-  [MonsterType.BEAR]: {
-    baseHealth: 45,
-    baseAttack: 15,
-    baseDefense: 10,
-    baseExpReward: 28,
+  [MonsterType.SLUG_SWARM]: {
+    baseHealth: 25,
+    baseAttack: 8,
+    baseDefense: 3,
+    baseExpReward: 16,
     baseGoldReward: 8,
-    name: 'Cave Bear',
-    description: 'A massive brown bear with razor-sharp claws.',
+    name: 'Slug Swarm',
+    description: 'A writhing mass of interconnected slugs that overwhelm targets with numbers.',
     tierNames: {
-      [MonsterTier.EASY]: 'Black Bear',
-      [MonsterTier.MEDIUM]: 'Cave Bear',
-      [MonsterTier.HARD]: 'Dire Bear',
-      [MonsterTier.BOSS]: 'Great Bear'
+      [MonsterTier.EASY]: 'Small Swarm',
+      [MonsterTier.MEDIUM]: 'Slug Swarm',
+      [MonsterTier.HARD]: 'Acidic Swarm',
+      [MonsterTier.BOSS]: 'Mega Swarm'
     }
   },
-  [MonsterType.GARGOYLE]: {
-    baseHealth: 38,
-    baseAttack: 13,
-    baseDefense: 12,
-    baseExpReward: 24,
-    baseGoldReward: 15,
-    name: 'Stone Gargoyle',
-    description: 'A living statue with wings and piercing eyes.',
+  [MonsterType.XRIIT_SCOUT]: {
+    baseHealth: 22,
+    baseAttack: 10,
+    baseDefense: 7,
+    baseExpReward: 15,
+    baseGoldReward: 12,
+    name: 'Xriit Scout',
+    description: 'Fast-moving Xriit reconnaissance units equipped with stealth technology.',
     tierNames: {
-      [MonsterTier.EASY]: 'Cracked Gargoyle',
-      [MonsterTier.MEDIUM]: 'Stone Gargoyle',
-      [MonsterTier.HARD]: 'Iron Gargoyle',
-      [MonsterTier.BOSS]: 'Gargoyle Sentinel'
+      [MonsterTier.EASY]: 'Xriit Probe',
+      [MonsterTier.MEDIUM]: 'Xriit Scout',
+      [MonsterTier.HARD]: 'Stealth Scout',
+      [MonsterTier.BOSS]: 'Elite Infiltrator'
     }
   },
-  [MonsterType.WRAITH]: {
-    baseHealth: 30,
+  [MonsterType.XRIIT_COMMANDER]: {
+    baseHealth: 45,
     baseAttack: 16,
-    baseDefense: 4,
-    baseExpReward: 26,
-    baseGoldReward: 18,
-    name: 'Wraith',
-    description: 'A ghostly specter that drains the life from the living.',
+    baseDefense: 12,
+    baseExpReward: 35,
+    baseGoldReward: 30,
+    name: 'Xriit Commander',
+    description: 'High-ranking Xriit officers with powerful weaponry and tactical command abilities.',
     tierNames: {
-      [MonsterTier.EASY]: 'Lost Spirit',
-      [MonsterTier.MEDIUM]: 'Wraith',
-      [MonsterTier.HARD]: 'Banshee',
-      [MonsterTier.BOSS]: 'Wraith Lord'
+      [MonsterTier.EASY]: 'Xriit Officer',
+      [MonsterTier.MEDIUM]: 'Xriit Commander',
+      [MonsterTier.HARD]: 'War Commander',
+      [MonsterTier.BOSS]: 'Supreme Leader'
     }
   },
-  [MonsterType.MINOTAUR]: {
+  [MonsterType.MOGGO_BRUTE]: {
+    baseHealth: 50,
+    baseAttack: 18,
+    baseDefense: 5,
+    baseExpReward: 25,
+    baseGoldReward: 12,
+    name: 'Moggo Brute',
+    description: 'Massive Moggo warriors with enhanced strength and intimidating presence.',
+    tierNames: {
+      [MonsterTier.EASY]: 'Moggo Brawler',
+      [MonsterTier.MEDIUM]: 'Moggo Brute',
+      [MonsterTier.HARD]: 'Moggo Destroyer',
+      [MonsterTier.BOSS]: 'Apex Predator'
+    }
+  },
+  [MonsterType.MOGGO_PACK]: {
+    baseHealth: 30,
+    baseAttack: 12,
+    baseDefense: 4,
+    baseExpReward: 20,
+    baseGoldReward: 14,
+    name: 'Moggo Pack',
+    description: 'Coordinated groups of Moggos that use pack hunting tactics.',
+    tierNames: {
+      [MonsterTier.EASY]: 'Moggo Duo',
+      [MonsterTier.MEDIUM]: 'Moggo Pack',
+      [MonsterTier.HARD]: 'War Pack',
+      [MonsterTier.BOSS]: 'Moggo Clan'
+    }
+  },
+  [MonsterType.CRITTER_NEST]: {
+    baseHealth: 15,
+    baseAttack: 6,
+    baseDefense: 1,
+    baseExpReward: 10,
+    baseGoldReward: 5,
+    name: 'Critter Nest',
+    description: 'A breeding ground of critters that spawns new threats continuously.',
+    tierNames: {
+      [MonsterTier.EASY]: 'Small Nest',
+      [MonsterTier.MEDIUM]: 'Critter Nest',
+      [MonsterTier.HARD]: 'Infested Nest',
+      [MonsterTier.BOSS]: 'Queen\'s Chamber'
+    }
+  },
+  [MonsterType.MERC_RAIDER]: {
+    baseHealth: 28,
+    baseAttack: 13,
+    baseDefense: 7,
+    baseExpReward: 18,
+    baseGoldReward: 20,
+    name: 'Merc Raider',
+    description: 'Aggressive space mercenaries specialized in hit-and-run tactics.',
+    tierNames: {
+      [MonsterTier.EASY]: 'Merc Thug',
+      [MonsterTier.MEDIUM]: 'Merc Raider',
+      [MonsterTier.HARD]: 'Elite Raider',
+      [MonsterTier.BOSS]: 'Raid Leader'
+    }
+  },
+  [MonsterType.MERC_CAPTAIN]: {
     baseHealth: 55,
     baseAttack: 17,
     baseDefense: 11,
-    baseExpReward: 35,
-    baseGoldReward: 25,
-    name: 'Minotaur',
-    description: 'A bull-headed giant wielding a massive axe.',
+    baseExpReward: 40,
+    baseGoldReward: 35,
+    name: 'Merc Captain',
+    description: 'Veteran mercenary leaders with advanced armor and military experience.',
     tierNames: {
-      [MonsterTier.EASY]: 'Young Minotaur',
-      [MonsterTier.MEDIUM]: 'Minotaur Warrior',
-      [MonsterTier.HARD]: 'Minotaur Brute',
-      [MonsterTier.BOSS]: 'Minotaur Champion'
+      [MonsterTier.EASY]: 'Merc Sergeant',
+      [MonsterTier.MEDIUM]: 'Merc Captain',
+      [MonsterTier.HARD]: 'War Captain',
+      [MonsterTier.BOSS]: 'Fleet Admiral'
     }
   },
-  [MonsterType.DEMON]: {
-    baseHealth: 65,
-    baseAttack: 20,
-    baseDefense: 13,
-    baseExpReward: 45,
-    baseGoldReward: 50,
-    name: 'Lesser Demon',
-    description: 'A fiendish creature from the depths of the underworld.',
+  [MonsterType.STATION_DEFENSE]: {
+    baseHealth: 40,
+    baseAttack: 15,
+    baseDefense: 14,
+    baseExpReward: 30,
+    baseGoldReward: 18,
+    name: 'Station Defense',
+    description: 'Automated defense systems protecting abandoned stations and facilities.',
     tierNames: {
-      [MonsterTier.EASY]: 'Imp',
-      [MonsterTier.MEDIUM]: 'Lesser Demon',
-      [MonsterTier.HARD]: 'Demon',
-      [MonsterTier.BOSS]: 'Demon Lord'
+      [MonsterTier.EASY]: 'Patrol Drone',
+      [MonsterTier.MEDIUM]: 'Security Bot',
+      [MonsterTier.HARD]: 'Defense Turret',
+      [MonsterTier.BOSS]: 'Command Core'
     }
   },
-  [MonsterType.LICH]: {
-    baseHealth: 70,
-    baseAttack: 22,
+  [MonsterType.ROGUE_AI]: {
+    baseHealth: 60,
+    baseAttack: 14,
     baseDefense: 16,
-    baseExpReward: 60,
-    baseGoldReward: 80,
-    name: 'Lich',
-    description: 'An undead sorcerer with immense magical power.',
+    baseExpReward: 45,
+    baseGoldReward: 40,
+    name: 'Rogue AI',
+    description: 'Malfunctioning artificial intelligence controlling station systems and drones.',
     tierNames: {
-      [MonsterTier.EASY]: 'Necromancer',
-      [MonsterTier.MEDIUM]: 'Dark Mage',
-      [MonsterTier.HARD]: 'Lich',
-      [MonsterTier.BOSS]: 'Archlich'
+      [MonsterTier.EASY]: 'Glitched AI',
+      [MonsterTier.MEDIUM]: 'Rogue AI',
+      [MonsterTier.HARD]: 'Hostile AI',
+      [MonsterTier.BOSS]: 'AI Overlord'
+    }
+  },
+  [MonsterType.VOID_ENTITY]: {
+    baseHealth: 70,
+    baseAttack: 20,
+    baseDefense: 10,
+    baseExpReward: 55,
+    baseGoldReward: 50,
+    name: 'Void Entity',
+    description: 'Mysterious beings from deep space that defy conventional understanding.',
+    tierNames: {
+      [MonsterTier.EASY]: 'Void Wisp',
+      [MonsterTier.MEDIUM]: 'Void Entity',
+      [MonsterTier.HARD]: 'Void Horror',
+      [MonsterTier.BOSS]: 'Void Sovereign'
     }
   }
 };
 
+// Tier multipliers for scaling monster stats by difficulty
 const tiers: Record<MonsterTier, TierData> = {
   [MonsterTier.EASY]: {
     multiplier: 0.8,
-    prefix: 'Young '
+    prefix: 'Weak '
   },
   [MonsterTier.MEDIUM]: {
-    multiplier: 1.2,
+    multiplier: 1.0,
     prefix: ''
   },
   [MonsterTier.HARD]: {
-    multiplier: 1.8,
-    prefix: 'Veteran '
+    multiplier: 1.3,
+    prefix: 'Elite '
   },
   [MonsterTier.BOSS]: {
-    multiplier: 3.0,
-    prefix: 'Ancient '
+    multiplier: 1.8,
+    prefix: 'Boss '
   }
 };
 
-/**
- * Exported monster configuration with full type safety
- * 
- * Benefits:
- * - Compile-time type checking
- * - IntelliSense support
- * - Refactoring safety
- * - Still separated from business logic
- */
 export const MONSTER_CONFIG: MonsterConfig = {
   monsters,
   tiers

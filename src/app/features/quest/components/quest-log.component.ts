@@ -52,18 +52,17 @@ export class QuestLogComponent implements OnChanges {
     if (!this.newEntryTimestamp || !this.log[index]) return false;
     return this.log[index].timestamp.getTime() === this.newEntryTimestamp.getTime();
   }
-  
-  // Get the appropriate icon for each step type
+    // Get the appropriate icon for each step type
   getStepIcon(stepType?: QuestStepType): string {
     if (!stepType) return '';
     
     switch (stepType) {
       case QuestStepType.EXPLORATION:
-        return '🧭';
+        return '🛰️';
       case QuestStepType.ENCOUNTER:
-        return '⚔️';
+        return '⚡';
       case QuestStepType.TREASURE:
-        return '💰';
+        return '🫧';
       default:
         return '';
     }
@@ -103,33 +102,4 @@ export class QuestLogComponent implements OnChanges {
     return this.expandedCombatEntries.has(index);
   }
 
-  // Add a method to format messages with monster name highlighting
-  formatMessageWithMonsterHighlight(entry: LogEntry): string {
-    if (!entry.message) return '';
-    
-    let message = entry.message;
-    
-    // List of monster names to highlight (should match monster configuration)
-    const monsterNames = [
-      'Goblin', 'Orc', 'Troll', 'Dragon', 'Skeleton', 'Zombie', 'Vampire', 'Werewolf',
-      'Giant Spider', 'Cave Bear', 'Wild Boar', 'Dire Wolf', 'Ancient Dragon', 'Fire Elemental',
-      'Ice Golem', 'Shadow Wraith', 'Bandit', 'Dark Mage'
-    ];
-    
-    // First, check if this is an encounter entry and try to get monster name from the entry itself
-    if (entry.stepType === 'encounter' && entry.monster?.name) {
-      const monsterName = entry.monster.name;
-      const regex = new RegExp(`\\b${monsterName}\\b`, 'gi');
-      message = message.replace(regex, (match) => `<span class="monster-name-highlight">${match}</span>`);
-    }
-    
-    // Then apply general monster name highlighting for any remaining monster names
-    // But avoid double-highlighting by checking if the text is already wrapped
-    monsterNames.forEach(monsterName => {
-      const regex = new RegExp(`\\b${monsterName}\\b(?![^<]*<\/span>)`, 'gi');
-      message = message.replace(regex, (match) => `<span class="monster-name-highlight">${match}</span>`);
-    });
-    
-    return message;
-  }
 }

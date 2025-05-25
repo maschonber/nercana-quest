@@ -16,7 +16,8 @@ describe('CombatService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('simulateCombat', () => {    it('should simulate complete combat and return valid result', () => {
+  describe('simulateCombat', () => {
+    it('should simulate complete combat and return valid result', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
@@ -30,18 +31,20 @@ describe('CombatService', () => {
       };
 
       const monster: Monster = {
-        type: MonsterType.GOBLIN,
-        name: 'Goblin',
+        type: MonsterType.SPACE_SLUG,
+        name: 'Space Slug',
         health: 30,
         maxHealth: 30,
         attack: 8,
         defense: 5,
         experienceReward: 20,
         goldReward: 10,
-        description: 'A small, green-skinned creature.'
+        description: 'A slimy space creature that feeds on asteroids.'
       };
 
-      const result = service.simulateCombat(hero, monster);      // Result should have required properties
+      const result = service.simulateCombat(hero, monster);
+      
+      // Result should have required properties
       expect(result).toHaveProperty('outcome');
       expect(result).toHaveProperty('turns');
       expect(result).toHaveProperty('experienceGained');
@@ -64,7 +67,8 @@ describe('CombatService', () => {
       });
     });
 
-    it('should give full rewards for victory and reduced rewards for defeat', () => {      // Setup a very strong hero for guaranteed victory
+    it('should give full rewards for victory and reduced rewards for defeat', () => {
+      // Setup a very strong hero for guaranteed victory
       const strongHero: Hero = {
         name: 'Strong Hero',
         health: 200,
@@ -79,15 +83,15 @@ describe('CombatService', () => {
 
       // Setup a very weak monster
       const weakMonster: Monster = {
-        type: MonsterType.GOBLIN,
-        name: 'Weak Goblin',
+        type: MonsterType.CRITTER,
+        name: 'Weak Critter',
         health: 10,
         maxHealth: 10,
         attack: 5,
         defense: 2,
         experienceReward: 20,
         goldReward: 15,
-        description: 'A small, weak goblin.'
+        description: 'A small, weak space critter.'
       };
 
       const victoryResult = service.simulateCombat(strongHero, weakMonster);
@@ -97,7 +101,9 @@ describe('CombatService', () => {
       
       // Should get full rewards
       expect(victoryResult.experienceGained).toBe(weakMonster.experienceReward);
-      expect(victoryResult.goldGained).toBe(weakMonster.goldReward);      // Setup a very weak hero for guaranteed defeat
+      expect(victoryResult.goldGained).toBe(weakMonster.goldReward);
+
+      // Setup a very weak hero for guaranteed defeat
       const weakHero: Hero = {
         name: 'Weak Hero',
         health: 20,
@@ -112,15 +118,15 @@ describe('CombatService', () => {
 
       // Setup a very strong monster
       const strongMonster: Monster = {
-        type: MonsterType.DRAGON,
-        name: 'Strong Dragon',
+        type: MonsterType.VOID_ENTITY,
+        name: 'Strong Void Entity',
         health: 200,
         maxHealth: 200,
         attack: 40,
         defense: 30,
         experienceReward: 100,
         goldReward: 200,
-        description: 'A powerful dragon.'
+        description: 'A powerful void entity from another dimension.'
       };
 
       const defeatResult = service.simulateCombat(weakHero, strongMonster);

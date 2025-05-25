@@ -26,7 +26,7 @@
               'treasure-icon': entry.stepType === 'treasure'
             }">{{ getStepIcon(entry.stepType) }}</i>
           </span>          
-          <span class="entry-message" [innerHTML]="formatMessageWithMonsterHighlight(entry)"></span>
+          <span class="entry-message" [innerHTML]="entry.message"></span>
           <span class="entry-rewards" *ngIf="hasRewards(entry)">
             <span class="experience-reward" *ngIf="getExperienceFromEntry(entry) > 0">
               +{{ getExperienceFromEntry(entry) }} XP
