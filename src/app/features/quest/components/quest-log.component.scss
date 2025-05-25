@@ -238,28 +238,6 @@
   border-color: rgba(246, 213, 92, 0.4);
 }
 
-/* Combat details toggle button styling */
-.combat-details-toggle {
-  margin-left: 0.5rem;
-  font-size: 0.75rem;
-  background-color: var(--background-tertiary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 0.15rem 0.4rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-.combat-details-toggle:hover {
-  background-color: var(--accent-primary-subtle);
-  color: var(--accent-primary);
-}
-
 /* Combat details section */
 .combat-details {
   width: 100%;
@@ -601,4 +579,36 @@
     font-size: 0.7rem;
     padding: 0.15rem 0.4rem;
   }
+}
+
+/* Clickable entry styling */
+.log-view li.has-details {
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.log-view li.has-details:hover {
+  background-color: var(--background-tertiary);
+  transform: translateY(-1px);
+}
+
+.log-view li.has-details:active {
+  transform: translateY(0);
+}
+
+/* Expand indicator styling */
+.expand-indicator {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+  min-width: 20px;
+  justify-content: center;
+}
+
+.has-details:hover .expand-indicator {
+  color: var(--accent-primary);
 }

@@ -5,13 +5,19 @@
   </div>
   
   <div class="log-content">
-    <ng-container *ngIf="log.length > 0; else emptyLog">
-      <ul>
+    <ng-container *ngIf="log.length > 0; else emptyLog">      <ul>
         <li *ngFor="let entry of log; let i = index" 
             [ngClass]="{'success-entry': entry.success, 'fail-entry': !entry.success, 'new-entry': isNewEntry(i),
                        'exploration-entry': entry.stepType === 'exploration',
                        'encounter-entry': entry.stepType === 'encounter',
-                       'treasure-entry': entry.stepType === 'treasure'}">
+                       'treasure-entry': entry.stepType === 'treasure',
+                       'has-details': hasExpandableDetails(entry),
+                       'expanded': isEntryExpanded(i)}"
+            (click)="hasExpandableDetails(entry) ? toggleEntryDetails(i) : null"
+            [attr.aria-expanded]="hasExpandableDetails(entry) ? isEntryExpanded(i) : null"
+            [attr.role]="hasExpandableDetails(entry) ? 'button' : null"
+            [attr.tabindex]="hasExpandableDetails(entry) ? '0' : null"
+            [title]="hasExpandableDetails(entry) ? (isEntryExpanded(i) ? 'Click to hide details' : 'Click to show details') : null">
           <span class="entry-time">[{{ entry.timestamp | date:'shortTime' }}]</span>
           <span class="entry-icon" *ngIf="entry.stepType">
             <i class="step-icon" [ngClass]="{
@@ -30,19 +36,14 @@
             </span>
           </span>
           
-          <!-- Combat details toggle button for encounter entries with combat results -->
-          <button 
-            *ngIf="entry.stepType === 'encounter' && entry.combatResult" 
-            class="combat-details-toggle" 
-            (click)="toggleCombatDetails(i)"
-            [attr.aria-expanded]="isCombatExpanded(i)"
-            [title]="isCombatExpanded(i) ? 'Hide combat details' : 'Show combat details'">
-            <span *ngIf="!isCombatExpanded(i)">▼ Details</span>
-            <span *ngIf="isCombatExpanded(i)">▲ Hide</span>
-          </button>
+          <!-- Visual indicator for expandable entries -->
+          <span *ngIf="hasExpandableDetails(entry)" class="expand-indicator">
+            <span *ngIf="!isEntryExpanded(i)">▼</span>
+            <span *ngIf="isEntryExpanded(i)">▲</span>
+          </span>
           
           <!-- Expanded combat details section -->
-          <div *ngIf="entry.stepType === 'encounter' && entry.combatResult && isCombatExpanded(i)" class="combat-details">
+          <div *ngIf="entry.stepType === 'encounter' && entry.combatResult && isEntryExpanded(i)" class="combat-details">
             <!-- Combat outcome banner -->
             <div class="combat-outcome" [ngClass]="getCombatOutcomeClass(entry.combatResult.outcome)">
               {{ getCombatOutcomeText(entry.combatResult.outcome) }}

@@ -88,8 +88,13 @@ export class QuestLogComponent implements OnChanges {
     return entry.goldGained || 0;
   }
   
-  // Toggle expanded combat details
-  toggleCombatDetails(index: number): void {
+  // Check if a log entry has expandable details
+  hasExpandableDetails(entry: LogEntry): boolean {
+    return entry.stepType === 'encounter' && !!entry.combatResult;
+  }
+
+  // Toggle expanded details for any entry (renamed from toggleCombatDetails)
+  toggleEntryDetails(index: number): void {
     if (this.expandedCombatEntries.has(index)) {
       this.expandedCombatEntries.delete(index);
     } else {
@@ -97,8 +102,8 @@ export class QuestLogComponent implements OnChanges {
     }
   }
   
-  // Check if combat details are expanded
-  isCombatExpanded(index: number): boolean {
+  // Check if entry details are expanded (renamed from isCombatExpanded)
+  isEntryExpanded(index: number): boolean {
     return this.expandedCombatEntries.has(index);
   }
   
