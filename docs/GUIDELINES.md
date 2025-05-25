@@ -43,6 +43,7 @@ Follow this systematic approach for any code changes:
 - Test edge cases and error scenarios  
 - Use Angular TestBed sparingly, only for integration tests
 - Maintain clean test setup/teardown
+- **Performance**: Run all Jest tests at once rather than individual test files - Jest context setup is expensive and running the full suite is more efficient than multiple partial runs
 
 ## Development Lifecycle
 

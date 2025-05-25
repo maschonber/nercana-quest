@@ -1,13 +1,21 @@
 // Model for monsters/enemies in Nercana combat system
 export enum MonsterType {
-  GOBLIN = 'goblin',
-  TROLL = 'troll',
-  BANDIT = 'bandit',
-  WOLF = 'wolf',
-  SPIDER = 'spider',
-  SKELETON = 'skeleton',
-  ZOMBIE = 'zombie',
-  DRAGON = 'dragon'
+  GOBLIN = 'GOBLIN',
+  TROLL = 'TROLL',
+  BANDIT = 'BANDIT',
+  WOLF = 'WOLF',
+  SPIDER = 'SPIDER',
+  SKELETON = 'SKELETON',
+  ZOMBIE = 'ZOMBIE',
+  DRAGON = 'DRAGON',
+  RAT = "RAT",
+  ORC = "ORC",
+  BEAR = "BEAR",
+  GARGOYLE = "GARGOYLE",
+  WRAITH = "WRAITH",
+  MINOTAUR = "MINOTAUR",
+  DEMON = "DEMON",
+  LICH = "LICH"
 }
 
 export interface Monster {

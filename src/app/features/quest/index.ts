@@ -1,6 +1,7 @@
 // Quest feature exports
 export * from './models/quest.model';
 export * from './models/monster.model';
+export * from './models/monster-data.model';
 export * from './models/combat.model';
 export * from './services/quest-domain.service';
 export * from './services/quest-facade.service';

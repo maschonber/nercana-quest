@@ -1,25 +1,40 @@
 import { Injectable } from '@angular/core';
 import { Monster, MonsterTier, MonsterType } from '../models/monster.model';
+import { MonsterConfig } from '../models/monster-data.model';
+import { MONSTER_CONFIG } from '../../../../assets/data/monster-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MonsterService {
-  /**
+  private monsterConfig: MonsterConfig = MONSTER_CONFIG;
+  
+  // Cache for calculated monster difficulties to avoid repeated calculations
+  private monsterDifficulties: Map<MonsterType, number> = new Map();  /**
    * Creates a random monster appropriate for hero's level
+   * Uses a difficulty-based system that considers both monster base strength and tier modifiers
    * @param heroLevel Current level of the hero
    * @returns A generated monster instance
    */
   generateRandomMonster(heroLevel: number): Monster {
-    // Determine appropriate monster tier
-    const tier = this.getMonsterTierForLevel(heroLevel);
+    // Calculate the target difficulty range for this hero level
+    const targetDifficulty = this.getTargetDifficultyForLevel(heroLevel);
+    const difficultyRange = this.getDifficultyRange(targetDifficulty);
     
-    // Select random monster type from available types
-    const monsterTypes = Object.values(MonsterType);
-    const randomType = monsterTypes[Math.floor(Math.random() * monsterTypes.length)];
+    // Get suitable monster options within the difficulty range
+    const suitableMonsters = this.getSuitableMonstersForDifficulty(difficultyRange);
     
-    // Generate the monster with appropriate stats for the tier
-    return this.createMonster(randomType, tier, heroLevel);
+    if (suitableMonsters.length === 0) {
+      // Fallback to simple tier-based system if no suitable monsters found
+      console.warn(`No suitable monsters found for hero level ${heroLevel}, falling back to tier-based selection`);
+      return this.generateFallbackMonster(heroLevel);
+    }
+    
+    // Select random monster from suitable options
+    const randomMonster = suitableMonsters[Math.floor(Math.random() * suitableMonsters.length)];
+    
+    // Generate the monster with appropriate stats
+    return this.createMonster(randomMonster.type, randomMonster.tier, heroLevel);
   }
 
   /**
@@ -37,120 +52,33 @@ export class MonsterService {
       return Math.random() < 0.1 ? MonsterTier.BOSS : MonsterTier.HARD;
     }
   }
-
   /**
    * Creates a monster with appropriate stats based on type and tier
-   */  private createMonster(type: MonsterType, tier: MonsterTier, heroLevel: number): Monster {
-    // Base stats that will be modified by tier
-    let baseHealth = 0;
-    let baseAttack = 0;
-    let baseDefense = 0;
-    let baseExpReward = 0;
-    let baseGoldReward = 0;
-    let name = '';
-    let description = '';
-
-    // Set base stats by monster type
-    switch (type) {
-      case MonsterType.GOBLIN:
-        baseHealth = 20;
-        baseAttack = 8;
-        baseDefense = 5;
-        baseExpReward = 15;
-        baseGoldReward = 8;
-        name = 'Goblin';
-        description = 'A small, green-skinned creature with a knack for mischief.';
-        break;      case MonsterType.TROLL:
-        baseHealth = 40;
-        baseAttack = 12;
-        baseDefense = 8;
-        baseExpReward = 25;
-        baseGoldReward = 15;
-        name = 'Troll';
-        description = 'A large, brutish creature with regenerative abilities.';
-        break;      case MonsterType.BANDIT:
-        baseHealth = 25;
-        baseAttack = 10;
-        baseDefense = 6;
-        baseExpReward = 18;
-        baseGoldReward = 20;
-        name = 'Bandit';
-        description = 'A human outlaw lurking in the wilds.';
-        break;      case MonsterType.WOLF:
-        baseHealth = 22;
-        baseAttack = 11;
-        baseDefense = 4;
-        baseExpReward = 16;
-        baseGoldReward = 5;
-        name = 'Wolf';
-        description = 'A fierce predator hunting in packs.';
-        break;      case MonsterType.SPIDER:
-        baseHealth = 18;
-        baseAttack = 9;
-        baseDefense = 5;
-        baseExpReward = 14;
-        baseGoldReward = 7;
-        name = 'Giant Spider';
-        description = 'A venomous arachnid the size of a dog.';
-        break;      case MonsterType.SKELETON:
-        baseHealth = 28;
-        baseAttack = 9;
-        baseDefense = 7;
-        baseExpReward = 20;
-        baseGoldReward = 10;
-        name = 'Skeleton Warrior';
-        description = 'An animated skeleton clutching rusty weapons.';
-        break;      case MonsterType.ZOMBIE:
-        baseHealth = 32;
-        baseAttack = 8;
-        baseDefense = 5;
-        baseExpReward = 17;
-        baseGoldReward = 8;
-        name = 'Zombie';
-        description = 'A shambling undead creature hungry for flesh.';
-        break;      case MonsterType.DRAGON:
-        baseHealth = 80;
-        baseAttack = 18;
-        baseDefense = 15;
-        baseExpReward = 50;
-        baseGoldReward = 100;
-        name = 'Dragon';
-        description = 'A fearsome reptilian beast with scales and fire breath.';
-        break;
-    }    // Apply tier multipliers
-    let tierMultiplier = 1.0;
-    let prefixName = '';
-    
-    switch (tier) {
-      case MonsterTier.EASY:
-        tierMultiplier = 0.8;
-        prefixName = 'Young ';
-        break;
-      case MonsterTier.MEDIUM:
-        tierMultiplier = 1.2;
-        // No prefix for medium tier
-        break;
-      case MonsterTier.HARD:
-        tierMultiplier = 1.8;
-        prefixName = 'Veteran ';
-        break;
-      case MonsterTier.BOSS:
-        tierMultiplier = 3.0;
-        prefixName = 'Ancient ';
-        break;
+   */
+  private createMonster(type: MonsterType, tier: MonsterTier, heroLevel: number): Monster {
+    // Get monster data from configuration
+    const monsterData = this.monsterConfig.monsters[type];
+    if (!monsterData) {
+      throw new Error(`Monster type ${type} not found in configuration`);
     }
 
-    // Apply hero level scaling (slight increase with level)
-    const levelScaling = 1 + (heroLevel * 0.1);
-      // Calculate final stats
-    const health = Math.floor(baseHealth * tierMultiplier * levelScaling);
-    const attack = Math.floor(baseAttack * tierMultiplier * levelScaling);
-    const defense = Math.floor(baseDefense * tierMultiplier * levelScaling);
-    const experienceReward = Math.floor(baseExpReward * tierMultiplier * levelScaling);
-    const goldReward = Math.floor(baseGoldReward * tierMultiplier * levelScaling);
+    // Get tier data from configuration
+    const tierData = this.monsterConfig.tiers[tier];
+    if (!tierData) {
+      throw new Error(`Monster tier ${tier} not found in configuration`);
+    }
 
-    // Apply name prefix based on tier
-    name = prefixName + name;
+    // Apply tier multiplier and hero level scaling
+    const levelScaling = 1 + (heroLevel * 0.1);
+    const finalMultiplier = tierData.multiplier * levelScaling;    // Calculate final stats
+    const health = Math.floor(monsterData.baseHealth * finalMultiplier);
+    const attack = Math.floor(monsterData.baseAttack * finalMultiplier);
+    const defense = Math.floor(monsterData.baseDefense * finalMultiplier);
+    const experienceReward = Math.floor(monsterData.baseExpReward * finalMultiplier);
+    const goldReward = Math.floor(monsterData.baseGoldReward * finalMultiplier);
+
+    // Choose appropriate name: use tier-specific name if available, otherwise fallback to prefix + base name
+    const name = monsterData.tierNames?.[tier] || (tierData.prefix + monsterData.name);
 
     // Return the fully configured monster
     return {
@@ -162,7 +90,123 @@ export class MonsterService {
       defense,
       experienceReward,
       goldReward,
-      description
+      description: monsterData.description
     };
+  }
+
+  /**
+   * Calculates the base difficulty of a monster type based on its stats
+   * Uses a weighted formula considering health, attack, and defense
+   */
+  private getMonsterBaseDifficulty(type: MonsterType): number {
+    if (this.monsterDifficulties.has(type)) {
+      return this.monsterDifficulties.get(type)!;
+    }
+
+    const monsterData = this.monsterConfig.monsters[type];
+    if (!monsterData) {
+      throw new Error(`Monster type ${type} not found in configuration`);
+    }
+
+    // Calculate difficulty using weighted formula
+    // Health contributes 40%, Attack 35%, Defense 25%
+    const difficulty = (monsterData.baseHealth * 0.4) + 
+                      (monsterData.baseAttack * 0.35) + 
+                      (monsterData.baseDefense * 0.25);
+
+    this.monsterDifficulties.set(type, difficulty);
+    return difficulty;
+  }
+
+  /**
+   * Calculates the effective difficulty of a monster with tier and level scaling
+   */
+  private getEffectiveDifficulty(type: MonsterType, tier: MonsterTier, heroLevel: number): number {
+    const baseDifficulty = this.getMonsterBaseDifficulty(type);
+    const tierData = this.monsterConfig.tiers[tier];
+    const levelScaling = 1 + (heroLevel * 0.1);
+    
+    return baseDifficulty * tierData.multiplier * levelScaling;
+  }
+
+  /**
+   * Determines target difficulty for a hero level
+   */
+  private getTargetDifficultyForLevel(heroLevel: number): number {
+    // Base difficulty grows with hero level, with some variance for challenge
+    const baseDifficulty = 15 + (heroLevel * 3); // Roughly scales with typical monster progression
+    const variance = baseDifficulty * 0.2; // ±20% variance
+    
+    return baseDifficulty + (Math.random() - 0.5) * variance;
+  }
+
+  /**
+   * Gets acceptable difficulty range around target
+   */
+  private getDifficultyRange(targetDifficulty: number): { min: number; max: number } {
+    const tolerance = targetDifficulty * 0.5; // ±50% tolerance
+    return {
+      min: targetDifficulty - tolerance,
+      max: targetDifficulty + tolerance
+    };
+  }
+
+  /**
+   * Finds suitable monster type/tier combinations for given difficulty range
+   */
+  private getSuitableMonstersForDifficulty(difficultyRange: { min: number; max: number }): Array<{ type: MonsterType; tier: MonsterTier }> {
+    const suitableMonsters: Array<{ type: MonsterType; tier: MonsterTier }> = [];
+    const monsterTypes = Object.values(MonsterType);
+    const tierTypes = Object.values(MonsterTier);
+
+    // Check all combinations of monster types and tiers
+    for (const type of monsterTypes) {
+      for (const tier of tierTypes) {
+        // Use average hero level for difficulty calculation (level 5 as baseline)
+        const effectiveDifficulty = this.getEffectiveDifficulty(type, tier, 5);
+        
+        if (effectiveDifficulty >= difficultyRange.min && effectiveDifficulty <= difficultyRange.max) {
+          suitableMonsters.push({ type, tier });
+        }
+      }
+    }
+
+    return suitableMonsters;
+  }
+
+  /**
+   * Fallback to simple tier-based generation when difficulty system fails
+   */
+  private generateFallbackMonster(heroLevel: number): Monster {
+    const tier = this.getMonsterTierForLevel(heroLevel);
+    const monsterTypes = Object.values(MonsterType);
+    const randomType = monsterTypes[Math.floor(Math.random() * monsterTypes.length)];
+    
+    return this.createMonster(randomType, tier, heroLevel);
+  }
+  /**
+   * Debug method to analyze monster distribution for a given hero level
+   * Useful for balancing and testing the difficulty system
+   */
+  analyzeMonsterDistribution(heroLevel: number, sampleSize: number = 100): { [key: string]: number } {
+    const distribution: { [key: string]: number } = {};
+    
+    for (let i = 0; i < sampleSize; i++) {
+      const monster = this.generateRandomMonster(heroLevel);
+      const key = monster.name; // Use the actual tier-specific name
+      distribution[key] = (distribution[key] || 0) + 1;
+    }
+    
+    // Convert to percentages and sort by frequency
+    const sorted = Object.entries(distribution)
+      .map(([name, count]) => ({ name, percentage: (count / sampleSize * 100).toFixed(1) }))
+      .sort((a, b) => parseFloat(b.percentage) - parseFloat(a.percentage));
+    
+    const result: { [key: string]: number } = {};
+    sorted.forEach(item => {
+      result[item.name] = parseFloat(item.percentage);
+    });
+    
+    return result;
   }
 }

@@ -273,29 +273,6 @@ export class QuestDomainService {
   }
 
   /**
-   * Generates appropriate quest message based on outcome
-   */
-  private generateQuestMessage(questStatus: 'ongoing' | 'successful' | 'failed'): string {
-    if (questStatus === 'successful') {
-      const successMessages = [
-        'Quest succeeded! Your hero returns victorious.',
-        'Your hero emerges triumphant from the dangerous quest!',
-        'Victory! The quest has been completed successfully.',
-        'Your hero overcomes all obstacles and succeeds!'
-      ];
-      return successMessages[Math.floor(Math.random() * successMessages.length)];
-    } else {
-      const failureMessages = [
-        'Quest failed. Your hero barely escapes!',
-        'The quest proves too dangerous. Your hero retreats.',
-        'Despite valiant efforts, the quest ends in failure.',
-        'Your hero is forced to abandon the quest.'
-      ];
-      return failureMessages[Math.floor(Math.random() * failureMessages.length)];
-    }
-  }
-  
-  /**
    * Calculates experience gained from quest
    * Experience scales with hero level and stats
    */
