@@ -21,7 +21,7 @@ export interface QuestStep {
 }
 
 export interface QuestResult {
-  success: boolean;
+  questStatus: 'ongoing' | 'successful' | 'failed';
   message: string;
   timestamp: Date;
   experienceGained: number;

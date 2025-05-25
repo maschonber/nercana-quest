@@ -131,7 +131,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
     });    // Mock quest context to ensure we get exactly 2 encounters
     jest.spyOn(questDomainService, 'createQuestContext').mockReturnValue({
       remainingStepTypes: [QuestStepType.ENCOUNTER, QuestStepType.ENCOUNTER],
-      questSuccess: true,
+      questStatus: 'ongoing',
       baseExperience: 50,
       baseTreasureGold: 100,
       encounterCount: 2,
@@ -261,11 +261,10 @@ describe('Multi-Encounter Health Persistence Integration', () => {
         goldGained: 0,
         summary: 'Default victory'
       };
-    });
-      // Mock quest context for 2 encounters
+    });      // Mock quest context for 2 encounters
     jest.spyOn(questDomainService, 'createQuestContext').mockReturnValue({
       remainingStepTypes: [QuestStepType.ENCOUNTER, QuestStepType.ENCOUNTER],
-      questSuccess: true,
+      questStatus: 'ongoing',
       baseExperience: 50,
       baseTreasureGold: 100,
       encounterCount: 2,
@@ -332,11 +331,10 @@ describe('Multi-Encounter Health Persistence Integration', () => {
         goldGained: 0,
         summary: 'Default victory'
       };
-    });
-      // Mock quest with exploration -> encounter -> treasure pattern
+    });      // Mock quest with exploration -> encounter -> treasure pattern
     jest.spyOn(questDomainService, 'createQuestContext').mockReturnValue({
       remainingStepTypes: [QuestStepType.EXPLORATION, QuestStepType.ENCOUNTER, QuestStepType.TREASURE],
-      questSuccess: true,
+      questStatus: 'ongoing',
       baseExperience: 50,
       baseTreasureGold: 100,
       encounterCount: 1,

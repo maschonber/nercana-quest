@@ -11,8 +11,8 @@ import { CombatService } from './combat.service';
 export interface QuestContext {
   /** Remaining step types to be generated */
   remainingStepTypes: QuestStepType[];
-  /** Overall quest success prediction */
-  questSuccess: boolean;
+  /** Current quest status - starts as ongoing, changes based on encounters */
+  questStatus: 'ongoing' | 'successful' | 'failed';
   /** Base experience reward for treasure steps */
   baseExperience: number;
   /** Base gold reward for treasure steps */
@@ -33,19 +33,14 @@ export interface QuestContext {
 export class QuestDomainService {
   private readonly monsterService = inject(MonsterService);
   private readonly combatService = inject(CombatService);
-  
-  /**
+    /**
    * Creates initial quest context for dynamic step generation
    */
   createQuestContext(hero: Hero): QuestContext {
     const stepCount = Math.floor(Math.random() * 4) + 2; // 2-5 steps
     
-    // Determine overall quest success first
-    const successChance = this.calculateSuccessChance(hero);
-    const questSuccess = Math.random() < successChance;
-    
-    // Generate step types
-    const stepTypes = this.generateStepTypes(stepCount, questSuccess);
+    // Generate step types without pre-determining success
+    const stepTypes = this.generateStepTypes(stepCount);
     
     // Count encounters and treasures
     const encounterCount = stepTypes.filter(type => type === QuestStepType.ENCOUNTER).length;
@@ -57,7 +52,7 @@ export class QuestDomainService {
     
     return {
       remainingStepTypes: [...stepTypes],
-      questSuccess,
+      questStatus: 'ongoing',
       baseExperience,
       baseTreasureGold,
       encounterCount,
@@ -66,13 +61,12 @@ export class QuestDomainService {
       totalSteps: stepCount
     };
   }
-  
-  /**
+    /**
    * Generates the next quest step using current hero state
    */
   generateNextStep(hero: Hero, context: QuestContext): QuestStep | null {
-    if (context.remainingStepTypes.length === 0) {
-      return null; // No more steps
+    if (context.remainingStepTypes.length === 0 || context.questStatus !== 'ongoing') {
+      return null; // No more steps or quest already ended
     }
     
     const stepType = context.remainingStepTypes.shift()!;
@@ -80,7 +74,7 @@ export class QuestDomainService {
     const step = this.createQuestStep(
       stepType,
       hero, // Use current hero state with updated health
-      context.questSuccess,
+      context.questStatus,
       context.currentStepIndex,
       context.totalSteps,
       context.baseExperience,
@@ -92,49 +86,48 @@ export class QuestDomainService {
     // Update context for next step
     context.currentStepIndex++;
     
-    // If hero was defeated in combat, mark quest as failed
+    // If hero was defeated in combat, mark quest as failed and end immediately
     if (step.type === QuestStepType.ENCOUNTER && 
         step.combatResult && 
         step.combatResult.outcome === CombatOutcome.HERO_DEFEAT) {
-      context.questSuccess = false;
+      context.questStatus = 'failed';
+      // Clear remaining steps since quest ends here
+      context.remainingStepTypes = [];
+    } else if (context.remainingStepTypes.length === 0) {
+      // All steps completed successfully
+      context.questStatus = 'successful';
     }
     
     return step;
   }
-  
-  /**
+    /**
    * Generates step types for a quest
    */
-  private generateStepTypes(stepCount: number, questSuccess: boolean): QuestStepType[] {
-    let encounterCount = 0;
-    let treasureCount = 0;
-    
-    // First pass: determine step types and count encounters/treasures
+  private generateStepTypes(stepCount: number): QuestStepType[] {
     const stepTypes: QuestStepType[] = [];
+    
     for (let i = 0; i < stepCount; i++) {
+      const roll = Math.random();
       let stepType: QuestStepType;
       
-      const roll = Math.random();
       if (roll < 0.4) {
         stepType = QuestStepType.EXPLORATION;
       } else if (roll < 0.8) {
         stepType = QuestStepType.ENCOUNTER;
-        encounterCount++;
       } else {
         stepType = QuestStepType.TREASURE;
-        treasureCount++;
       }
       
       stepTypes.push(stepType);
     }
     
-    // Ensure at least one treasure for successful quests
-    if (questSuccess && treasureCount === 0) {
+    // Ensure at least one treasure step in every quest for potential rewards
+    const hasTreasure = stepTypes.some(type => type === QuestStepType.TREASURE);
+    if (!hasTreasure) {
       // Replace the last exploration with treasure
       for (let i = stepTypes.length - 1; i >= 0; i--) {
         if (stepTypes[i] === QuestStepType.EXPLORATION) {
           stepTypes[i] = QuestStepType.TREASURE;
-          treasureCount++;
           break;
         }
       }
@@ -142,12 +135,12 @@ export class QuestDomainService {
     
     return stepTypes;
   }
-    /**
+  /**
    * Creates a quest step of a specific type with appropriate rewards
    */  private createQuestStep(
     type: QuestStepType, 
     hero: Hero, 
-    questSuccess: boolean, 
+    questStatus: 'ongoing' | 'successful' | 'failed', 
     stepIndex: number, 
     totalSteps: number,
     baseExperience: number,
@@ -157,7 +150,7 @@ export class QuestDomainService {
   ): QuestStep {
     // Default values
     let message = '';
-    let success = questSuccess;
+    let success = true; // Individual step success (different from overall quest status)
     let experienceGained = 0;
     let goldGained = 0;
     let monster = undefined;
@@ -165,9 +158,9 @@ export class QuestDomainService {
     
     switch(type) {
       case QuestStepType.EXPLORATION:
-        message = this.generateExplorationMessage(questSuccess);
-        // Exploration steps don't affect quest success and provide no rewards
-        success = true; // Always "succeed" at exploration even if quest fails
+        message = this.generateExplorationMessage();
+        // Exploration steps always succeed individually
+        success = true;
         break;
         
       case QuestStepType.ENCOUNTER:
@@ -190,9 +183,9 @@ export class QuestDomainService {
         break;
         
       case QuestStepType.TREASURE:
-        message = this.generateTreasureMessage(questSuccess);
-        // Major gold from treasures (only when successful)
-        if (questSuccess) {
+        message = this.generateTreasureMessage();
+        // Treasure steps provide rewards based on quest still being ongoing
+        if (questStatus === 'ongoing') {
           goldGained = Math.floor(baseTreasureGold / Math.max(1, treasureCount));
         }
         break;
@@ -209,74 +202,39 @@ export class QuestDomainService {
       combatResult
     };
   }
-  
-  /**
+    /**
    * Generates message for exploration step
    */
-  private generateExplorationMessage(questSuccess: boolean): string {
-    if (questSuccess) {
-      const messages = [
-        'Your hero explores a forgotten ruin, discovering ancient inscriptions.',
-        'A hidden forest path reveals beautiful scenery and rare plants.',
-        'Your hero scales a tall cliff, gaining a breathtaking view of the land.',
-        'An abandoned mineshaft holds mysteries from a bygone era.'
-      ];
-      return messages[Math.floor(Math.random() * messages.length)];
-    } else {
-      const messages = [
-        'Your hero encounters dense fog, making navigation difficult.',
-        'The swampy terrain slows your hero\'s progress considerably.',
-        'A sudden rainstorm forces your hero to seek shelter temporarily.',
-        'Your hero takes a wrong turn, losing valuable time.'
-      ];
-      return messages[Math.floor(Math.random() * messages.length)];
-    }
+  private generateExplorationMessage(): string {
+    const messages = [
+      'Your hero explores a forgotten ruin, discovering ancient inscriptions.',
+      'A hidden forest path reveals beautiful scenery and rare plants.',
+      'Your hero scales a tall cliff, gaining a breathtaking view of the land.',
+      'An abandoned mineshaft holds mysteries from a bygone era.',
+      'Your hero encounters dense fog, making navigation challenging.',
+      'The swampy terrain requires careful navigation.',
+      'A sudden rainstorm forces your hero to seek temporary shelter.',
+      'Your hero discovers an interesting landmark along the journey.'
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
   }
   
-  /**
-   * Generates message for encounter step
-   */
-  private generateEncounterMessage(questSuccess: boolean): string {
-    if (questSuccess) {
-      const messages = [
-        'Your hero defeats a band of goblins threatening a trade route!',
-        'A territorial troll is no match for your hero\'s combat skills!',
-        'Your hero outsmarts a cunning sphinx guarding a passage!',
-        'A pack of wild beasts is driven away by your hero\'s prowess!'
-      ];
-      return messages[Math.floor(Math.random() * messages.length)];
-    } else {
-      const messages = [
-        'Your hero is forced to retreat from overwhelming enemy forces!',
-        'A powerful enchanted creature proves too strong to defeat!',        'Your hero barely escapes an ambush by skilled bandits!',
-        'The dark magic wielder\'s spells force your hero to fall back!'
-      ];
-      return messages[Math.floor(Math.random() * messages.length)];
-    }
-  }
-  
-  /**
+    /**
    * Generates message for treasure step
    */
-  private generateTreasureMessage(questSuccess: boolean): string {
-    if (questSuccess) {
-      const messages = [
-        'Your hero discovers a hidden chest filled with gold!',
-        'Ancient coins and gems are recovered from a forgotten vault!',
-        'Your hero is rewarded handsomely for completing the task!',
-        'A grateful merchant rewards your hero with a bag of gold!'
-      ];
-      return messages[Math.floor(Math.random() * messages.length)];
-    } else {
-      const messages = [
-        'The rumored treasure turns out to be nothing but fool\'s gold.',
-        'Your hero finds the treasure chamber empty, looted long ago.',
-        'The promised reward is withheld due to the quest\'s failure.',
-        'Your hero must leave valuable loot behind during the hasty retreat.'
-      ];
-      return messages[Math.floor(Math.random() * messages.length)];
-    }
-  }  /**
+  private generateTreasureMessage(): string {
+    const messages = [
+      'Your hero discovers a hidden chest filled with gold!',
+      'Ancient coins and gems are recovered from a forgotten vault!',
+      'Your hero finds valuable artifacts hidden in the ruins!',
+      'A grateful merchant rewards your hero with treasure!',
+      'Your hero uncovers a small cache of valuable items.',
+      'A hidden compartment reveals some coins and trinkets.',
+      'Your hero finds a few valuable gems among the rubble.',
+      'Some interesting artifacts are discovered along the way.'
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+  }/**
    * Generates message for encounter step based on combat result
    */
   private generateEncounterMessageFromCombat(combatResult: CombatResult, monster?: any): string {
@@ -315,21 +273,10 @@ export class QuestDomainService {
   }
 
   /**
-   * Calculates quest success chance based on hero stats
-   */
-  private calculateSuccessChance(hero: Hero): number {
-    const totalPower = hero.attack + hero.defense + hero.luck;
-    const baseChance = 0.3; // 30% base success rate
-    const powerBonus = Math.min(0.6, totalPower / 100); // Up to 60% bonus based on stats
-    
-    return Math.min(0.95, baseChance + powerBonus); // Cap at 95% success rate
-  }
-
-  /**
    * Generates appropriate quest message based on outcome
    */
-  private generateQuestMessage(success: boolean): string {
-    if (success) {
+  private generateQuestMessage(questStatus: 'ongoing' | 'successful' | 'failed'): string {
+    if (questStatus === 'successful') {
       const successMessages = [
         'Quest succeeded! Your hero returns victorious.',
         'Your hero emerges triumphant from the dangerous quest!',

@@ -76,8 +76,7 @@ describe('QuestDomainService', () => {
 
       const context = service.createQuestContext(hero);
 
-      expect(context).toHaveProperty('remainingStepTypes');
-      expect(context).toHaveProperty('questSuccess');
+      expect(context).toHaveProperty('remainingStepTypes');      expect(context).toHaveProperty('questStatus');
       expect(context).toHaveProperty('baseExperience');
       expect(context).toHaveProperty('baseTreasureGold');
       expect(context).toHaveProperty('encounterCount');
@@ -89,7 +88,7 @@ describe('QuestDomainService', () => {
       expect(context.remainingStepTypes.length).toBeGreaterThanOrEqual(2);
       expect(context.remainingStepTypes.length).toBeLessThanOrEqual(5);
       expect(context.totalSteps).toBe(context.remainingStepTypes.length);
-      expect(typeof context.questSuccess).toBe('boolean');
+      expect(context.questStatus).toBe('ongoing');
       expect(typeof context.baseExperience).toBe('number');
       expect(typeof context.baseTreasureGold).toBe('number');
     });
@@ -157,8 +156,7 @@ describe('QuestDomainService', () => {
 
       for (let i = 0; i < attempts; i++) {
         const context = service.createQuestContext(highStatHero);
-        const steps: any[] = [];
-        
+        const steps: any[] = [];        
         // Generate all steps
         while (context.remainingStepTypes.length > 0) {
           const step = service.generateNextStep(highStatHero, context);
@@ -167,7 +165,7 @@ describe('QuestDomainService', () => {
           }
         }
         
-        if (context.questSuccess) {
+        if (context.questStatus === 'successful') {
           successfulQuests++;
           totalExperience += steps.reduce((sum, step) => sum + step.experienceGained, 0);
           totalGold += steps.reduce((sum, step) => sum + step.goldGained, 0);
