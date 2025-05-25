@@ -1,11 +1,13 @@
 .hero-details {
-  flex: 1 1 300px;
-  min-width: 300px;
-  max-width: 350px;
+  flex: 0 0 280px;
+  /* Fixed width for compact hero details */
+  min-width: 280px;
+  max-width: 280px;
   background-color: var(--background-primary);
   color: var(--text-primary);
   border-radius: 0.5rem;
-  padding: 1rem 1.5rem;
+  padding: 1rem 1.25rem;
+  /* Slightly reduced padding */
   box-shadow: 0 1px 3px var(--shadow-medium);
   border: 1px solid var(--border-color);
   overflow-y: auto;
@@ -13,27 +15,34 @@
 }
 
 .hero-details h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  /* Reduced margin */
   color: var(--accent-primary);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  /* Reduced padding */
   border-bottom: 1px solid var(--border-color);
 }
 
 .hero-details h3 {
-  font-size: 1rem;
-  margin: 1rem 0 0.5rem 0;
+  font-size: 0.95rem;
+  /* Slightly smaller */
+  margin: 0.75rem 0 0.4rem 0;
+  /* Reduced margins */
   color: var(--text-secondary);
 }
 
 .hero-details ul {
   padding: 0;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1rem 0;
+  /* Reduced bottom margin */
 }
 
 .hero-details li {
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+  /* Reduced margin */
+  font-size: 0.9rem;
+  /* Slightly smaller */
   color: var(--text-primary);
 }
 
@@ -44,8 +53,10 @@
 }
 
 .level-info {
-  margin-top: 10px;
-  padding: 12px;
+  margin-top: 8px;
+  /* Reduced margin */
+  padding: 10px;
+  /* Reduced padding */
   background-color: var(--background-secondary);
   border-radius: 4px;
   border: 1px solid var(--border-color);
@@ -65,7 +76,7 @@
 
 .xp-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  background: var(--accent-primary);
   transition: width 0.4s ease, background 0.3s ease;
   box-shadow: 0 1px 3px var(--shadow-medium);
 }
@@ -90,4 +101,13 @@
   margin-top: 5px;
   font-size: 0.85rem;
   color: var(--text-secondary);
+}
+
+@media (max-width: 900px) {
+  .hero-details {
+    flex: none;
+    min-width: auto;
+    max-width: none;
+    width: 100%;
+  }
 }

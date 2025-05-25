@@ -14,7 +14,7 @@
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  max-width: 1280px; /* Increased for better space utilization */
+  max-width: 1400px; /* Increased for better space utilization */
   background-color: var(--background-primary);
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px var(--shadow-light);
@@ -47,9 +47,12 @@
   gap: 1.5rem;
   flex: 1;
   overflow: hidden;
+  min-height: 0; /* Allows flex children to shrink */
+  width: 100%; /* Ensure full width */
+  align-items: stretch; /* Ensure both components have same height */
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 900px) {
   .nercana-container {
     padding: 1rem;
     gap: 1rem;

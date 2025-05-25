@@ -61,6 +61,7 @@ The application uses a clean, modern UI design with a light color scheme:
 - Scrollable components with custom scrollbar styling
 - Visual feedback for quest outcomes (green for success, red for failures)
 - Progress indicators for character advancement
+- **No gradients**: All UI elements use solid colors instead of gradients for a clean, uncluttered appearance
 
 ## Technical Implementation
 

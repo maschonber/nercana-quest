@@ -1,6 +1,12 @@
+:host {
+  flex: 999 1 400px; /* Force high growth factor with 400px base */
+  min-width: 400px;
+  display: flex;
+}
+
 .log-view {
-  flex: 2 1 800px; /* Increased minimum width to 800px */
-  min-width: 800px; /* Ensure minimum width even when flex container is smaller */
+  flex: 1; /* Take full space within the host */
+  min-width: 0; /* Allow shrinking if needed */
   background-color: var(--background-primary);
   border-radius: 0.5rem;
   padding: 1rem 1.5rem;
@@ -578,4 +584,21 @@
   background-color: rgba(239, 83, 80, 0.1);
 }
 
-/* Existing combat styles continue... */
+/* Responsive design for better mobile experience */
+@media (max-width: 900px) {
+  .log-view {
+    flex: 1 1 100%; /* Full width on smaller screens */
+    min-width: 100%; /* Take full width */
+    max-height: 400px; /* Reduced height on smaller screens */
+  }
+  
+  .quest-reward {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  .reward-tag {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+  }
+}
