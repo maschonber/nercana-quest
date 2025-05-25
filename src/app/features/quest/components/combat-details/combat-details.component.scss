@@ -1,0 +1,305 @@
+@import '../../../../shared/styles/quest-shared.scss';
+
+.combat-details {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background-color: var(--background-tertiary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  @include fade-in();
+}
+
+/* Combat outcome banner */
+.combat-outcome {
+  &.outcome-victory {
+    @include outcome-victory;
+  }
+  
+  &.outcome-defeat {
+    @include outcome-defeat;
+  }
+  
+  &.outcome-fled {
+    @include outcome-fled;
+  }
+}
+
+/* Monster information section */
+.monster-info {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: var(--background-secondary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.monster-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.monster-header h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-danger);
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.monster-type {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background-color: var(--background-tertiary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.monster-description {
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.stats-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.3rem 0.5rem;
+  background-color: var(--background-tertiary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  min-width: 60px;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 0.2rem;
+}
+
+/* Combat rounds section */
+.combat-turns {
+  margin: 1rem 0;
+}
+
+.combat-turns h4 {
+  font-size: 1rem;
+  color: var(--accent-primary);
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.combat-turn {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-secondary);
+}
+
+.turn-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.turn-number {
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: var(--background-tertiary);
+  padding: 0.2rem 0.4rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.turn-actor {
+  font-weight: 600;
+  padding: 0.2rem 0.4rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+/* Combat actions */
+.turn-action {
+  margin-bottom: 0.5rem;
+  padding: 0.4rem;
+  background-color: var(--background-tertiary);
+  border-radius: 3px;
+  border: 1px solid var(--border-color);
+}
+
+.action-description {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.damage-indicator {
+  font-weight: 600;
+  color: var(--accent-danger);
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+.action-failed {
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+.hero-turn {
+  border-left: 4px solid var(--accent-secondary);
+  
+  .turn-actor {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--accent-secondary);
+    border-color: rgba(76, 175, 80, 0.3);
+  }
+}
+
+.monster-turn {
+  border-left: 4px solid var(--accent-danger);
+  
+  .turn-actor {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: var(--accent-danger);
+    border-color: rgba(244, 67, 54, 0.3);
+  }
+}
+
+/* Health bars */
+.turn-health-status {
+  margin-top: 0.5rem;
+}
+
+.health-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.health-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.health-bars {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.health-bar-container {
+  flex: 1;
+  @include health-bar-container;
+}
+
+.health-bar {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.health-fill {
+  &.hero-health {
+    @include hero-health;
+  }
+  
+  &.monster-health {
+    @include monster-health;
+  }
+}
+
+/* Combat summary */
+.combat-summary {
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background-color: var(--background-secondary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.combat-summary p {
+  margin: 0;
+  color: var(--text-primary);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Combat rewards section */
+.combat-rewards {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: var(--background-secondary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.combat-rewards h4 {
+  font-size: 0.9rem;
+  color: var(--accent-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.rewards-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.experience-reward {
+  @include experience-reward;
+}
+
+.gold-reward {
+  @include gold-reward;
+}
+
+/* Dark theme adjustments */
+@include dark-theme-reward-adjustments;
+
+:global(.dark-theme) .hero-turn {
+  border-left-color: #4CAF50;
+  
+  .turn-actor {
+    background-color: rgba(76, 175, 80, 0.15);
+    border-color: rgba(76, 175, 80, 0.4);
+  }
+}
+
+:global(.dark-theme) .monster-turn {
+  border-left-color: #F44336;
+  
+  .turn-actor {
+    background-color: rgba(244, 67, 54, 0.15);
+    border-color: rgba(244, 67, 54, 0.4);
+  }
+}

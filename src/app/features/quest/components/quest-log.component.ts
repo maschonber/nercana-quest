@@ -2,14 +2,14 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LogEntry } from '../../../models/log-entry.model';
 import { QuestStepType } from '../models/quest.model';
-import { CombatOutcome, CombatantType } from '../models/combat.model';
+import { CombatDetailsComponent } from './combat-details/combat-details.component';
 
 @Component({
   selector: 'app-quest-log',
   templateUrl: './quest-log.component.html',
   styleUrl: './quest-log.component.scss',
   standalone: true,
-  imports: [CommonModule, DatePipe]
+  imports: [CommonModule, DatePipe, CombatDetailsComponent]
 })
 export class QuestLogComponent implements OnChanges {
   @Input() log!: LogEntry[];
@@ -20,9 +20,6 @@ export class QuestLogComponent implements OnChanges {
   
   // Track expanded combat details
   expandedCombatEntries: Set<number> = new Set<number>();
-  
-  // Expose enum for template
-  CombatantType = CombatantType;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['log'] && this.log && this.log.length > this.previousLogLength) {
@@ -101,59 +98,38 @@ export class QuestLogComponent implements OnChanges {
       this.expandedCombatEntries.add(index);
     }
   }
-  
-  // Check if entry details are expanded (renamed from isCombatExpanded)
+    // Check if entry details are expanded (renamed from isCombatExpanded)
   isEntryExpanded(index: number): boolean {
     return this.expandedCombatEntries.has(index);
   }
-  
-  // Get combat outcome text
-  getCombatOutcomeText(outcome: CombatOutcome): string {
-    switch (outcome) {
-      case CombatOutcome.HERO_VICTORY:
-        return 'Victory!';
-      case CombatOutcome.HERO_DEFEAT:
-        return 'Defeat';
-      case CombatOutcome.HERO_FLED:
-        return 'Fled';
-      default:
-        return 'Unknown';
-    }
-  }
-  
-  // Get combat outcome CSS class
-  getCombatOutcomeClass(outcome: CombatOutcome): string {
-    switch (outcome) {
-      case CombatOutcome.HERO_VICTORY:
-        return 'outcome-victory';
-      case CombatOutcome.HERO_DEFEAT:
-        return 'outcome-defeat';
-      case CombatOutcome.HERO_FLED:
-        return 'outcome-fled';
-      default:
-        return '';
-    }
-  }
-  
-  // Get health percentage for health bars
-  getHealthPercentage(current: number, max: number): number {
-    return Math.max(0, Math.min(100, (current / max) * 100));
-  }
-  // All combats now use the turn-based structure
-  hasNewTurnStructure(entry: LogEntry): boolean {
-    return true;
-  }
 
-  // Get actor name for a turn
-  getTurnActorName(turn: any, entry: LogEntry): string {
-    if (turn.actor === CombatantType.HERO) {
-      return 'You';
-    } else {
-      return entry.monster?.name || 'Monster';
+  // Add a method to format messages with monster name highlighting
+  formatMessageWithMonsterHighlight(entry: LogEntry): string {
+    if (!entry.message) return '';
+    
+    let message = entry.message;
+    
+    // List of monster names to highlight (should match monster configuration)
+    const monsterNames = [
+      'Goblin', 'Orc', 'Troll', 'Dragon', 'Skeleton', 'Zombie', 'Vampire', 'Werewolf',
+      'Giant Spider', 'Cave Bear', 'Wild Boar', 'Dire Wolf', 'Ancient Dragon', 'Fire Elemental',
+      'Ice Golem', 'Shadow Wraith', 'Bandit', 'Dark Mage'
+    ];
+    
+    // First, check if this is an encounter entry and try to get monster name from the entry itself
+    if (entry.stepType === 'encounter' && entry.monster?.name) {
+      const monsterName = entry.monster.name;
+      const regex = new RegExp(`\\b${monsterName}\\b`, 'gi');
+      message = message.replace(regex, (match) => `<span class="monster-name-highlight">${match}</span>`);
     }
-  }
-  // Get CSS class for turn based on actor type
-  getTurnActorClass(turn: any): string {
-    return turn.actor === CombatantType.HERO ? 'hero-turn' : 'monster-turn';
+    
+    // Then apply general monster name highlighting for any remaining monster names
+    // But avoid double-highlighting by checking if the text is already wrapped
+    monsterNames.forEach(monsterName => {
+      const regex = new RegExp(`\\b${monsterName}\\b(?![^<]*<\/span>)`, 'gi');
+      message = message.replace(regex, (match) => `<span class="monster-name-highlight">${match}</span>`);
+    });
+    
+    return message;
   }
 }

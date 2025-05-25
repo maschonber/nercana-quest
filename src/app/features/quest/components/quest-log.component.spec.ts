@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { QuestLogComponent } from './quest-log.component';
 import { LogEntry } from '../../../models/log-entry.model';
+import { QuestStepType } from '../models/quest.model';
+import { CombatOutcome, CombatantType, CombatActionType } from '../models/combat.model';
+import { MonsterType } from '../models/monster.model';
 
 describe('QuestLogComponent', () => {
   let component: QuestLogComponent;
@@ -10,12 +13,56 @@ describe('QuestLogComponent', () => {
     {
       message: 'Quest succeeded! Your hero returns victorious.',
       timestamp: new Date('2024-01-01T12:00:00'),
-      success: true
+      success: true,
+      stepType: QuestStepType.EXPLORATION
     },
     {
       message: 'Quest failed. Your hero barely escapes!',
       timestamp: new Date('2024-01-01T11:30:00'),
-      success: false
+      success: false,
+      stepType: QuestStepType.EXPLORATION
+    },
+    {
+      message: 'You encountered a fierce Dragon in the mountains!',
+      timestamp: new Date('2024-01-01T11:00:00'),
+      success: true,
+      stepType: QuestStepType.ENCOUNTER,      monster: {
+        name: 'Ancient Dragon',
+        type: MonsterType.DRAGON,
+        description: 'A massive dragon with gleaming scales.',
+        health: 0,
+        maxHealth: 120,
+        attack: 25,
+        defense: 18,
+        experienceReward: 50,
+        goldReward: 25
+      },
+      combatResult: {
+        outcome: CombatOutcome.HERO_VICTORY,
+        turns: [
+          {
+            turnNumber: 1,
+            actor: CombatantType.HERO,
+            action: {
+              type: CombatActionType.ATTACK,
+              description: 'You strike with your sword',
+              damage: 15,
+              actorName: 'Hero',
+              targetName: 'Ancient Dragon',
+              success: true
+            },
+            actorHealthAfter: 100,
+            targetHealthAfter: 105,
+            heroHealthAfter: 100,
+            monsterHealthAfter: 105
+          }
+        ],
+        summary: 'You defeated the dragon!',
+        experienceGained: 50,
+        goldGained: 25
+      },
+      experienceGained: 50,
+      goldGained: 25
     }
   ];
 
@@ -78,11 +125,10 @@ describe('QuestLogComponent', () => {
     expect(emptyMessage).toBeTruthy();
     expect(emptyMessage.textContent).toContain('No quests completed yet');
   });
-  
-  it('should show log entry counter when entries exist', () => {
+    it('should show log entry counter when entries exist', () => {
     const counter = fixture.nativeElement.querySelector('.log-counter');
     expect(counter).toBeTruthy();
-    expect(counter.textContent).toContain('2 entries');
+    expect(counter.textContent).toContain('3 entries');
   });
   
   it('should mark new entries correctly', () => {
@@ -91,7 +137,8 @@ describe('QuestLogComponent', () => {
       {
         message: 'New quest completed!',
         timestamp: new Date(),
-        success: true
+        success: true,
+        stepType: QuestStepType.EXPLORATION
       },
       ...mockLogEntries
     ];
@@ -113,5 +160,82 @@ describe('QuestLogComponent', () => {
     // The isNewEntry method should return true for the first entry
     expect(component.isNewEntry(0)).toBeTruthy();
     expect(component.isNewEntry(1)).toBeFalsy();
+  });
+
+  it('should apply correct quest step type classes', () => {
+    const compiled = fixture.nativeElement;
+    const entries = compiled.querySelectorAll('li');
+    
+    expect(entries[0].classList.contains('exploration-entry')).toBe(true);
+    expect(entries[1].classList.contains('exploration-entry')).toBe(true);
+    expect(entries[2].classList.contains('encounter-entry')).toBe(true);
+  });
+
+  it('should show expandable details for encounter entries', () => {
+    const encounterEntry = fixture.nativeElement.querySelectorAll('li')[2];
+    expect(encounterEntry.classList.contains('has-details')).toBe(true);
+    
+    const expandIndicator = encounterEntry.querySelector('.expand-indicator');
+    expect(expandIndicator).toBeTruthy();
+  });
+
+  it('should toggle combat details when encounter entry is clicked', () => {
+    const encounterEntry = fixture.nativeElement.querySelectorAll('li')[2];
+    
+    // Initially not expanded
+    expect(component.isEntryExpanded(2)).toBe(false);
+    
+    // Click to expand
+    encounterEntry.click();
+    expect(component.isEntryExpanded(2)).toBe(true);
+    
+    // Click to collapse
+    encounterEntry.click();
+    expect(component.isEntryExpanded(2)).toBe(false);
+  });
+
+  it('should format messages with monster name highlighting', () => {
+    const testEntry: LogEntry = {
+      message: 'You encountered a Dragon in the forest!',
+      timestamp: new Date(),
+      success: true,
+      stepType: QuestStepType.ENCOUNTER
+    };
+    
+    const result = component.formatMessageWithMonsterHighlight(testEntry);
+    expect(result).toContain('<span class="monster-name-highlight">Dragon</span>');
+  });
+
+  it('should highlight monster names from entry data first', () => {
+    const testEntry: LogEntry = {
+      message: 'You encountered an Ancient Dragon!',
+      timestamp: new Date(),
+      success: true,
+      stepType: QuestStepType.ENCOUNTER,
+      monster: {
+        name: 'Ancient Dragon',
+        type: MonsterType.DRAGON,
+        description: 'A fearsome beast',
+        health: 100,
+        maxHealth: 100,
+        attack: 20,
+        defense: 15,
+        experienceReward: 50,
+        goldReward: 25
+      }
+    };
+    
+    const result = component.formatMessageWithMonsterHighlight(testEntry);
+    expect(result).toContain('<span class="monster-name-highlight">Ancient Dragon</span>');
+    // Should not double-highlight the word "Dragon" separately
+    expect(result).not.toMatch(/Ancient <span[^>]*>Dragon<\/span>/);
+  });
+
+  it('should display reward information correctly', () => {
+    const compiled = fixture.nativeElement;
+    const encounterEntry = compiled.querySelectorAll('li')[2];
+    
+    expect(encounterEntry.textContent).toContain('+50 XP');
+    expect(encounterEntry.textContent).toContain('+25 Gold');
   });
 });

@@ -1,0 +1,207 @@
+// Shared Quest Styles and Mixins
+// Common patterns and utilities used across quest-related components
+
+// Quest Entry Status Colors
+@mixin quest-entry-border($color, $width: 3px) {
+  border-left: $width solid $color;
+}
+
+@mixin quest-entry-success {
+  @include quest-entry-border(var(--accent-secondary));
+}
+
+@mixin quest-entry-fail {
+  @include quest-entry-border(var(--accent-danger));
+}
+
+// Quest Step Type Styling
+@mixin exploration-entry {
+  background-color: var(--background-secondary);
+  @include quest-entry-border(rgba(26, 115, 232, 0.6));
+}
+
+@mixin encounter-entry {
+  background-color: var(--background-secondary);
+  @include quest-entry-border(var(--accent-danger));
+}
+
+@mixin treasure-entry {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(251, 188, 4, 0.08);
+  @include quest-entry-border(var(--accent-warning), 4px);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(251, 188, 4, 0.1) 100%);
+    pointer-events: none;
+    border-radius: 3px;
+  }
+  
+  &:hover {
+    background-color: rgba(251, 188, 4, 0.12);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(251, 188, 4, 0.2);
+  }
+}
+
+// Reward Display Components
+@mixin reward-badge($bg-color, $text-color, $border-color) {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 12px;
+  white-space: nowrap;
+  background-color: $bg-color;
+  color: $text-color;
+  border: 1px solid $border-color;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+@mixin experience-reward {
+  @include reward-badge(
+    rgba(26, 115, 232, 0.1),
+    var(--accent-primary),
+    rgba(26, 115, 232, 0.2)
+  );
+}
+
+@mixin gold-reward {
+  @include reward-badge(
+    rgba(251, 188, 4, 0.15),
+    var(--accent-warning),
+    rgba(251, 188, 4, 0.3)
+  );
+}
+
+// Monster Name Highlighting
+@mixin monster-name-highlight {
+  background-color: rgba(220, 38, 127, 0.15);
+  color: var(--accent-danger);
+  padding: 0.1rem 0.2rem;
+  border-radius: 2px;
+  font-weight: 600;
+  border: 1px solid rgba(220, 38, 127, 0.3);
+}
+
+// Health Bar Components
+@mixin health-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: var(--background-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+@mixin health-bar-fill($color) {
+  height: 100%;
+  background-color: $color;
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+@mixin hero-health {
+  @include health-bar-fill(var(--accent-secondary));
+}
+
+@mixin monster-health {
+  @include health-bar-fill(var(--accent-danger));
+}
+
+// Combat Outcome Styling
+@mixin combat-outcome-base {
+  width: 100%;
+  text-align: center;
+  padding: 0.3rem;
+  border-radius: 3px;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+@mixin outcome-victory {
+  @include combat-outcome-base;
+  background-color: rgba(76, 175, 80, 0.2);
+  color: var(--accent-secondary);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+}
+
+@mixin outcome-defeat {
+  @include combat-outcome-base;
+  background-color: rgba(244, 67, 54, 0.2);
+  color: var(--accent-danger);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+}
+
+@mixin outcome-fled {
+  @include combat-outcome-base;
+  background-color: rgba(255, 193, 7, 0.2);
+  color: var(--accent-warning);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+// Animation Utilities
+@mixin fade-in($duration: 0.3s) {
+  animation: fadeIn $duration ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes highlight {
+  0% { 
+    background-color: var(--accent-primary); 
+    opacity: 0.2; 
+  }
+  100% { 
+    background-color: var(--background-secondary); 
+    opacity: 1; 
+  }
+}
+
+// Dark Theme Adjustments
+@mixin dark-theme-reward-adjustments {
+  :global(.dark-theme) .experience-reward {
+    background-color: rgba(99, 179, 237, 0.2);
+    border-color: rgba(99, 179, 237, 0.4);
+  }
+
+  :global(.dark-theme) .gold-reward {
+    background-color: rgba(246, 213, 92, 0.2);
+    border-color: rgba(246, 213, 92, 0.4);
+  }
+}
+
+@mixin dark-theme-treasure-adjustments {
+  :global(.dark-theme) .treasure-entry {
+    background-color: rgba(246, 213, 92, 0.08);
+    
+    &::before {
+      background: linear-gradient(90deg, rgba(246, 213, 92, 0.08) 100%);
+    }
+    
+    &:hover {
+      background-color: rgba(246, 213, 92, 0.12);
+    }
+  }
+}
+
+@mixin dark-theme-monster-highlight {
+  :global(.dark-theme) .monster-name-highlight {
+    background-color: rgba(233, 30, 99, 0.2);
+    border-color: rgba(233, 30, 99, 0.4);
+  }
+}

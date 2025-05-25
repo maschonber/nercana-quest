@@ -25,8 +25,8 @@
               'encounter-icon': entry.stepType === 'encounter',
               'treasure-icon': entry.stepType === 'treasure'
             }">{{ getStepIcon(entry.stepType) }}</i>
-          </span>
-          <span class="entry-message">{{ entry.message }}</span>
+          </span>          
+          <span class="entry-message" [innerHTML]="formatMessageWithMonsterHighlight(entry)"></span>
           <span class="entry-rewards" *ngIf="hasRewards(entry)">
             <span class="experience-reward" *ngIf="getExperienceFromEntry(entry) > 0">
               +{{ getExperienceFromEntry(entry) }} XP
@@ -41,94 +41,11 @@
             <span *ngIf="!isEntryExpanded(i)">▼</span>
             <span *ngIf="isEntryExpanded(i)">▲</span>
           </span>
-          
-          <!-- Expanded combat details section -->
-          <div *ngIf="entry.stepType === 'encounter' && entry.combatResult && isEntryExpanded(i)" class="combat-details">
-            <!-- Combat outcome banner -->
-            <div class="combat-outcome" [ngClass]="getCombatOutcomeClass(entry.combatResult.outcome)">
-              {{ getCombatOutcomeText(entry.combatResult.outcome) }}
-            </div>
-            
-            <!-- Monster information -->
-            <div class="monster-info" *ngIf="entry.monster">
-              <div class="monster-header">
-                <h4>{{ entry.monster.name }}</h4>
-                <span class="monster-type">{{ entry.monster.type }}</span>
-              </div>
-              <p class="monster-description">{{ entry.monster.description }}</p>
-              <div class="stats-container">
-                <div class="stat-item">
-                  <span class="stat-label">Attack</span>
-                  <span class="stat-value">{{ entry.monster.attack }}</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-label">Defense</span>
-                  <span class="stat-value">{{ entry.monster.defense }}</span>
-                </div>
-              </div>
-            </div>            <!-- Combat turns -->
-            <div class="combat-turns">
-              <h4>Combat Summary</h4>
-              <div class="combat-turn" *ngFor="let turn of entry.combatResult.turns" [ngClass]="getTurnActorClass(turn)">
-                <div class="turn-info">
-                  <span class="turn-number">Turn {{ turn.turnNumber }}</span>
-                  <span class="turn-actor">{{ getTurnActorName(turn, entry) }}</span>
-                </div>
-                <div class="turn-action">
-                  <span class="action-description">{{ turn.action.description }}</span>
-                  <span *ngIf="turn.action.damage" class="damage-indicator">
-                    {{ turn.action.damage }} damage
-                  </span>
-                  <span *ngIf="!turn.action.success" class="action-failed">
-                    (Failed)
-                  </span>
-                </div>
-                <!-- Health status after the turn -->
-                <div class="turn-health-status">
-                  <div class="health-info">
-                    <span class="health-label">You: {{ turn.heroHealthAfter }} HP</span>
-                    <span class="health-label">{{ entry.monster?.name }}: {{ turn.monsterHealthAfter }} HP</span>
-                  </div>
-                  
-                  <!-- Health bars -->
-                  <div class="health-bars">
-                    <div class="health-bar-container">
-                      <div class="health-bar">
-                        <div class="health-fill hero-health" 
-                             [style.width.%]="getHealthPercentage(turn.heroHealthAfter, entry.combatResult.turns[0].heroHealthAfter)">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="health-bar-container">
-                      <div class="health-bar">
-                        <div class="health-fill monster-health" 
-                             [style.width.%]="getHealthPercentage(turn.monsterHealthAfter, entry.monster?.maxHealth || 100)">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Combat summary -->
-            <div class="combat-summary">
-              <p>{{ entry.combatResult.summary }}</p>
-            </div>
-            
-            <!-- Combat rewards recap -->
-            <div class="combat-rewards" *ngIf="entry.combatResult.experienceGained > 0 || entry.combatResult.goldGained > 0">
-              <h4>Rewards</h4>
-              <div class="rewards-container">
-                <span *ngIf="entry.combatResult.experienceGained > 0" class="experience-reward">
-                  +{{ entry.combatResult.experienceGained }} XP
-                </span>
-                <span *ngIf="entry.combatResult.goldGained > 0" class="gold-reward">
-                  +{{ entry.combatResult.goldGained }} Gold
-                </span>
-              </div>
-            </div>
-          </div>
+            <!-- Expanded combat details section -->
+          <app-combat-details 
+            *ngIf="entry.stepType === 'encounter' && entry.combatResult && isEntryExpanded(i)"
+            [entry]="entry">
+          </app-combat-details>
         </li>
       </ul>
     </ng-container>

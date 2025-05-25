@@ -110,9 +110,9 @@ export class QuestDomainService {
       const roll = Math.random();
       let stepType: QuestStepType;
       
-      if (roll < 0.4) {
+      if (roll < 0.5) {
         stepType = QuestStepType.EXPLORATION;
-      } else if (roll < 0.8) {
+      } else if (roll < 0.9) {
         stepType = QuestStepType.ENCOUNTER;
       } else {
         stepType = QuestStepType.TREASURE;
