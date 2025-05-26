@@ -72,6 +72,7 @@ export class MonsterService {
     const health = Math.floor(monsterData.baseHealth * finalMultiplier);
     const attack = Math.floor(monsterData.baseAttack * finalMultiplier);
     const defense = Math.floor(monsterData.baseDefense * finalMultiplier);
+    const speed = Math.floor(monsterData.baseSpeed * finalMultiplier);
     const experienceReward = Math.floor(monsterData.baseExpReward * finalMultiplier);
 
     // Choose appropriate name: use tier-specific name if available, otherwise fallback to prefix + base name
@@ -85,6 +86,7 @@ export class MonsterService {
       maxHealth: health,
       attack,
       defense,
+      speed,
       experienceReward,
       description: monsterData.description
     };

@@ -13,14 +13,14 @@ describe('HeroDomainService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-  describe('calculateTotalPower', () => {
-    it('should calculate total power correctly', () => {      const hero: Hero = {
+  describe('calculateTotalPower', () => {    it('should calculate total power correctly', () => {      const hero: Hero = {
         name: 'Test Hero',
         health: 100,
         maxHealth: 100,
         attack: 12,
         defense: 8,
         luck: 5,
+        speed: 15,
         level: 1,
         experience: 0
       };
@@ -75,7 +75,9 @@ describe('HeroDomainService', () => {
         maxHealth: 100,
         attack: 12,
         defense: 8,
-        luck: 5,        level: 1,
+        luck: 5,
+        speed: 15,
+        level: 1,
         experience: 100
       };
 
@@ -87,15 +89,16 @@ describe('HeroDomainService', () => {
       expect(leveledHero.luck).toBe(6);
       expect(leveledHero.name).toBe('Test Hero');
       expect(leveledHero.experience).toBe(100);
-    });
-      it('should increase hero stats for multiple levels', () => {
+    });    it('should increase hero stats for multiple levels', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
         maxHealth: 100,
         attack: 12,
         defense: 8,
-        luck: 5,        level: 1,
+        luck: 5,
+        speed: 15,
+        level: 1,
         experience: 100
       };
 
@@ -113,7 +116,9 @@ describe('HeroDomainService', () => {
         health: 100,
         maxHealth: 100,
         attack: 12,
-        defense: 8,        luck: 5,
+        defense: 8,
+        luck: 5,
+        speed: 15,
         level: 1,
         experience: 0
       };
@@ -125,7 +130,9 @@ describe('HeroDomainService', () => {
         health: 0,
         maxHealth: 100,
         attack: -5,
-        defense: 8,        luck: 5,
+        defense: 8,
+        luck: 5,
+        speed: 15,
         level: 1,
         experience: 0
       };
@@ -138,7 +145,9 @@ describe('HeroDomainService', () => {
         maxHealth: 2000,
         attack: 200,
         defense: 200,
-        luck: 100,        level: 99,
+        luck: 100,
+        speed: 50,
+        level: 99,
         experience: 9999
       };
 

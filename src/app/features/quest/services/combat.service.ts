@@ -12,10 +12,17 @@ import {
   CombatantType
 } from '../models/combat.model';
 
+interface TurnQueueEntry {
+  combatant: Combatant;
+  nextActionTime: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
-export class CombatService {  /**
+export class CombatService {
+  private turnQueue: TurnQueueEntry[] = [];
+  private currentTime: number = 0;  /**
    * Simulates a complete combat encounter between hero and monster
    * @param hero The hero participating in combat
    * @param monster The monster to fight
@@ -45,7 +52,7 @@ export class CombatService {  /**
       summary
     };
   }  /**
-   * Executes a single combat turn
+   * Executes a single combat turn using speed-based initiative
    */
   private executeCombatTurn(combat: Combat): void {
     const { hero, monster } = combat;
@@ -55,20 +62,13 @@ export class CombatService {  /**
     const heroCombatant = this.toCombatant(hero, CombatantType.HERO);
     const monsterCombatant = this.toCombatant(monster, CombatantType.MONSTER);
 
-    // Determine which combatant acts this turn based on initiative/speed
-    // We alternate turns, but the first actor is determined by speed
-    const isFirstTurn = combat.turns.length === 0;
-    
-    let actorType: CombatantType;
-    
-    if (isFirstTurn) {
-      // For the first turn, determine who goes first based on speed
-      actorType = this.determineFirstActor(heroCombatant, monsterCombatant, hero, monster);
-    } else {
-      // For subsequent turns, alternate between hero and monster
-      const lastTurn = combat.turns[combat.turns.length - 1];
-      actorType = lastTurn.actor === CombatantType.HERO ? CombatantType.MONSTER : CombatantType.HERO;
+    // Initialize turn queue on first turn
+    if (combat.turns.length === 0) {
+      this.initializeTurnQueue(heroCombatant, monsterCombatant);
     }
+
+    // Determine which combatant acts this turn based on speed
+    const actorType = this.getNextActor(heroCombatant, monsterCombatant);
 
     // Execute the appropriate turn based on actor type
     let turn: CombatTurn;
@@ -98,17 +98,65 @@ export class CombatService {  /**
       combat.outcome = CombatOutcome.HERO_VICTORY;
     } else if (hero.health <= 0) {
       combat.outcome = CombatOutcome.HERO_DEFEAT;
-    }
+    }  }
+
+  /**
+   * Initializes the turn queue with both combatants based on their speed
+   */
+  private initializeTurnQueue(hero: Combatant, monster: Combatant): void {
+    this.turnQueue = [];
+    this.currentTime = 0;
+    
+    // Calculate initial action delay based on speed (lower delay = faster action)
+    // Base delay is 100, reduced by speed. Minimum delay is 10.
+    const heroDelay = Math.max(10, 100 - hero.speed * 3);
+    const monsterDelay = Math.max(10, 100 - monster.speed * 3);
+    
+    this.turnQueue.push({
+      combatant: hero,
+      nextActionTime: heroDelay
+    });
+    
+    this.turnQueue.push({
+      combatant: monster,
+      nextActionTime: monsterDelay
+    });
+    
+    // Sort by next action time (soonest first)
+    this.turnQueue.sort((a, b) => a.nextActionTime - b.nextActionTime);
   }
 
   /**
-   * Determines which actor goes first in combat
+   * Gets the next actor based on speed and scheduling
+   */
+  private getNextActor(hero: Combatant, monster: Combatant): CombatantType {
+    // Find the combatant with the earliest next action time
+    const nextEntry = this.turnQueue[0];
+    const actingCombatant = nextEntry.combatant;
+    
+    // Advance time to when this combatant acts
+    this.currentTime = nextEntry.nextActionTime;
+    
+    // Schedule this combatant's next action
+    // Action delay is based on speed: faster combatants act more frequently
+    const actionDelay = Math.max(10, 100 - actingCombatant.speed * 3);
+    nextEntry.nextActionTime = this.currentTime + actionDelay;
+    
+    // Resort the queue for next turn
+    this.turnQueue.sort((a, b) => a.nextActionTime - b.nextActionTime);
+    
+    return actingCombatant.type;
+  }
+
+  /**
+   * Determines which actor goes first in combat (legacy method, now handled by initializeTurnQueue)
+   */  /**
+   * Determines which actor goes first in combat (legacy method, now handled by initializeTurnQueue)
    */
   private determineFirstActor(heroCombatant: Combatant, monsterCombatant: Combatant, hero: Hero, monster: Monster): CombatantType {
-    // For now, use attack stat + luck as speed/initiative. 
-    // Later can be expanded to include dedicated speed/agility stats
-    const heroSpeed = hero.attack + (hero.luck / 2);
-    const monsterSpeed = monster.attack;
+    // Use the actual speed stats from the models
+    const heroSpeed = hero.speed;
+    const monsterSpeed = monster.speed;
 
     if (heroSpeed >= monsterSpeed) {
       return CombatantType.HERO;
@@ -344,14 +392,14 @@ export class CombatService {  /**
 
   /**
    * Convert hero or monster to combatant interface
-   */
-  private toCombatant(entity: Hero | Monster, type: CombatantType): Combatant {
+   */  private toCombatant(entity: Hero | Monster, type: CombatantType): Combatant {
     return {
       name: entity.name,
       health: entity.health,
       maxHealth: type === CombatantType.HERO ? 100 : (entity as Monster).maxHealth, // Heroes have fixed max health
       attack: entity.attack,
       defense: entity.defense,
+      speed: entity.speed,
       type
     };
   }

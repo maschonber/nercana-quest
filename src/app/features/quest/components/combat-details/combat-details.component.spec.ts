@@ -11,13 +11,13 @@ import { Hero } from '../../../hero/models/hero.model';
 describe('CombatDetailsComponent', () => {
   let component: CombatDetailsComponent;
   let fixture: ComponentFixture<CombatDetailsComponent>;
-
   const mockHero: Hero = {
     name: 'Test Hero',
     health: 100,
     maxHealth: 120,
     attack: 15,    defense: 10,
     luck: 7,
+    speed: 15,
     level: 2,
     experience: 150
   };
@@ -29,14 +29,14 @@ describe('CombatDetailsComponent', () => {
     timestamp: new Date('2024-01-15T10:30:00Z'),
     message: 'You encountered a fierce Void Entity!',
     success: true,
-    stepType: QuestStepType.ENCOUNTER,
-    monster: {
+    stepType: QuestStepType.ENCOUNTER,    monster: {
       name: 'Ancient Void Entity',
       type: MonsterType.VOID_ENTITY,
       description: 'A massive void entity that defies conventional understanding.',
       health: 0,
       maxHealth: 120,      attack: 25,
       defense: 18,
+      speed: 25,
       experienceReward: 50
     },
     combatResult: {

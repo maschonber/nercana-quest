@@ -32,7 +32,9 @@ describe('QuestLogComponent', () => {
         health: 0,
         maxHealth: 120,
         attack: 25,
-        defense: 18,        experienceReward: 50
+        defense: 18,
+        speed: 22,
+        experienceReward: 50
       },
       combatResult: {
         outcome: CombatOutcome.HERO_VICTORY,

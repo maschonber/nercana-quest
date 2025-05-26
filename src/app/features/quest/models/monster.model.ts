@@ -26,6 +26,7 @@ export interface Monster {
   maxHealth: number;
   attack: number;
   defense: number;
+  speed: number;
   experienceReward: number;
   description: string;
 }

@@ -16,6 +16,7 @@ const initialState: HeroState = {
     attack: 12,
     defense: 8,
     luck: 5,
+    speed: 15,
     level: 1,
     experience: 0
   }

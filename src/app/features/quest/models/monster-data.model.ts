@@ -4,6 +4,7 @@ export interface MonsterData {
   readonly baseHealth: number;
   readonly baseAttack: number;
   readonly baseDefense: number;
+  readonly baseSpeed: number;
   readonly baseExpReward: number;
   readonly name: string;
   readonly description: string;

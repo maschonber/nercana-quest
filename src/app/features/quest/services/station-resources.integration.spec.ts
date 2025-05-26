@@ -12,14 +12,14 @@ import { CombatOutcome } from '../models/combat.model';
 describe('QuestDomainService - Station Resources Integration', () => {
   let service: QuestDomainService;
   let monsterService: jest.Mocked<MonsterService>;
-  let combatService: jest.Mocked<CombatService>;
-  const testHero: Hero = {
+  let combatService: jest.Mocked<CombatService>;  const testHero: Hero = {
     name: 'Test Hero',
     health: 100,
     maxHealth: 100,
     attack: 15,
     defense: 10,
     luck: 8,
+    speed: 8,
     level: 3,
     experience: 150
   };
@@ -46,8 +46,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
     combatService = TestBed.inject(CombatService) as jest.Mocked<CombatService>;
   });
 
-  describe('Station Resource Generation', () => {
-    it('should accumulate goo from successful encounters', () => {      // Mock successful combat for encounter steps
+  describe('Station Resource Generation', () => {    it('should accumulate goo from successful encounters', () => {      // Mock successful combat for encounter steps
       monsterService.generateRandomMonster.mockReturnValue({
         name: 'Test Monster',
         type: 'SPACE_SLUG' as any,
@@ -56,6 +55,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
         maxHealth: 30,
         attack: 10,
         defense: 5,
+        speed: 5,
         experienceReward: 25
       });
 
@@ -92,9 +92,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       expect(step).toBeTruthy();
       expect(step!.success).toBe(true);
       expect(context.accumulatedMetal).toBeGreaterThan(initialMetal);
-    });
-
-    it('should not accumulate resources from failed encounters', () => {      // Mock failed combat for encounter steps
+    });    it('should not accumulate resources from failed encounters', () => {      // Mock failed combat for encounter steps
       monsterService.generateRandomMonster.mockReturnValue({
         name: 'Test Monster',
         type: 'SPACE_SLUG' as any,
@@ -103,6 +101,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
         maxHealth: 30,
         attack: 10,
         defense: 5,
+        speed: 12,
         experienceReward: 25
       });
 
@@ -139,6 +138,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
         maxHealth: 30,
         attack: 10,
         defense: 5,
+        speed: 12,
         experienceReward: 25
       });
 
@@ -186,6 +186,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
         maxHealth: 30,
         attack: 10,
         defense: 5,
+        speed: 12,
         experienceReward: 25
       });
 
@@ -228,6 +229,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
         maxHealth: 30,
         attack: 10,
         defense: 5,
+        speed: 12,
         experienceReward: 25
       }));
 

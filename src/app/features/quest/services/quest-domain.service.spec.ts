@@ -31,8 +31,7 @@ describe('QuestDomainService', () => {
       service = TestBed.inject(QuestDomainService);
     monsterServiceSpy = TestBed.inject(MonsterService);
     combatServiceSpy = TestBed.inject(CombatService);
-    
-    // Setup default return values for spies
+      // Setup default return values for spies
     const mockMonster: Monster = {
       type: MonsterType.SPACE_SLUG,
       name: 'Test Space Slug',
@@ -40,6 +39,7 @@ describe('QuestDomainService', () => {
       maxHealth: 30,
       attack: 8,
       defense: 5,
+      speed: 5,
       experienceReward: 20,
       description: 'A test space slug'
     };
@@ -62,8 +62,7 @@ describe('QuestDomainService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-  
-  describe('Quest Generation System', () => {it('should create quest context with appropriate properties', () => {
+    describe('Quest Generation System', () => {it('should create quest context with appropriate properties', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
@@ -71,6 +70,7 @@ describe('QuestDomainService', () => {
         attack: 12,
         defense: 8,
         luck: 5,
+        speed: 8,
         level: 1,
         experience: 0
       };
@@ -95,6 +95,7 @@ describe('QuestDomainService', () => {
         attack: 12,
         defense: 8,
         luck: 5,
+        speed: 15,
         level: 1,
         experience: 0
       };
@@ -132,6 +133,7 @@ describe('QuestDomainService', () => {
         attack: 100,
         defense: 100,
         luck: 50,
+        speed: 30,
         level: 10,
         experience: 500
       };
@@ -170,6 +172,7 @@ describe('QuestDomainService', () => {
         attack: 100,
         defense: 100,
         luck: 50,
+        speed: 30,
         level: 10,
         experience: 500
       };
@@ -204,6 +207,7 @@ describe('QuestDomainService', () => {
         attack: 12,
         defense: 8,
         luck: 5,
+        speed: 15,
         level: 1,
         experience: 0
       };
@@ -246,6 +250,7 @@ describe('QuestDomainService', () => {
         attack: 12,
         defense: 8,
         luck: 5,
+        speed: 15,
         level: 1,
         experience: 0
       };

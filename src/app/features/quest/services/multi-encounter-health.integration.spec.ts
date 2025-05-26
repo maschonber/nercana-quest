@@ -16,7 +16,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
   let heroStore: any;
   let heroFacade: HeroFacadeService;
   let questDomainService: QuestDomainService;
-  let combatService: any;    const mockHero: Hero = {
+  let combatService: any;  const mockHero: Hero = {
     name: 'Test Hero',
     level: 5,
     experience: 100,
@@ -24,7 +24,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
     maxHealth: 100,
     attack: 15,
     defense: 10,
-    luck: 5
+    luck: 5,
+    speed: 15
   };
   beforeEach(async () => {
     const combatSpy = jest.fn();
@@ -136,13 +137,13 @@ describe('Multi-Encounter Health Persistence Integration', () => {
       
       const stepType = context.remainingStepTypes.shift()!;
       context.currentStepIndex++;
-        if (stepType === QuestStepType.ENCOUNTER) {
-        const monster: Monster = { 
+        if (stepType === QuestStepType.ENCOUNTER) {        const monster: Monster = { 
           type: 'goblin' as any,
           name: 'Test Monster', 
           health: 30, 
           maxHealth: 30,          attack: 10, 
           defense: 5,
+          speed: 12,
           experienceReward: 25,
           description: 'A test monster'
         };

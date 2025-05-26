@@ -12,7 +12,9 @@ describe('HeroDetailsComponent', () => {
     maxHealth: 100,
     attack: 15,
     defense: 10,
-    luck: 7,    level: 1,
+    luck: 7,
+    speed: 15,
+    level: 1,
     experience: 0
   };
   // Create a mock HeroFacadeService

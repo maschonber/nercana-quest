@@ -5,6 +5,7 @@ export interface Hero {
   maxHealth: number;
   attack: number;
   defense: number;
+  speed: number;
   luck: number;
   level: number;
   experience: number;

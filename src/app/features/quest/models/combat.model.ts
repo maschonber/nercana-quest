@@ -37,6 +37,7 @@ export interface Combatant {
   maxHealth: number;
   attack: number;
   defense: number;
+  speed: number;
   type: CombatantType;
 }
 
