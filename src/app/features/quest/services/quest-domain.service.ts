@@ -11,16 +11,8 @@ import { CombatService } from './combat.service';  /**
     remainingStepTypes: QuestStepType[];
     /** Current quest status - starts as ongoing, changes based on encounters */
     questStatus: 'ongoing' | 'successful' | 'failed';
-    /** Base experience reward for treasure steps */
-    baseExperience: number;
-    /** Total number of encounter steps planned */
-    encounterCount: number;
-    /** Total number of treasure steps planned */
-    treasureCount: number;
     /** Current step index */
     currentStepIndex: number;
-    /** Total number of steps in the quest */
-    totalSteps: number;
     /** Accumulated resources that will be awarded only on quest success */
     accumulatedGoo: number;
     accumulatedMetal: number;
@@ -34,28 +26,16 @@ export class QuestDomainService {
   private readonly combatService = inject(CombatService);
   /**
    * Creates initial quest context for dynamic step generation
-   */
-  createQuestContext(hero: Hero): QuestContext {
+   */  createQuestContext(hero: Hero): QuestContext {
     const stepCount = Math.floor(Math.random() * 4) + 2; // 2-5 steps
     
     // Generate step types without pre-determining success
     const stepTypes = this.generateStepTypes(stepCount);
     
-    // Count encounters and treasures
-    const encounterCount = stepTypes.filter(type => type === QuestStepType.ENCOUNTER).length;
-    const treasureCount = stepTypes.filter(type => type === QuestStepType.TREASURE).length;
-    
-    // Calculate base rewards
-    const baseExperience = this.calculateExperience(hero);
-    
     return {
       remainingStepTypes: [...stepTypes],
       questStatus: 'ongoing',
-      baseExperience,
-      encounterCount,
-      treasureCount,
       currentStepIndex: 0,
-      totalSteps: stepCount,
       accumulatedGoo: 0,
       accumulatedMetal: 0
     };
@@ -69,16 +49,9 @@ export class QuestDomainService {
     }
     
     const stepType = context.remainingStepTypes.shift()!;
-    
-    const step = this.createQuestStep(
+      const step = this.createQuestStep(
       stepType,
       hero, // Use current hero state with updated health
-      context.questStatus,
-      context.currentStepIndex,
-      context.totalSteps,
-      context.baseExperience,
-      context.encounterCount,
-      context.treasureCount,
       context
     );
     
@@ -133,19 +106,12 @@ export class QuestDomainService {
     }
     
     return stepTypes;
-  }
-  /**
+  }  /**
    * Creates a quest step of a specific type with appropriate rewards
    */  private createQuestStep(
     type: QuestStepType, 
     hero: Hero, 
-    questStatus: 'ongoing' | 'successful' | 'failed', 
-    stepIndex: number, 
-    totalSteps: number,
-    baseExperience: number,
-    encounterCount: number,
-    treasureCount: number,
-    context: QuestContext  ): QuestStep {    // Default values
+    context: QuestContext  ): QuestStep {// Default values
     let message = '';
     let success = true; // Individual step success (different from overall quest status)
     let experienceGained = 0;
@@ -270,26 +236,9 @@ export class QuestDomainService {
         
       default:
         return `Your clone encountered ${monsterName}, but the outcome is unclear.`;
-    }
-  }
+    }  }
 
   /**
-   * Calculates experience gained from quest
-   * Experience scales with hero level and stats
-   */
-  private calculateExperience(hero: Hero): number {
-    const baseExperience = 10;
-    
-    // Increase base XP with level to ensure progression
-    const levelScaling = 1 + (hero.level * 0.2);
-    
-    // Bonus from hero stats
-    const statMultiplier = 1 + (hero.attack + hero.defense) / 50;
-    
-    // Final calculation with randomness for variety
-    const varianceFactor = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
-      return Math.floor(baseExperience * levelScaling * statMultiplier * varianceFactor);
-  }  /**
    * Calculates goo gained from defeating a monster in an encounter
    * Now primarily based on the effective difficulty of the defeated monster
    */

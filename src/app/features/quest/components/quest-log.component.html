@@ -20,14 +20,13 @@
           
           <!-- Entry header with timestamp, icon, and rewards -->
           <div class="entry-header">
-            <span class="entry-time">[{{ entry.timestamp | date:'shortTime' }}]</span>
-            <span class="entry-icon" *ngIf="entry.stepType">              <i class="step-icon" [ngClass]="{
+            <span class="entry-time">[{{ entry.timestamp | date:'shortTime' }}]</span>            <span class="entry-icon" *ngIf="entry.stepType">              <i class="step-icon" [ngClass]="{
                 'exploration-icon': entry.stepType === 'exploration',
                 'encounter-icon': entry.stepType === 'encounter',
                 'treasure-icon': entry.stepType === 'treasure',
                 'quest-complete-icon': entry.stepType === 'quest_complete'
-              }">{{ getStepIcon(entry.stepType) }}</i>
-            </span>              <span class="entry-rewards" *ngIf="hasRewards(entry)">
+              }">{{ getStepIcon(entry.stepType, entry.success) }}</i>
+            </span><span class="entry-rewards" *ngIf="hasRewards(entry)">
               <span class="experience-reward" *ngIf="getExperienceFromEntry(entry) > 0">
                 +{{ getExperienceFromEntry(entry) }} XP
               </span>

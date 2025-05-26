@@ -75,21 +75,18 @@ describe('QuestDomainService', () => {
         experience: 0
       };
 
-      const context = service.createQuestContext(hero);
-
-      expect(context).toHaveProperty('remainingStepTypes');      expect(context).toHaveProperty('questStatus');
-      expect(context).toHaveProperty('baseExperience');
-      expect(context).toHaveProperty('encounterCount');
-      expect(context).toHaveProperty('treasureCount');
+      const context = service.createQuestContext(hero);      expect(context).toHaveProperty('remainingStepTypes');      expect(context).toHaveProperty('questStatus');
       expect(context).toHaveProperty('currentStepIndex');
-      expect(context).toHaveProperty('totalSteps');
+      expect(context).toHaveProperty('accumulatedGoo');
+      expect(context).toHaveProperty('accumulatedMetal');
       
       // Should have between 2-5 steps
       expect(context.remainingStepTypes.length).toBeGreaterThanOrEqual(2);
       expect(context.remainingStepTypes.length).toBeLessThanOrEqual(5);
-      expect(context.totalSteps).toBe(context.remainingStepTypes.length);
       expect(context.questStatus).toBe('ongoing');
-      expect(typeof context.baseExperience).toBe('number');
+      expect(context.currentStepIndex).toBe(0);
+      expect(context.accumulatedGoo).toBe(0);
+      expect(context.accumulatedMetal).toBe(0);
     });    it('should generate steps with appropriate properties using dynamic generation', () => {
       const hero: Hero = {
         name: 'Test Hero',
