@@ -7,5 +7,13 @@
       [class.quest-in-progress]="questInProgress()">
       {{ buttonText() }}
     </button>
+    
+    <!-- Debug heal button -->
+    <button 
+      class="heal-btn" 
+      (click)="onFullHeal()"
+      title="Debug: Heal clone to full health">
+      🔋 Full Heal
+    </button>
   </div>
 </div>

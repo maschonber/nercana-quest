@@ -36,4 +36,9 @@ export class HeroActionsComponent {
       this.questFacade.embarkOnQuest();
     }
   }
+
+  // Debug heal button that heals clone to full health
+  onFullHeal(): void {
+    this.heroFacade.fullHeal();
+  }
 }

@@ -18,6 +18,7 @@ describe('HeroActionsComponent', () => {
     // Create mock facades with writable signals
     mockHeroFacade = {
       isHeroReady: isHeroReadySignal,
+      fullHeal: jest.fn(),
     } as any;
 
     mockQuestFacade = {
@@ -84,6 +85,34 @@ describe('HeroActionsComponent', () => {
 
     expect(mockQuestFacade.embarkOnQuest).not.toHaveBeenCalled();
   });
+  it('should call heroFacade.fullHeal when heal button is clicked', () => {
+    // Add mock method for fullHeal
+    mockHeroFacade.fullHeal = jest.fn();
+    
+    component.onFullHeal();
+
+    expect(mockHeroFacade.fullHeal).toHaveBeenCalledTimes(1);
+  });
+
+  it('should display heal button in template', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const healButton = compiled.querySelector('.heal-btn');
+
+    expect(healButton).toBeTruthy();
+    expect(healButton?.textContent?.trim()).toBe('🔋 Full Heal');
+    expect(healButton?.getAttribute('title')).toBe('Debug: Heal clone to full health');
+  });
+
+  it('should call onFullHeal when heal button is clicked', () => {
+    jest.spyOn(component, 'onFullHeal');
+    const compiled = fixture.nativeElement as HTMLElement;
+    const healButton = compiled.querySelector('.heal-btn') as HTMLButtonElement;
+
+    healButton.click();
+
+    expect(component.onFullHeal).toHaveBeenCalledTimes(1);
+  });
+
   it('should display correct button text based on state', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const button = compiled.querySelector('.quest-btn');

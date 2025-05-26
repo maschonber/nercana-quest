@@ -82,3 +82,30 @@
     opacity: 1;
   }
 }
+
+/* Heal button styles */
+.heal-btn {
+  background: var(--accent-secondary);
+  color: var(--background-primary);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  min-width: 120px;
+}
+
+.heal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: #4caf50; /* Brighter green on hover */
+  color: var(--background-primary);
+}
+
+.heal-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
