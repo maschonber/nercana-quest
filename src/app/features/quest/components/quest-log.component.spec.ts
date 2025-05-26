@@ -39,16 +39,17 @@ describe('QuestLogComponent', () => {
       combatResult: {
         outcome: CombatOutcome.HERO_VICTORY,
         turns: [
-          {
-            turnNumber: 1,
-            actor: CombatantType.HERO,
+          {            turnNumber: 1,
+            actorId: 'hero-1',
             action: {
               type: CombatActionType.ATTACK,
               description: 'You strike with your sword',
               damage: 15,
               actorName: 'Hero',
               targetName: 'Ancient Dragon',
-              success: true
+              success: true,
+              actorId: 'hero-1',
+              targetId: 'monster-1'
             },
             actorHealthAfter: 100,
             targetHealthAfter: 105,

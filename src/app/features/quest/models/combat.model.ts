@@ -21,17 +21,25 @@ export enum CombatantType {
   MONSTER = 'monster'
 }
 
+export enum TeamSide {
+  HERO = 'hero',
+  ENEMY = 'enemy'
+}
+
 export interface CombatAction {
   type: CombatActionType;
   description: string;
   damage?: number;
   healing?: number;
+  actorId: string; // ID of acting combatant
   actorName: string;
+  targetId: string; // ID of target combatant
   targetName: string;
   success: boolean;
 }
 
 export interface Combatant {
+  id: string; // Unique identifier for targeting
   name: string;
   health: number;
   maxHealth: number;
@@ -39,16 +47,24 @@ export interface Combatant {
   defense: number;
   speed: number;
   type: CombatantType;
+  isAlive: boolean; // Quick check for combat eligibility
+  hasFled: boolean; // Track if combatant has fled
 }
 
 export interface CombatTurn {
   turnNumber: number;
-  actor: CombatantType;
+  actorId: string; // ID of acting combatant
   action: CombatAction;
   actorHealthAfter: number;
   targetHealthAfter: number;
+  // Legacy fields for backward compatibility - can be removed later
   heroHealthAfter: number;
   monsterHealthAfter: number;
+}
+
+export interface CombatTeam {
+  side: TeamSide;
+  combatants: Combatant[];
 }
 
 export interface CombatResult {
@@ -59,9 +75,13 @@ export interface CombatResult {
 }
 
 export interface Combat {
-  hero: Hero;
-  monster: Monster;
+  heroTeam: CombatTeam;
+  enemyTeam: CombatTeam;
   turns: CombatTurn[];
   currentTurn: number;
   outcome: CombatOutcome;
+  
+  // Legacy fields for backward compatibility - can be removed later
+  hero?: Hero;
+  monster?: Monster;
 }

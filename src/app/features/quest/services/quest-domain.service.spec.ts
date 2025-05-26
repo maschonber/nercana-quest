@@ -16,9 +16,8 @@ describe('QuestDomainService', () => {
       generateRandomMonster: jest.fn(),
       calculateMonsterInstanceDifficulty: jest.fn()
     };
-    
-    const combatSpy = {
-      simulateCombat: jest.fn()
+      const combatSpy = {
+      createTeamCombat: jest.fn()
     };
     
     TestBed.configureTestingModule({
@@ -56,7 +55,7 @@ describe('QuestDomainService', () => {
       summary: 'Test combat summary'
     };
     
-    combatServiceSpy.simulateCombat.mockReturnValue(mockCombatResult);
+    combatServiceSpy.createTeamCombat.mockReturnValue(mockCombatResult);
   });
 
   it('should be created', () => {
@@ -234,7 +233,7 @@ describe('QuestDomainService', () => {
           
           if (step.monster && step.combatResult) {
             expect(monsterServiceSpy.generateRandomMonster).toHaveBeenCalled();
-            expect(combatServiceSpy.simulateCombat).toHaveBeenCalled();
+            expect(combatServiceSpy.createTeamCombat).toHaveBeenCalled();
             
             // Verify combat rewards match step rewards
             expect(step.experienceGained).toBe(step.combatResult.experienceGained);

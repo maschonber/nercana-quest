@@ -9,7 +9,9 @@ import {
   CombatResult,
   CombatTurn,
   Combatant,
-  CombatantType
+  CombatantType,
+  CombatTeam,
+  TeamSide
 } from '../models/combat.model';
 
 interface TurnQueueEntry {
@@ -23,103 +25,105 @@ interface TurnQueueEntry {
 export class CombatService {
   private turnQueue: TurnQueueEntry[] = [];
   private currentTime: number = 0;  /**
-   * Simulates a complete combat encounter between hero and monster
-   * @param hero The hero participating in combat
-   * @param monster The monster to fight
+   * Simulates a complete combat encounter between two teams
+   * @param heroTeam Array of combatants fighting for the hero side
+   * @param enemyTeam Array of combatants fighting for the enemy side
    * @returns Complete combat result with turns and outcome
    */
-  simulateCombat(hero: Hero, monster: Monster): CombatResult {
-    // Initialize combat
+  simulateCombat(heroTeam: Combatant[], enemyTeam: Combatant[]): CombatResult {
+    // Initialize combat with teams
     const combat: Combat = {
-      hero,
-      monster: { ...monster }, // Clone monster to avoid modifying original
+      heroTeam: { side: TeamSide.HERO, combatants: [...heroTeam] },
+      enemyTeam: { side: TeamSide.ENEMY, combatants: [...enemyTeam] },
       turns: [],
       currentTurn: 0,
       outcome: CombatOutcome.IN_PROGRESS
     };
 
-    // Simulate turns until combat ends (victory, defeat, or flee)
+    // Simulate turns until combat ends
     while (combat.outcome === CombatOutcome.IN_PROGRESS) {
       this.executeCombatTurn(combat);
     }
 
+    // Calculate total experience reward from defeated enemies
+    const experienceGained = this.calculateExperienceGained(combat.enemyTeam);
+
     // Create a summary based on the outcome
-    const summary = this.generateCombatSummary(combat);    // Return the final combat result
+    const summary = this.generateCombatSummary(combat);
+
+    // Return the final combat result
     return {
       outcome: combat.outcome,
       turns: combat.turns,
-      experienceGained: combat.outcome === CombatOutcome.HERO_VICTORY ? monster.experienceReward : Math.floor(monster.experienceReward * 0.2),
+      experienceGained,
       summary
     };
-  }  /**
+  }
+/**
    * Executes a single combat turn using speed-based initiative
    */
   private executeCombatTurn(combat: Combat): void {
-    const { hero, monster } = combat;
     combat.currentTurn++;
 
-    // Convert hero and monster to combatants for shared logic
-    const heroCombatant = this.toCombatant(hero, CombatantType.HERO);
-    const monsterCombatant = this.toCombatant(monster, CombatantType.MONSTER);
+    // Get all alive combatants from both teams
+    const allCombatants = [
+      ...combat.heroTeam.combatants.filter(c => c.isAlive),
+      ...combat.enemyTeam.combatants.filter(c => c.isAlive)
+    ];
 
     // Initialize turn queue on first turn
     if (combat.turns.length === 0) {
-      this.initializeTurnQueue(heroCombatant, monsterCombatant);
+      this.initializeTurnQueue(allCombatants);
     }
 
-    // Determine which combatant acts this turn based on speed
-    const actorType = this.getNextActor(heroCombatant, monsterCombatant);
-
-    // Execute the appropriate turn based on actor type
-    let turn: CombatTurn;
+    // Get the next acting combatant
+    const actingCombatant = this.getNextActor();
     
-    if (actorType === CombatantType.HERO) {
-      turn = this.executeHeroTurn(combat.currentTurn, hero, monster);
-      
-      // Update health after turn
-      monster.health = turn.targetHealthAfter;
-      
-      // Check for flee attempt
-      if (turn.action.type === CombatActionType.FLEE && turn.action.success) {
-        combat.outcome = CombatOutcome.HERO_FLED;
-      }
-    } else {
-      turn = this.executeMonsterTurn(combat.currentTurn, monster, hero);
-      
-      // Update health after turn
-      hero.health = turn.targetHealthAfter;
+    if (!actingCombatant || !actingCombatant.isAlive) {
+      // Skip turn if no valid actor
+      return;
     }
 
-    // Add the current turn to the combat's turns
+    // Determine opposing team
+    const opposingTeam = actingCombatant.type === CombatantType.HERO 
+      ? combat.enemyTeam 
+      : combat.heroTeam;
+
+    // Select target using smart AI
+    const target = this.selectTarget(opposingTeam);
+    
+    if (!target) {
+      // No valid targets, combat should end
+      this.checkCombatEnd(combat);
+      return;
+    }
+
+    // Execute the turn
+    const turn = this.executeTurn(combat.currentTurn, actingCombatant, target);
     combat.turns.push(turn);
-    
-    // Check if combat has ended
-    if (monster.health <= 0) {
-      combat.outcome = CombatOutcome.HERO_VICTORY;
-    } else if (hero.health <= 0) {
-      combat.outcome = CombatOutcome.HERO_DEFEAT;
-    }  }
 
+    // Update combatant states
+    this.updateCombatantStates(combat);
+
+    // Check if combat has ended
+    this.checkCombatEnd(combat);
+  }
   /**
-   * Initializes the turn queue with both combatants based on their speed
+   * Initializes the turn queue with all combatants based on their speed
    */
-  private initializeTurnQueue(hero: Combatant, monster: Combatant): void {
+  private initializeTurnQueue(combatants: Combatant[]): void {
     this.turnQueue = [];
     this.currentTime = 0;
     
-    // Calculate initial action delay based on speed (lower delay = faster action)
-    // Base delay is 100, reduced by speed. Minimum delay is 10.
-    const heroDelay = Math.max(10, 100 - hero.speed * 3);
-    const monsterDelay = Math.max(10, 100 - monster.speed * 3);
-    
-    this.turnQueue.push({
-      combatant: hero,
-      nextActionTime: heroDelay
-    });
-    
-    this.turnQueue.push({
-      combatant: monster,
-      nextActionTime: monsterDelay
+    combatants.forEach(combatant => {
+      // Calculate initial action delay based on speed (lower delay = faster action)
+      // Base delay is 100, reduced by speed. Minimum delay is 10.
+      const actionDelay = Math.max(10, 100 - combatant.speed * 3);
+      
+      this.turnQueue.push({
+        combatant,
+        nextActionTime: actionDelay
+      });
     });
     
     // Sort by next action time (soonest first)
@@ -129,7 +133,16 @@ export class CombatService {
   /**
    * Gets the next actor based on speed and scheduling
    */
-  private getNextActor(hero: Combatant, monster: Combatant): CombatantType {
+  private getNextActor(): Combatant | null {
+    // Filter out dead/fled combatants from queue
+    this.turnQueue = this.turnQueue.filter(entry => 
+      entry.combatant.isAlive && !entry.combatant.hasFled
+    );
+    
+    if (this.turnQueue.length === 0) {
+      return null;
+    }
+    
     // Find the combatant with the earliest next action time
     const nextEntry = this.turnQueue[0];
     const actingCombatant = nextEntry.combatant;
@@ -141,74 +154,16 @@ export class CombatService {
     // Action delay is based on speed: faster combatants act more frequently
     const actionDelay = Math.max(10, 100 - actingCombatant.speed * 3);
     nextEntry.nextActionTime = this.currentTime + actionDelay;
-    
-    // Resort the queue for next turn
+      // Resort the queue for next turn
     this.turnQueue.sort((a, b) => a.nextActionTime - b.nextActionTime);
     
-    return actingCombatant.type;
+    return actingCombatant;
   }
 
   /**
-   * Determines which actor goes first in combat (legacy method, now handled by initializeTurnQueue)
-   */  /**
-   * Determines which actor goes first in combat (legacy method, now handled by initializeTurnQueue)
+   * Shared action execution logic for combatants
    */
-  private determineFirstActor(heroCombatant: Combatant, monsterCombatant: Combatant, hero: Hero, monster: Monster): CombatantType {
-    // Use the actual speed stats from the models
-    const heroSpeed = hero.speed;
-    const monsterSpeed = monster.speed;
-
-    if (heroSpeed >= monsterSpeed) {
-      return CombatantType.HERO;
-    } else {
-      return CombatantType.MONSTER;
-    }
-  }
-  /**
-   * Execute a hero's turn
-   */
-  private executeHeroTurn(turnNumber: number, hero: Hero, monster: Monster): CombatTurn {
-    const action = this.determineHeroAction(hero, monster);
-    const initialMonsterHealth = monster.health;
-
-    // Execute the action using shared logic
-    this.executeAction(action, hero, monster);
-
-    return {
-      turnNumber,
-      actor: CombatantType.HERO,
-      action,
-      actorHealthAfter: hero.health,
-      targetHealthAfter: monster.health,
-      heroHealthAfter: hero.health,
-      monsterHealthAfter: monster.health
-    };
-  }
-
-  /**
-   * Execute a monster's turn
-   */
-  private executeMonsterTurn(turnNumber: number, monster: Monster, hero: Hero): CombatTurn {
-    const action = this.determineMonsterAction(monster, hero);
-    const initialHeroHealth = hero.health;
-
-    // Execute the action using shared logic
-    this.executeAction(action, monster, hero);
-
-    return {
-      turnNumber,
-      actor: CombatantType.MONSTER,
-      action,
-      actorHealthAfter: monster.health,
-      targetHealthAfter: hero.health,
-      heroHealthAfter: hero.health,
-      monsterHealthAfter: monster.health
-    };
-  }
-  /**
-   * Shared action execution logic for both heroes and monsters
-   */
-  private executeAction(action: CombatAction, actor: Hero | Monster, target: Hero | Monster): void {
+  private executeAction(action: CombatAction, actor: Combatant, target: Combatant): void {
     switch (action.type) {
       case CombatActionType.ATTACK:
         const damage = this.calculateDamage(actor.attack, target.defense);
@@ -217,31 +172,23 @@ export class CombatService {
         action.success = damage > 0;
         break;
         
+      case CombatActionType.FLEE:
+        if (action.success) {
+          actor.hasFled = true;
+          action.description += ' Success!';
+        } else {
+          action.description += ' Failed!';
+        }
+        break;
+        
       case CombatActionType.DEFEND:
-        // Defense is handled in damage calculation when target is defending
+        // Defending reduces incoming damage on next attack (not implemented yet)
         action.success = true;
         break;
         
       case CombatActionType.SPECIAL:
-        // Special attacks deal more damage but have lower success chance
-        if (Math.random() < 0.6) { // 60% success rate
-          const specialDamage = this.calculateDamage(actor.attack * 1.5, target.defense);
-          target.health = Math.max(0, target.health - specialDamage);
-          action.damage = specialDamage;
-          action.success = true;
-        } else {
-          action.success = false;
-        }
-        break;
-        
-      case CombatActionType.FLEE:
-        // Only heroes can flee - this should be handled in the hero turn method
-        if ('luck' in actor) { // Check if it's a hero
-          const fleeChance = 0.3 + ((actor as Hero).luck / 50);
-          action.success = Math.random() < fleeChance;
-        } else {
-          action.success = false;
-        }
+        // Special abilities (not implemented yet)
+        action.success = false;
         break;
     }
   }
@@ -260,94 +207,61 @@ export class CombatService {
     return this.calculateDamage(attack, effectiveDefense);
   }
   /**
-   * Determine what action the hero will take
+   * Determines what action a combatant should take
    */
-  private determineHeroAction(hero: Hero, monster: Monster): CombatAction {
-    // Base probabilities for actions
-    let attackProb = 0.7;    // 70% chance to attack
-    let defendProb = 0.15;   // 15% chance to defend
-    let specialProb = 0.1;   // 10% chance for special attack
-    let fleeProb = 0.05;     // 5% chance to attempt to flee
-    
-    // Adjust probabilities based on situation
-    
-    // If hero is low on health, increase chance to defend or flee
-    if (hero.health < 30) {
-      attackProb -= 0.2;
-      defendProb += 0.1;
-      fleeProb += 0.1;
-    }
-    
-    // If monster is nearly defeated, increase attack probability
-    if (monster.health < monster.maxHealth * 0.2) {
-      attackProb += 0.1;
-      fleeProb -= 0.05;
-      specialProb -= 0.05;
-    }
-    
-    // For testing: If hero is much stronger than the monster, never flee
-    const heroStrengthRatio = hero.attack / monster.defense;
-    if (heroStrengthRatio > 5 && hero.health > 50) {
-      // Hero is very strong compared to monster, remove flee probability
-      if (fleeProb > 0) {
-        attackProb += fleeProb;
-        fleeProb = 0;
-      }
-    }
-    
-    // Select action based on probabilities
-    const roll = Math.random();
-    let actionType: CombatActionType;
-    let description: string;
-      if (roll < attackProb) {
-      actionType = CombatActionType.ATTACK;
-      description = `${hero.name} fires at ${monster.name}!`;
-    } else if (roll < attackProb + defendProb) {
-      actionType = CombatActionType.DEFEND;
-      description = `${hero.name} activates defensive systems.`;
-    } else if (roll < attackProb + defendProb + specialProb) {
-      actionType = CombatActionType.SPECIAL;
-      description = `${hero.name} attempts a charged energy blast against ${monster.name}!`;
+  private determineAction(actor: Combatant, target: Combatant): CombatAction {
+    // For now, use simple logic based on combatant type
+    if (actor.type === CombatantType.HERO) {
+      return this.determineHeroAction(actor, target);
     } else {
-      actionType = CombatActionType.FLEE;
-      description = `${hero.name} attempts to disengage from combat!`;
+      return this.determineMonsterAction(actor, target);
     }
-    
+  }
+
+  /**
+   * Determines hero action (updated for combatant interface)
+   */
+  private determineHeroAction(hero: Combatant, target: Combatant): CombatAction {
+    // Hero logic: 10% chance to flee if health is very low
+    if (hero.health <= hero.maxHealth * 0.2 && Math.random() < 0.1) {
+      return {
+        type: CombatActionType.FLEE,
+        description: `${hero.name} attempts to flee from combat!`,
+        actorId: hero.id,
+        actorName: hero.name,
+        targetId: target.id,
+        targetName: target.name,
+        success: Math.random() < 0.7 // 70% chance to flee successfully
+      };
+    }
+
+    // Otherwise, attack
     return {
-      type: actionType,
-      description,
+      type: CombatActionType.ATTACK,
+      description: `${hero.name} attacks ${target.name}!`,
+      actorId: hero.id,
       actorName: hero.name,
-      targetName: monster.name,
-      success: false // Will be updated during execution
+      targetId: target.id,
+      targetName: target.name,
+      success: true
     };
   }
 
   /**
-   * Determine what action the monster will take
+   * Determines monster action (updated for combatant interface)
    */
-  private determineMonsterAction(monster: Monster, hero: Hero): CombatAction {
-    // Monsters mostly attack, with occasional defensive moves
-    const attackProb = 0.8; // 80% chance to attack
-    
-    let actionType: CombatActionType;
-    let description: string;
-      if (Math.random() < attackProb) {
-      actionType = CombatActionType.ATTACK;
-      description = `${monster.name} strikes at ${hero.name}!`;
-    } else {
-      actionType = CombatActionType.DEFEND;
-      description = `${monster.name} prepares defensive maneuvers.`;
-    }
-    
+  private determineMonsterAction(monster: Combatant, target: Combatant): CombatAction {
+    // Monster logic: Always attack (monsters don't flee)
     return {
-      type: actionType,
-      description,
+      type: CombatActionType.ATTACK,
+      description: `${monster.name} attacks ${target.name}!`,
+      actorId: monster.id,
       actorName: monster.name,
-      targetName: hero.name,
-      success: false // Will be updated during execution
+      targetId: target.id,
+      targetName: target.name,
+      success: true
     };
   }
-
   /**
    * Calculate damage based on attacker's attack and defender's defense
    */
@@ -368,39 +282,233 @@ export class CombatService {
     const finalDamage = Math.floor(baseDamage * variance * criticalMultiplier);
     
     return finalDamage;
-  }
-  /**
+  }  /**
    * Generate a narrative summary of the combat encounter
    */
   private generateCombatSummary(combat: Combat): string {
-    const { hero, monster, outcome, turns } = combat;
+    const { outcome, turns, heroTeam, enemyTeam } = combat;
+    
+    const heroNames = heroTeam.combatants.map(c => c.name).join(', ');
+    const enemyNames = enemyTeam.combatants.map(c => c.name).join(', ');
     
     switch (outcome) {
       case CombatOutcome.HERO_VICTORY:
-        return `After ${turns.length} turns, ${hero.name} emerged victorious against the ${monster.name}!`;
+        return `After ${turns.length} turns, the hero team (${heroNames}) emerged victorious against the enemy team (${enemyNames})!`;
         
       case CombatOutcome.HERO_DEFEAT:
-        return `After ${turns.length} turns, ${hero.name} was defeated by the ${monster.name}!`;
+        return `After ${turns.length} turns, the hero team (${heroNames}) was defeated by the enemy team (${enemyNames})!`;
         
       case CombatOutcome.HERO_FLED:
-        return `After ${turns.length} turns of combat, ${hero.name} managed to escape from the ${monster.name}.`;
+        return `After ${turns.length} turns of combat, the hero team (${heroNames}) managed to escape from the enemy team (${enemyNames}).`;
         
       default:
-        return `The battle between ${hero.name} and ${monster.name} continues...`;
+        return `The battle between the hero team (${heroNames}) and the enemy team (${enemyNames}) continues...`;
+    }
+  }
+  /**
+   * Enhanced AI target selection with realistic tactical decisions
+   * 
+   * Priority system:
+   * 1. Healers/Support units (if identified by low attack, high speed)
+   * 2. Low health enemies that can be finished quickly (< 30% health)
+   * 3. High damage dealers (high attack) to reduce incoming damage
+   * 4. Tanks/Defensive units (high defense) when no better options exist
+   * 
+   * This creates more realistic combat where AI focuses on:
+   * - Eliminating threats efficiently
+   * - Finishing wounded enemies
+   * - Prioritizing dangerous opponents
+   */
+  private selectTarget(opposingTeam: CombatTeam): Combatant | null {
+    const availableTargets = opposingTeam.combatants.filter(c => c.isAlive && !c.hasFled);
+    
+    if (availableTargets.length === 0) {
+      return null;
+    }
+
+    // If only one target, return it immediately
+    if (availableTargets.length === 1) {
+      return availableTargets[0];
+    }
+
+    // Calculate threat scores for each target
+    const targetScores = availableTargets.map(target => {
+      const healthPercent = (target.health / target.maxHealth) * 100;
+      let score = 0;
+      let reason = '';
+
+      // Priority 1: Identify potential healers/support (low attack, high speed)
+      // These are dangerous because they can heal or buff others
+      if (target.attack < 15 && target.speed > 20) {
+        score += 100;
+        reason = 'suspected healer/support';
+      }
+
+      // Priority 2: Finish off weak enemies (< 30% health)
+      // This reduces enemy action economy quickly
+      if (healthPercent < 30) {
+        score += 80 + (30 - healthPercent); // Weaker = higher priority
+        reason = reason ? `${reason}, critically wounded` : 'critically wounded';
+      }
+
+      // Priority 3: High damage dealers (attack > 25)
+      // These pose the greatest immediate threat
+      if (target.attack > 25) {
+        score += 60 + (target.attack - 25);
+        reason = reason ? `${reason}, high damage dealer` : 'high damage dealer';
+      }
+
+      // Priority 4: Medium health enemies that can be finished with focus fire
+      // Between 30-60% health are good secondary targets
+      if (healthPercent >= 30 && healthPercent <= 60) {
+        score += 40 + (60 - healthPercent);
+        reason = reason ? `${reason}, moderately wounded` : 'moderately wounded';
+      }
+
+      // Bonus: Speed consideration - fast enemies can act more often
+      if (target.speed > 25) {
+        score += 15;
+        reason = reason ? `${reason}, high speed` : 'high speed';
+      }
+
+      // Penalty: High defense enemies are harder to kill (target last)
+      if (target.defense > 20) {
+        score -= 20;
+        reason = reason ? `${reason}, heavily armored` : 'heavily armored';
+      }
+
+      // Randomization factor (±10%) to prevent completely predictable behavior
+      const randomFactor = 0.9 + (Math.random() * 0.2); // 0.9 to 1.1
+      score *= randomFactor;
+
+      return {
+        target,
+        score,
+        reason: reason || 'default target',
+        healthPercent
+      };
+    });
+
+    // Sort by score (highest first) and return the best target
+    targetScores.sort((a, b) => b.score - a.score);
+    
+    // For debugging/logging purposes, you could log the selection reasoning:
+    // console.log(`AI selected ${targetScores[0].target.name} (${targetScores[0].reason}, score: ${targetScores[0].score.toFixed(1)})`);
+    
+    return targetScores[0].target;
+  }
+
+  /**
+   * Executes a turn between an actor and target
+   */
+  private executeTurn(turnNumber: number, actor: Combatant, target: Combatant): CombatTurn {
+    const action = this.determineAction(actor, target);
+    const initialTargetHealth = target.health;
+
+    // Execute the action
+    this.executeAction(action, actor, target);
+
+    return {
+      turnNumber,
+      actorId: actor.id,
+      action,
+      actorHealthAfter: actor.health,
+      targetHealthAfter: target.health,
+      // Legacy fields for backward compatibility
+      heroHealthAfter: actor.type === CombatantType.HERO ? actor.health : target.health,
+      monsterHealthAfter: actor.type === CombatantType.MONSTER ? actor.health : target.health
+    };
+  }
+
+  /**
+   * Updates combatant states (alive/dead) based on current health
+   */
+  private updateCombatantStates(combat: Combat): void {
+    const allCombatants = [
+      ...combat.heroTeam.combatants,
+      ...combat.enemyTeam.combatants
+    ];
+
+    allCombatants.forEach(combatant => {
+      combatant.isAlive = combatant.health > 0 && !combatant.hasFled;
+    });
+  }
+
+  /**
+   * Checks if combat should end and updates the outcome
+   */
+  private checkCombatEnd(combat: Combat): void {
+    const aliveHeroes = combat.heroTeam.combatants.filter(c => c.isAlive);
+    const aliveEnemies = combat.enemyTeam.combatants.filter(c => c.isAlive);
+    const fledHeroes = combat.heroTeam.combatants.filter(c => c.hasFled);
+
+    if (aliveEnemies.length === 0) {
+      combat.outcome = CombatOutcome.HERO_VICTORY;
+    } else if (aliveHeroes.length === 0) {
+      combat.outcome = CombatOutcome.HERO_DEFEAT;
+    } else if (fledHeroes.length > 0 && aliveHeroes.length === 0) {
+      combat.outcome = CombatOutcome.HERO_FLED;
     }
   }
 
   /**
+   * Calculates total experience gained from defeated enemies
+   */
+  private calculateExperienceGained(enemyTeam: CombatTeam): number {
+    return enemyTeam.combatants
+      .filter(enemy => !enemy.isAlive && !enemy.hasFled)
+      .reduce((total, enemy) => {
+        // Assume experience is based on enemy level/power
+        // For now, use a simple formula based on stats
+        const enemyPower = enemy.attack + enemy.defense + enemy.speed;
+        return total + Math.floor(enemyPower * 2);
+      }, 0);
+  }
+  /**
    * Convert hero or monster to combatant interface
-   */  private toCombatant(entity: Hero | Monster, type: CombatantType): Combatant {
+   */
+  private toCombatant(entity: Hero | Monster, type: CombatantType, id: string): Combatant {
     return {
+      id,
       name: entity.name,
       health: entity.health,
       maxHealth: type === CombatantType.HERO ? 100 : (entity as Monster).maxHealth, // Heroes have fixed max health
       attack: entity.attack,
       defense: entity.defense,
       speed: entity.speed,
-      type
+      type,
+      isAlive: entity.health > 0,
+      hasFled: false
     };
+  }
+
+  /**
+   * Creates a combatant from a hero entity
+   */
+  createHeroCombatant(hero: Hero, id?: string): Combatant {
+    return this.toCombatant(hero, CombatantType.HERO, id || `hero-${hero.name}`);
+  }
+
+  /**
+   * Creates a combatant from a monster entity
+   */
+  createMonsterCombatant(monster: Monster, id?: string): Combatant {
+    return this.toCombatant(monster, CombatantType.MONSTER, id || `monster-${monster.name}`);
+  }
+
+  /**
+   * Creates a team combat scenario from individual heroes and monsters
+   * This replaces the old createSingleCombat method with a more flexible approach
+   */
+  createTeamCombat(heroes: Hero[], monsters: Monster[]): CombatResult {
+    const heroTeam = heroes.map((hero, index) => 
+      this.createHeroCombatant(hero, `hero-${index}-${hero.name}`)
+    );
+    
+    const enemyTeam = monsters.map((monster, index) => 
+      this.createMonsterCombatant(monster, `monster-${index}-${monster.name}`)
+    );
+    
+    return this.simulateCombat(heroTeam, enemyTeam);
   }
 }

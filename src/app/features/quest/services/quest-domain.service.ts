@@ -130,12 +130,11 @@ export class QuestDomainService {
       case QuestStepType.ENCOUNTER:
         // Generate a monster appropriate for the hero's level
         monster = this.monsterService.generateRandomMonster(hero.level);
-        
-        // Clone hero to avoid modifying the original during combat simulation
+          // Clone hero to avoid modifying the original during combat simulation
         const heroCopy = { ...hero };
         
-        // Simulate combat between hero and monster
-        combatResult = this.combatService.simulateCombat(heroCopy, monster);
+        // Simulate combat between hero and monster using new team combat API
+        combatResult = this.combatService.createTeamCombat([heroCopy], [monster]);
         
         // Determine success based on combat outcome
         success = combatResult.outcome === CombatOutcome.HERO_VICTORY;
@@ -241,8 +240,7 @@ export class QuestDomainService {
   /**
    * Calculates goo gained from defeating a monster in an encounter
    * Now primarily based on the effective difficulty of the defeated monster
-   */
-  private calculateGooFromEncounter(hero: Hero, monster: any): number {
+   */  private calculateGooFromEncounter(hero: Hero, monster: any): number {
     if (!monster) {
       // Fallback to old calculation if no monster provided
       const baseGoo = 1;
@@ -254,10 +252,15 @@ export class QuestDomainService {
     // Calculate the effective difficulty using the centralized method from MonsterService
     const effectiveDifficulty = this.monsterService.calculateMonsterInstanceDifficulty(monster);
     
+    // Safety check: if difficulty is undefined or NaN, calculate a fallback
+    const safeDifficulty = (effectiveDifficulty != null && !isNaN(effectiveDifficulty)) 
+      ? effectiveDifficulty 
+      : this.calculateFallbackDifficulty(monster);
+    
     // Base goo calculation primarily from monster difficulty
     // Use a scaling factor to convert difficulty to reasonable goo amounts
     const difficultyScalingFactor = 0.15; // Adjust this to balance goo rewards
-    const baseGooFromDifficulty = effectiveDifficulty * difficultyScalingFactor;
+    const baseGooFromDifficulty = safeDifficulty * difficultyScalingFactor;
     
     // Small level bonus (much less influential than before)
     const levelBonus = hero.level * 0.1;
@@ -267,7 +270,24 @@ export class QuestDomainService {
     
     // Final calculation with minimum of 1 goo
     const finalGoo = Math.max(1, Math.floor((baseGooFromDifficulty + levelBonus) * varianceFactor));
-      return finalGoo;
+    return finalGoo;
+  }
+
+  /**
+   * Fallback difficulty calculation when MonsterService method fails
+   */
+  private calculateFallbackDifficulty(monster: any): number {
+    if (!monster) {
+      return 10; // Default difficulty
+    }
+    
+    // Use the same weighted formula as MonsterService
+    // Health contributes 40%, Attack 35%, Defense 25%
+    const difficulty = (monster.maxHealth * 0.4) + 
+                      (monster.attack * 0.35) + 
+                      (monster.defense * 0.25);
+
+    return difficulty || 10; // Return 10 if calculation results in 0/NaN
   }
 
   /**

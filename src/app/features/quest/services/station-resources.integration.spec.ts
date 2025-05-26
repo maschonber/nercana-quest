@@ -27,10 +27,8 @@ describe('QuestDomainService - Station Resources Integration', () => {
   beforeEach(() => {    const monsterServiceSpy = {
       generateRandomMonster: jest.fn(),
       calculateMonsterInstanceDifficulty: jest.fn()
-    };
-
-    const combatServiceSpy = {
-      simulateCombat: jest.fn()
+    };    const combatServiceSpy = {
+      createTeamCombat: jest.fn()
     };
 
     TestBed.configureTestingModule({
@@ -59,10 +57,9 @@ describe('QuestDomainService - Station Resources Integration', () => {
         experienceReward: 25
       });
 
-      // Mock the calculateMonsterInstanceDifficulty method
-      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
+      // Mock the calculateMonsterInstanceDifficulty method      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
 
-      combatService.simulateCombat.mockReturnValue({
+      combatService.createTeamCombat.mockReturnValue({
         outcome: CombatOutcome.HERO_VICTORY,
         turns: [],
         experienceGained: 25,
@@ -106,9 +103,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       });
 
       // Mock the calculateMonsterInstanceDifficulty method
-      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
-
-      combatService.simulateCombat.mockReturnValue({
+      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);      combatService.createTeamCombat.mockReturnValue({
         outcome: CombatOutcome.HERO_DEFEAT,
         turns: [],
         experienceGained: 0,
@@ -143,9 +138,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       });
 
       // Mock the calculateMonsterInstanceDifficulty method
-      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
-
-      combatService.simulateCombat.mockReturnValue({
+      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);      combatService.createTeamCombat.mockReturnValue({
         outcome: CombatOutcome.HERO_VICTORY,
         turns: [],
         experienceGained: 25,
@@ -191,9 +184,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       });
 
       // Mock the calculateMonsterInstanceDifficulty method
-      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
-
-      combatService.simulateCombat.mockReturnValue({
+      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);      combatService.createTeamCombat.mockReturnValue({
         outcome: CombatOutcome.HERO_VICTORY,
         turns: [],
         experienceGained: 25,
@@ -236,7 +227,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       // Mock the calculateMonsterInstanceDifficulty method
       monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
 
-      combatService.simulateCombat.mockImplementation(() => {
+      combatService.createTeamCombat.mockImplementation(() => {
         callCount++;
         if (callCount === 1) {
           return {

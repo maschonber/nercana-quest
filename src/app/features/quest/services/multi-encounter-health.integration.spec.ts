@@ -38,7 +38,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
         HeroFacadeService,
         QuestDomainService,
         MonsterService,
-        { provide: CombatService, useValue: { simulateCombat: combatSpy } }
+        { provide: CombatService, useValue: { createTeamCombat: combatSpy } }
       ]
     }).compileComponents();
 
@@ -58,24 +58,26 @@ describe('Multi-Encounter Health Persistence Integration', () => {
     let encounterCount = 0;
     const expectedEncounters = 2;    const healthAfterFirstEncounter = 60; // Hero loses 20 health
     const healthAfterSecondEncounter = 35; // Hero loses 25 more health
-    const finalHealthAfterLevelUp = 40; // +5 health from leveling up after second encounter
-      // Mock combat service to simulate two encounters with health damage
-    combatService.simulateCombat.mockImplementation((hero: Hero, monster: Monster): CombatResult => {
-      encounterCount++;      if (encounterCount === 1) {
+    const finalHealthAfterLevelUp = 40; // +5 health from leveling up after second encounter    // Mock combat service to simulate two encounters with health damage
+    combatService.createTeamCombat.mockImplementation((heroes: Hero[], monsters: Monster[]): CombatResult => {
+      const hero = heroes[0]; // Get the first hero from the team
+      const monster = monsters[0]; // Get the first monster from the team
+      encounterCount++;if (encounterCount === 1) {
         // First encounter: hero starts with 80 health, ends with 60
         console.log('First encounter - Hero health before:', hero.health);
         expect(hero.health).toBe(80);
         return {
           outcome: CombatOutcome.HERO_VICTORY,
-          turns: [
-            {
+          turns: [            {
               turnNumber: 1,
-              actor: 'hero' as any,
+              actorId: 'hero-1',
               action: {
                 type: 'attack' as any,
                 description: 'Hero attacks',
                 damage: 50,
+                actorId: 'hero-1',
                 actorName: 'Hero',
+                targetId: 'monster-1',
                 targetName: 'Monster',
                 success: true
               },
@@ -93,15 +95,16 @@ describe('Multi-Encounter Health Persistence Integration', () => {
         expect(hero.health).toBe(healthAfterFirstEncounter);
         return {
           outcome: CombatOutcome.HERO_VICTORY,
-          turns: [
-            {
+          turns: [            {
               turnNumber: 1,
-              actor: 'hero' as any,
+              actorId: 'hero-1',
               action: {
                 type: 'attack' as any,
                 description: 'Hero attacks',
                 damage: 45,
+                actorId: 'hero-1',
                 actorName: 'Hero',
+                targetId: 'monster-1',
                 targetName: 'Monster',
                 success: true
               },
@@ -147,7 +150,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
           experienceReward: 25,
           description: 'A test monster'
         };
-        const combatResult = combatService.simulateCombat(hero, monster);
+        const combatResult = combatService.createTeamCombat([hero], [monster]);
         
         return {
           type: QuestStepType.ENCOUNTER,          message: `Encounter ${context.currentStepIndex}`,
@@ -180,23 +183,25 @@ describe('Multi-Encounter Health Persistence Integration', () => {
   });
 
   it('should handle hero defeat in multi-encounter quest', (done) => {
-    let encounterCount = 0;
-      // Mock combat service to simulate hero defeat in second encounter
-    combatService.simulateCombat.mockImplementation((hero: Hero, monster: Monster): CombatResult => {
+    let encounterCount = 0;    // Mock combat service to simulate hero defeat in second encounter
+    combatService.createTeamCombat.mockImplementation((heroes: Hero[], monsters: Monster[]): CombatResult => {
+      const hero = heroes[0]; // Get the first hero from the team
+      const monster = monsters[0]; // Get the first monster from the team
       encounterCount++;
         if (encounterCount === 1) {
         // First encounter: hero wins but takes heavy damage
         return {
           outcome: CombatOutcome.HERO_VICTORY,
-          turns: [
-            {
+          turns: [            {
               turnNumber: 1,
-              actor: 'hero' as any,
+              actorId: 'hero-1',
               action: {
                 type: 'attack' as any,
                 description: 'Hero attacks',
                 damage: 40,
+                actorId: 'hero-1',
                 actorName: 'Hero',
+                targetId: 'monster-1',
                 targetName: 'Monster',
                 success: true
               },
@@ -213,15 +218,16 @@ describe('Multi-Encounter Health Persistence Integration', () => {
         expect(hero.health).toBe(10); // Should start with health from first encounter
         return {
           outcome: CombatOutcome.HERO_DEFEAT,
-          turns: [
-            {
+          turns: [            {
               turnNumber: 1,
-              actor: 'hero' as any,
+              actorId: 'hero-1',
               action: {
                 type: 'attack' as any,
                 description: 'Hero attacks',
                 damage: 10,
+                actorId: 'hero-1',
                 actorName: 'Hero',
+                targetId: 'monster-1',
                 targetName: 'Monster',
                 success: true
               },
@@ -267,8 +273,9 @@ describe('Multi-Encounter Health Persistence Integration', () => {
   });
 
   it('should handle mixed step types with health persistence', (done) => {
-    let encounterCount = 0;
-      combatService.simulateCombat.mockImplementation((hero: Hero, monster: Monster): CombatResult => {
+    let encounterCount = 0;      combatService.createTeamCombat.mockImplementation((heroes: Hero[], monsters: Monster[]): CombatResult => {
+      const hero = heroes[0]; // Get the first hero from the team
+      const monster = monsters[0]; // Get the first monster from the team
       encounterCount++;
       
       if (encounterCount === 1) {
@@ -276,15 +283,16 @@ describe('Multi-Encounter Health Persistence Integration', () => {
         expect(hero.health).toBe(80); // Should still have initial health
         return {
           outcome: CombatOutcome.HERO_VICTORY,
-          turns: [
-            {
+          turns: [            {
               turnNumber: 1,
-              actor: 'hero' as any,
+              actorId: 'hero-1',
               action: {
                 type: 'attack' as any,
                 description: 'Hero attacks',
                 damage: 35,
+                actorId: 'hero-1',
                 actorName: 'Hero',
+                targetId: 'monster-1',
                 targetName: 'Monster',
                 success: true
               },

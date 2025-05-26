@@ -43,14 +43,16 @@ describe('CombatDetailsComponent', () => {
       outcome: CombatOutcome.HERO_VICTORY,
       turns: [        {
           turnNumber: 1,
-          actor: CombatantType.HERO,
+          actorId: 'hero-1',
           action: {
             type: CombatActionType.ATTACK,
             description: 'You strike with your sword',
             damage: 15,
             success: true,
             actorName: 'You',
-            targetName: 'Ancient Dragon'
+            targetName: 'Ancient Dragon',
+            actorId: 'hero-1',
+            targetId: 'monster-1'
           },
           actorHealthAfter: 100,
           targetHealthAfter: 105,
@@ -58,14 +60,16 @@ describe('CombatDetailsComponent', () => {
           monsterHealthAfter: 105
         },        {
           turnNumber: 2,
-          actor: CombatantType.MONSTER,
+          actorId: 'monster-1',
           action: {
             type: CombatActionType.ATTACK,
             description: 'Ancient Dragon breathes fire',
             damage: 20,
             success: true,
             actorName: 'Ancient Dragon',
-            targetName: 'You'
+            targetName: 'You',
+            actorId: 'monster-1',
+            targetId: 'hero-1'
           },
           actorHealthAfter: 105,
           targetHealthAfter: 80,

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { CombatService } from './combat.service';
 import { Hero } from '../../hero/models/hero.model';
 import { Monster, MonsterType } from '../models/monster.model';
-import { CombatOutcome } from '../models/combat.model';
+import { CombatOutcome, CombatantType } from '../models/combat.model';
 
 describe('CombatService', () => {
   let service: CombatService;
@@ -41,7 +41,7 @@ describe('CombatService', () => {
         description: 'A slimy space creature that feeds on asteroids.'
       };
 
-      const result = service.simulateCombat(hero, monster);
+      const result = service.createTeamCombat([hero], [monster]);
       
       // Result should have required properties
       expect(result).toHaveProperty('outcome');      expect(result).toHaveProperty('turns');
@@ -53,11 +53,10 @@ describe('CombatService', () => {
       
       // Should have at least one turn
       expect(result.turns.length).toBeGreaterThan(0);
-      
-      // Each turn should have the required properties
+        // Each turn should have the required properties
       result.turns.forEach(turn => {
         expect(turn).toHaveProperty('turnNumber');
-        expect(turn).toHaveProperty('actor');
+        expect(turn).toHaveProperty('actorId');
         expect(turn).toHaveProperty('action');
         expect(turn).toHaveProperty('heroHealthAfter');
         expect(turn).toHaveProperty('monsterHealthAfter');
@@ -90,13 +89,12 @@ describe('CombatService', () => {
         description: 'A small, weak space critter.'
       };
 
-      const victoryResult = service.simulateCombat(strongHero, weakMonster);
+      const victoryResult = service.createTeamCombat([strongHero], [weakMonster]);
       
       // Strong hero should win
       expect(victoryResult.outcome).toBe(CombatOutcome.HERO_VICTORY);
-      
-      // Should get experience rewards
-      expect(victoryResult.experienceGained).toBe(weakMonster.experienceReward);      // Setup a very weak hero for guaranteed defeat
+        // Should get experience rewards (calculated from enemy stats)
+      expect(victoryResult.experienceGained).toBeGreaterThan(0);// Setup a very weak hero for guaranteed defeat
       const weakHero: Hero = {
         name: 'Weak Hero',
         health: 20,
@@ -122,15 +120,100 @@ describe('CombatService', () => {
         description: 'A powerful void entity from another dimension.'
       };
 
-      const defeatResult = service.simulateCombat(weakHero, strongMonster);
+      const defeatResult = service.createTeamCombat([weakHero], [strongMonster]);
       
       // Weak hero should lose
       expect([CombatOutcome.HERO_DEFEAT, CombatOutcome.HERO_FLED]).toContain(defeatResult.outcome);
-      
-      // If defeated, should get reduced experience
+        // If defeated, should get no experience (only defeated enemies give experience)
       if (defeatResult.outcome === CombatOutcome.HERO_DEFEAT) {
-        expect(defeatResult.experienceGained).toBeLessThan(strongMonster.experienceReward);
+        expect(defeatResult.experienceGained).toBe(0);
       }
+    });
+  });
+
+  describe('team-based combat', () => {
+    it('should simulate combat between multiple combatants', () => {
+      // Create hero team
+      const heroTeam = [
+        {
+          id: 'hero-1',
+          name: 'Clone Alpha',
+          health: 100,
+          maxHealth: 100,
+          attack: 15,
+          defense: 10,
+          speed: 8,
+          type: CombatantType.HERO,
+          isAlive: true,
+          hasFled: false
+        },
+        {
+          id: 'hero-2',
+          name: 'Clone Beta',
+          health: 80,
+          maxHealth: 100,
+          attack: 12,
+          defense: 12,
+          speed: 10,
+          type: CombatantType.HERO,
+          isAlive: true,
+          hasFled: false
+        }
+      ];
+
+      // Create enemy team
+      const enemyTeam = [
+        {
+          id: 'enemy-1',
+          name: 'Space Slug',
+          health: 40,
+          maxHealth: 40,
+          attack: 10,
+          defense: 5,
+          speed: 6,
+          type: CombatantType.MONSTER,
+          isAlive: true,
+          hasFled: false
+        },
+        {
+          id: 'enemy-2',
+          name: 'Xriit Scout',
+          health: 30,
+          maxHealth: 30,
+          attack: 12,
+          defense: 8,
+          speed: 9,
+          type: CombatantType.MONSTER,
+          isAlive: true,
+          hasFled: false
+        }
+      ];
+
+      const result = service.simulateCombat(heroTeam, enemyTeam);
+
+      // Result should have required properties
+      expect(result).toHaveProperty('outcome');
+      expect(result).toHaveProperty('turns');
+      expect(result).toHaveProperty('experienceGained');
+      expect(result).toHaveProperty('summary');
+
+      // Combat should have ended
+      expect(result.outcome).not.toBe(CombatOutcome.IN_PROGRESS);
+
+      // Should have at least one turn
+      expect(result.turns.length).toBeGreaterThan(0);
+
+      // Each turn should have the required properties
+      result.turns.forEach(turn => {
+        expect(turn).toHaveProperty('turnNumber');
+        expect(turn).toHaveProperty('actorId');
+        expect(turn).toHaveProperty('action');
+        expect(turn.action).toHaveProperty('actorId');
+        expect(turn.action).toHaveProperty('targetId');
+      });
+
+      // Summary should mention teams
+      expect(result.summary).toContain('team');
     });
   });
 });
