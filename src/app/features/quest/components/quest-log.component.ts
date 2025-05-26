@@ -51,8 +51,9 @@ export class QuestLogComponent implements OnChanges {
   isNewEntry(index: number): boolean {
     if (!this.newEntryTimestamp || !this.log[index]) return false;
     return this.log[index].timestamp.getTime() === this.newEntryTimestamp.getTime();
-  }    // Get the appropriate icon for each step type
-  getStepIcon(stepType?: QuestStepType): string {
+  }    
+    // Get the appropriate icon for each step type
+  getStepIcon(stepType?: QuestStepType, success?: boolean): string {
     if (!stepType) return '';
     
     switch (stepType) {
@@ -63,7 +64,7 @@ export class QuestLogComponent implements OnChanges {
       case QuestStepType.TREASURE:
         return '🫧';
       case QuestStepType.QUEST_COMPLETE:
-        return '✅';
+        return success ? '✅' : '❌';
       default:
         return '';
     }
