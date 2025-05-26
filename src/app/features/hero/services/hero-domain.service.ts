@@ -63,12 +63,12 @@ export class HeroDomainService {
    * @param hero Hero to level up
    * @param levels Number of levels gained
    * @returns Updated hero with improved stats
-   */
-  levelUpHero(hero: Hero, levels: number = 1): Hero {
+   */  levelUpHero(hero: Hero, levels: number = 1): Hero {
     let updatedHero = { ...hero };
     
     // Apply stat increases for each level gained
-    for (let i = 0; i < levels; i++) {      const healthIncrease = 5;
+    for (let i = 0; i < levels; i++) {      
+      const healthIncrease = 5;
       updatedHero = {
         ...updatedHero,
         health: updatedHero.health + healthIncrease,

@@ -1,4 +1,4 @@
-@import '../../../../shared/styles/quest-shared.scss';
+@use '../../../../shared/styles/quest-shared' as *;
 
 .combat-details {
   width: 100%;
@@ -201,40 +201,97 @@
 }
 
 .health-info {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.combatant-health-row {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.3rem;
-  font-size: 0.8rem;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.defeated {
+    opacity: 0.7;
+  }
 }
 
-.health-label {
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.health-bars {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.health-bar-container {
+.combatant-info {
   flex: 1;
-  @include health-bar-container;
+  min-width: 0; // Allow text to truncate if needed
+  
+  .health-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-right: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .health-status {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    
+    &.defeated {
+      color: var(--accent-danger);
+      font-weight: 500;
+    }
+  }
+
+  &.defeated {
+    .health-label {
+      color: var(--text-secondary);
+    }
+  }
 }
 
-.health-bar {
-  width: 100%;
-  height: 100%;
-  position: relative;
+.inline-health-bar {
+  flex: 1;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 80px;
+  max-width: 200px;
 }
+
+.enemies-health {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+
 
 .health-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 5px;
+  min-width: 2px; // Ensure visibility even at very low health
+
   &.hero-health {
-    @include hero-health;
+    background: #4CAF50; // Green for hero
+    
+    &.defeated {
+      background: #F44336; // Red for defeated
+      opacity: 0.8;
+    }
   }
-  
+
   &.monster-health {
-    @include monster-health;
+    background: #FF9800; // Orange for monsters
+    
+    &.defeated {
+      background: #F44336; // Red for defeated
+      opacity: 0.8;
+    }
   }
 }
 
@@ -305,5 +362,92 @@
   .turn-actor {
     background-color: rgba(244, 67, 54, 0.15);
     border-color: rgba(244, 67, 54, 0.4);
+  }
+}
+
+/* Multi-monster encounter styling */
+.multi-monsters {
+  h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-danger);
+    margin: 0 0 1rem 0;
+    text-align: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+
+.monsters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.monster-card {
+  background-color: var(--background-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--accent-danger);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .monster-header {
+    margin-bottom: 0.5rem;
+    
+    h5 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-danger);
+      margin: 0;
+    }
+  }
+
+  .monster-description {
+    font-size: 0.8rem;
+    margin: 0.4rem 0;
+    line-height: 1.3;
+  }
+
+  .stats-container {
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
+    .stat-item {
+      min-width: 50px;
+      padding: 0.25rem 0.4rem;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+    }
+
+    .stat-value {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+/* Responsive adjustments for multi-monster cards */
+@media (max-width: 768px) {
+  .monsters-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .monster-card {
+    padding: 0.5rem;
+    
+    .stats-container {
+      .stat-item {
+        min-width: 40px;
+        padding: 0.2rem 0.3rem;
+      }
+    }
   }
 }

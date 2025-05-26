@@ -84,8 +84,26 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               actorHealthAfter: healthAfterFirstEncounter,
               targetHealthAfter: 0,
               heroHealthAfter: healthAfterFirstEncounter,
-              monsterHealthAfter: 0
-            }          ],
+              monsterHealthAfter: 0,
+              allCombatantsHealth: [
+                {
+                  id: 'hero-1',
+                  name: 'Test Hero',
+                  health: healthAfterFirstEncounter,
+                  maxHealth: 100,
+                  isAlive: true,
+                  type: 'hero' as any
+                },
+                {
+                  id: 'monster-1',
+                  name: 'Test Monster',
+                  health: 0,
+                  maxHealth: 30,
+                  isAlive: false,
+                  type: 'monster' as any
+                }
+              ]
+            }],
           experienceGained: 25,
           summary: 'Hero victory!'
         };
@@ -111,8 +129,26 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               actorHealthAfter: healthAfterSecondEncounter,
               targetHealthAfter: 0,
               heroHealthAfter: healthAfterSecondEncounter,
-              monsterHealthAfter: 0
-            }          ],
+              monsterHealthAfter: 0,
+              allCombatantsHealth: [
+                {
+                  id: 'hero-1',
+                  name: 'Test Hero',
+                  health: healthAfterSecondEncounter,
+                  maxHealth: 100,
+                  isAlive: true,
+                  type: 'hero' as any
+                },
+                {
+                  id: 'monster-1',
+                  name: 'Test Monster',
+                  health: 0,
+                  maxHealth: 30,
+                  isAlive: false,
+                  type: 'monster' as any
+                }
+              ]
+            }],
           experienceGained: 30,
           summary: 'Hero victory!'
         };
@@ -208,8 +244,26 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               actorHealthAfter: 10,
               targetHealthAfter: 0,
               heroHealthAfter: 10, // Hero barely survives
-              monsterHealthAfter: 0
-            }          ],
+              monsterHealthAfter: 0,
+              allCombatantsHealth: [
+                {
+                  id: 'hero-1',
+                  name: 'Test Hero',
+                  health: 10,
+                  maxHealth: 100,
+                  isAlive: true,
+                  type: 'hero' as any
+                },
+                {
+                  id: 'monster-1',
+                  name: 'Test Monster',
+                  health: 0,
+                  maxHealth: 30,
+                  isAlive: false,
+                  type: 'monster' as any
+                }
+              ]
+            }],
           experienceGained: 20,
           summary: 'Hero victory!'
         };
@@ -234,8 +288,26 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               actorHealthAfter: 0,
               targetHealthAfter: 35,
               heroHealthAfter: 0, // Hero is defeated
-              monsterHealthAfter: 35
-            }          ],
+              monsterHealthAfter: 35,
+              allCombatantsHealth: [
+                {
+                  id: 'hero-1',
+                  name: 'Test Hero',
+                  health: 0,
+                  maxHealth: 100,
+                  isAlive: false,
+                  type: 'hero' as any
+                },
+                {
+                  id: 'monster-1',
+                  name: 'Test Monster',
+                  health: 35,
+                  maxHealth: 40,
+                  isAlive: true,
+                  type: 'monster' as any
+                }
+              ]
+            }],
           experienceGained: 0,
           summary: 'Hero defeated!'
         };
@@ -299,7 +371,25 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               actorHealthAfter: 55,
               targetHealthAfter: 0,
               heroHealthAfter: 55,
-              monsterHealthAfter: 0
+              monsterHealthAfter: 0,
+              allCombatantsHealth: [
+                {
+                  id: 'hero-1',
+                  name: 'Test Hero',
+                  health: 55,
+                  maxHealth: 100,
+                  isAlive: true,
+                  type: 'hero' as any
+                },
+                {
+                  id: 'monster-1',
+                  name: 'Test Monster',
+                  health: 0,
+                  maxHealth: 30,
+                  isAlive: false,
+                  type: 'monster' as any
+                }
+              ]
             }
           ],          experienceGained: 20,
           summary: 'Hero victory!'

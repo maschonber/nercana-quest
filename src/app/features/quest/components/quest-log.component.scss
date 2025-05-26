@@ -1,4 +1,4 @@
-@import '../../../shared/styles/quest-shared.scss';
+@use '../../../shared/styles/quest-shared' as *;
 
 :host {
   flex: 999 1 400px; /* Force high growth factor with 400px base */

@@ -26,8 +26,9 @@ describe('QuestDomainService - Station Resources Integration', () => {
 
   beforeEach(() => {    const monsterServiceSpy = {
       generateRandomMonster: jest.fn(),
-      calculateMonsterInstanceDifficulty: jest.fn()
-    };    const combatServiceSpy = {
+      calculateMonsterInstanceDifficulty: jest.fn(),
+      generateMultiMonsterEncounter: jest.fn()
+    };const combatServiceSpy = {
       createTeamCombat: jest.fn()
     };
 
@@ -45,7 +46,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
   });
 
   describe('Station Resource Generation', () => {    it('should accumulate goo from successful encounters', () => {      // Mock successful combat for encounter steps
-      monsterService.generateRandomMonster.mockReturnValue({
+      const mockMonster = {
         name: 'Test Monster',
         type: 'SPACE_SLUG' as any,
         description: 'A test monster',
@@ -55,7 +56,12 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         speed: 5,
         experienceReward: 25
-      });
+      };
+      
+      monsterService.generateRandomMonster.mockReturnValue(mockMonster);
+      
+      // Mock the generateMultiMonsterEncounter method
+      monsterService.generateMultiMonsterEncounter.mockReturnValue([mockMonster]);
 
       // Mock the calculateMonsterInstanceDifficulty method      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
 
@@ -90,7 +96,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       expect(step!.success).toBe(true);
       expect(context.accumulatedMetal).toBeGreaterThan(initialMetal);
     });    it('should not accumulate resources from failed encounters', () => {      // Mock failed combat for encounter steps
-      monsterService.generateRandomMonster.mockReturnValue({
+      const mockMonster = {
         name: 'Test Monster',
         type: 'SPACE_SLUG' as any,
         description: 'A test monster',
@@ -100,7 +106,12 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         speed: 12,
         experienceReward: 25
-      });
+      };
+      
+      monsterService.generateRandomMonster.mockReturnValue(mockMonster);
+      
+      // Mock the generateMultiMonsterEncounter method
+      monsterService.generateMultiMonsterEncounter.mockReturnValue([mockMonster]);
 
       // Mock the calculateMonsterInstanceDifficulty method
       monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);      combatService.createTeamCombat.mockReturnValue({
@@ -125,7 +136,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       const highLevelHero: Hero = { ...testHero, level: 10 };
 
       // Mock successful combat
-      monsterService.generateRandomMonster.mockReturnValue({
+      const mockMonster = {
         name: 'Test Monster',
         type: 'SPACE_SLUG' as any,
         description: 'A test monster',
@@ -135,7 +146,12 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         speed: 12,
         experienceReward: 25
-      });
+      };
+      
+      monsterService.generateRandomMonster.mockReturnValue(mockMonster);
+      
+      // Mock the generateMultiMonsterEncounter method
+      monsterService.generateMultiMonsterEncounter.mockReturnValue([mockMonster]);
 
       // Mock the calculateMonsterInstanceDifficulty method
       monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);      combatService.createTeamCombat.mockReturnValue({
@@ -171,7 +187,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       expect(highLevelGoo).toBeGreaterThan(lowLevelGoo);
     });    it('should only award resources to station upon successful quest completion', () => {
       // Mock successful combat
-      monsterService.generateRandomMonster.mockReturnValue({
+      const mockMonster = {
         name: 'Test Monster',
         type: 'SPACE_SLUG' as any,
         description: 'A test monster',
@@ -181,7 +197,12 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         speed: 12,
         experienceReward: 25
-      });
+      };
+      
+      monsterService.generateRandomMonster.mockReturnValue(mockMonster);
+      
+      // Mock the generateMultiMonsterEncounter method
+      monsterService.generateMultiMonsterEncounter.mockReturnValue([mockMonster]);
 
       // Mock the calculateMonsterInstanceDifficulty method
       monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);      combatService.createTeamCombat.mockReturnValue({
@@ -212,7 +233,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
     });    it('should lose all accumulated resources on quest failure', () => {
       // Mock one successful encounter then one failed encounter
       let callCount = 0;
-      monsterService.generateRandomMonster.mockImplementation(() => ({
+      const mockMonster = {
         name: 'Test Monster',
         type: 'SPACE_SLUG' as any,
         description: 'A test monster',
@@ -222,7 +243,12 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         speed: 12,
         experienceReward: 25
-      }));
+      };
+      
+      monsterService.generateRandomMonster.mockImplementation(() => mockMonster);
+      
+      // Mock the generateMultiMonsterEncounter method
+      monsterService.generateMultiMonsterEncounter.mockReturnValue([mockMonster]);
 
       // Mock the calculateMonsterInstanceDifficulty method
       monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);

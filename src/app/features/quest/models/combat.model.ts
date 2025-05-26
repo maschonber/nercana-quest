@@ -51,12 +51,23 @@ export interface Combatant {
   hasFled: boolean; // Track if combatant has fled
 }
 
+export interface CombatantHealthState {
+  id: string;
+  name: string;
+  health: number;
+  maxHealth: number;
+  isAlive: boolean;
+  type: CombatantType;
+}
+
 export interface CombatTurn {
   turnNumber: number;
   actorId: string; // ID of acting combatant
   action: CombatAction;
   actorHealthAfter: number;
   targetHealthAfter: number;
+  // Comprehensive health tracking for all combatants after this turn
+  allCombatantsHealth?: CombatantHealthState[];
   // Legacy fields for backward compatibility - can be removed later
   heroHealthAfter: number;
   monsterHealthAfter: number;

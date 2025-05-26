@@ -13,6 +13,8 @@ Follow this systematic approach for any code changes:
 5. **Test**: Add/update tests for new functionality, ensure comprehensive coverage
 6. **Validate**: Run all tests (Jest + Playwright) and iterate until passing
 
+At any point, if you are unsure about the approach or need clarification, ask for help. It's better to clarify than to guess.
+
 ## Core Standards
 
 - **Architecture**: Models in `/models/`, business logic in `/services/`, UI in components

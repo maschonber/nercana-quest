@@ -111,13 +111,14 @@ export class QuestDomainService {
    */  private createQuestStep(
     type: QuestStepType, 
     hero: Hero, 
-    context: QuestContext  ): QuestStep {// Default values
+    context: QuestContext  ): QuestStep {    // Default values
     let message = '';
     let success = true; // Individual step success (different from overall quest status)
     let experienceGained = 0;
     let gooGained = 0;
     let metalGained = 0;
     let monster = undefined;
+    let monsters = undefined; // For multi-monster encounters
     let combatResult = undefined;
     
     switch(type) {
@@ -125,29 +126,36 @@ export class QuestDomainService {
         message = this.generateExplorationMessage();
         // Exploration steps always succeed individually
         success = true;
-        break;
+        break;      case QuestStepType.ENCOUNTER:
+        // Generate monster(s) appropriate for the hero's level
+        const encounterMonsters = this.monsterService.generateMultiMonsterEncounter(hero.level);
         
-      case QuestStepType.ENCOUNTER:
-        // Generate a monster appropriate for the hero's level
-        monster = this.monsterService.generateRandomMonster(hero.level);
-          // Clone hero to avoid modifying the original during combat simulation
+        // For backward compatibility, set single monster if only one generated
+        if (encounterMonsters.length === 1) {
+          monster = encounterMonsters[0];
+        } else {
+          monsters = encounterMonsters;
+        }
+        
+        // Clone hero to avoid modifying the original during combat simulation
         const heroCopy = { ...hero };
         
-        // Simulate combat between hero and monster using new team combat API
-        combatResult = this.combatService.createTeamCombat([heroCopy], [monster]);
+        // Simulate combat between hero and monster(s) using team combat API
+        combatResult = this.combatService.createTeamCombat([heroCopy], encounterMonsters);
         
         // Determine success based on combat outcome
         success = combatResult.outcome === CombatOutcome.HERO_VICTORY;
         
         // Set rewards from combat (already scaled appropriately)
-        experienceGained = combatResult.experienceGained;        // Accumulate goo from encounters (only on success)
+        experienceGained = combatResult.experienceGained;
+        
+        // Accumulate goo from encounters (only on success)
         if (success) {
-          gooGained = this.calculateGooFromEncounter(hero, monster);
+          gooGained = this.calculateGooFromMultiEncounter(hero, encounterMonsters);
           context.accumulatedGoo += gooGained;
         }
-        
-        // Generate appropriate message based on combat outcome
-        message = this.generateEncounterMessageFromCombat(combatResult, monster);
+          // Generate appropriate message based on combat outcome
+        message = this.generateEncounterMessageFromCombat(combatResult, encounterMonsters);
         break;
         
       case QuestStepType.TREASURE:
@@ -167,6 +175,7 @@ export class QuestDomainService {
       gooGained: gooGained > 0 ? gooGained : undefined,
       metalGained: metalGained > 0 ? metalGained : undefined,
       monster,
+      monsters: monsters && monsters.length > 1 ? monsters : undefined, // Only set if multiple monsters
       combatResult
     };
   }  /**
@@ -203,38 +212,54 @@ export class QuestDomainService {
   }/**
    * Generates message for encounter step based on combat result
    */
-  private generateEncounterMessageFromCombat(combatResult: CombatResult, monster?: any): string {
-    const monsterName = monster?.name || "the hostile entity";
+  private generateEncounterMessageFromCombat(combatResult: CombatResult, monsters: any[] | any): string {
+    // Handle both single monster (backward compatibility) and multiple monsters
+    const monsterArray = Array.isArray(monsters) ? monsters : [monsters];
+    const monsterCount = monsterArray.length;
+    
+    let monsterDescription: string;
+    
+    if (monsterCount === 1) {
+      monsterDescription = monsterArray[0]?.name || "the hostile entity";
+    } else if (monsterCount === 2) {
+      monsterDescription = `${monsterArray[0]?.name || "enemy"} and ${monsterArray[1]?.name || "enemy"}`;
+    } else {
+      // 3 or more monsters
+      const firstTwo = monsterArray.slice(0, 2).map(m => m?.name || "enemy").join(", ");
+      const remaining = monsterCount - 2;
+      monsterDescription = `${firstTwo}, and ${remaining} other ${remaining === 1 ? 'enemy' : 'enemies'}`;
+    }
     
     switch (combatResult.outcome) {
       case CombatOutcome.HERO_VICTORY:
         const victoryMessages = [
-          `Your clone defeated ${monsterName} after an intense firefight! ${combatResult.summary}`,
-          `${monsterName} was no match for your clone's tactical prowess after a ${combatResult.turns.length}-turn engagement!`,
-          `Victory! Your clone neutralized ${monsterName} with superior technology!`,
-          `After a fierce struggle, your clone emerged victorious over ${monsterName}!`
+          `Your clone defeated ${monsterDescription} after an intense firefight! ${combatResult.summary}`,
+          `${monsterDescription} ${monsterCount === 1 ? 'was' : 'were'} no match for your clone's tactical prowess after a ${combatResult.turns.length}-turn engagement!`,
+          `Victory! Your clone neutralized ${monsterDescription} with superior technology!`,
+          `After a fierce struggle, your clone emerged victorious over ${monsterDescription}!`
         ];
         return victoryMessages[Math.floor(Math.random() * victoryMessages.length)];
-          case CombatOutcome.HERO_DEFEAT:
+          
+      case CombatOutcome.HERO_DEFEAT:
         const defeatMessages = [
-          `Your clone was destroyed by ${monsterName} in a devastating firefight. Clone termination confirmed.`,
-          `Despite valiant resistance, ${monsterName} eliminated your clone with overwhelming force. Time for a new clone.`,
-          `${monsterName} proved too powerful - your clone didn't survive the encounter. Mission failure, clone lost.`,
-          `Fatal encounter: Your clone was killed by ${monsterName}. Emergency clone replacement protocols are advised.`
+          `Your clone was destroyed by ${monsterDescription} in a devastating firefight. Clone termination confirmed.`,
+          `Despite valiant resistance, ${monsterDescription} eliminated your clone with overwhelming force. Time for a new clone.`,
+          `${monsterDescription} proved too powerful - your clone didn't survive the encounter. Mission failure, clone lost.`,
+          `Fatal encounter: Your clone was killed by ${monsterDescription}. Emergency clone replacement protocols are advised.`
         ];
         return defeatMessages[Math.floor(Math.random() * defeatMessages.length)];
         
       case CombatOutcome.HERO_FLED:
         const fleeMessages = [
-          `Your clone made a tactical retreat when facing ${monsterName}, judging the odds unfavorable.`,
-          `Recognizing the threat posed by ${monsterName}, your clone cowardly chose to disengage from combat.`,
-          `Your clone managed to escape from a potentially deadly encounter with ${monsterName}.`,
-          `Facing ${monsterName}, your clone foolishly decided to put its own safety above the mission.`
+          `Your clone made a tactical retreat when facing ${monsterDescription}, judging the odds unfavorable.`,
+          `Recognizing the threat posed by ${monsterDescription}, your clone cowardly chose to disengage from combat.`,
+          `Your clone managed to escape from a potentially deadly encounter with ${monsterDescription}.`,
+          `Facing ${monsterDescription}, your clone foolishly decided to put its own safety above the mission.`
         ];
         return fleeMessages[Math.floor(Math.random() * fleeMessages.length)];
         
       default:
-        return `Your clone encountered ${monsterName}, but the outcome is unclear.`;
+        return `Your clone encountered ${monsterDescription}, but the outcome is unclear.`;
     }  }
 
   /**
@@ -345,4 +370,23 @@ export class QuestDomainService {
     };
   }
 
+  /**
+   * Calculates goo gained from defeating multiple monsters in an encounter
+   */
+  private calculateGooFromMultiEncounter(hero: Hero, monsters: any[]): number {
+    if (!monsters || monsters.length === 0) {
+      return 0;
+    }
+    
+    // Calculate goo for each monster and sum them up
+    let totalGoo = 0;
+    for (const monster of monsters) {
+      const monsterGoo = this.calculateGooFromEncounter(hero, monster);
+      totalGoo += monsterGoo;
+    }
+    
+    // Apply a small bonus for defeating multiple enemies (5% bonus)
+    const multiDefeatBonus = 1.05;
+    return Math.floor(totalGoo * multiDefeatBonus);
+  }
 }

@@ -3,6 +3,13 @@ import { Monster, MonsterTier, MonsterType } from '../models/monster.model';
 import { MonsterConfig } from '../models/monster-data.model';
 import { MONSTER_CONFIG } from '../../../../assets/data/monster-config';
 
+// Species groupings for multi-monster encounters
+export interface SpeciesGroup {
+  name: string;
+  types: MonsterType[];
+  cooperation: number; // 0-1 scale, how likely they are to work together
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +17,48 @@ export class MonsterService {
   private monsterConfig: MonsterConfig = MONSTER_CONFIG;
   
   // Cache for calculated monster difficulties to avoid repeated calculations
-  private monsterDifficulties: Map<MonsterType, number> = new Map();  /**
+  private monsterDifficulties: Map<MonsterType, number> = new Map();
+
+  // Species affinity system for multi-monster encounters
+  private readonly speciesGroups: SpeciesGroup[] = [
+    {
+      name: 'Slug Species',
+      types: [MonsterType.SPACE_SLUG, MonsterType.SLUG_SWARM],
+      cooperation: 0.9 // High cooperation within species
+    },
+    {
+      name: 'Xriit Forces',
+      types: [MonsterType.XRIIT, MonsterType.XRIIT_SCOUT, MonsterType.XRIIT_COMMANDER],
+      cooperation: 0.85 // Military organization
+    },
+    {
+      name: 'Moggo Clans',
+      types: [MonsterType.MOGGO, MonsterType.MOGGO_BRUTE, MonsterType.MOGGO_PACK],
+      cooperation: 0.8 // Pack hunters
+    },
+    {
+      name: 'Vermin Infestation',
+      types: [MonsterType.CRITTER, MonsterType.CRITTER_NEST],
+      cooperation: 0.95 // Hive mind behavior
+    },
+    {
+      name: 'Mercenary Units',
+      types: [MonsterType.SPACE_MERC, MonsterType.MERC_RAIDER, MonsterType.MERC_CAPTAIN],
+      cooperation: 0.7 // Hired guns, some coordination
+    },
+    {
+      name: 'Station Systems',
+      types: [MonsterType.STATION_DEFENSE, MonsterType.ROGUE_AI],
+      cooperation: 0.6 // Networked but potentially conflicting systems
+    },
+    {
+      name: 'Cosmic Entities',
+      types: [MonsterType.VOID_ENTITY],
+      cooperation: 0.3 // Solitary, alien beings
+    }
+  ];
+
+  /**
    * Creates a random monster appropriate for hero's level
    * Uses a difficulty-based system that considers both monster base strength and tier modifiers
    * @param heroLevel Current level of the hero
@@ -226,5 +274,158 @@ export class MonsterService {
                       (monster.defense * 0.25);
 
     return difficulty;
+  }
+
+  /**
+   * Generates multiple monsters for an encounter based on hero level and species affinity
+   * @param heroLevel Current level of the hero
+   * @param maxMonsters Maximum number of monsters to generate (default 1-3)
+   * @returns Array of monsters with appropriate difficulty balancing
+   */
+  generateMultiMonsterEncounter(heroLevel: number, maxMonsters: number = 3): Monster[] {
+    // 30% chance for multi-monster encounter, increasing slightly with hero level
+    const multiMonsterChance = 0.2 + (heroLevel * 0.01); // 20% at level 1, 30% at level 10+
+    
+    if (Math.random() > multiMonsterChance) {
+      // Single monster encounter
+      return [this.generateRandomMonster(heroLevel)];
+    }
+
+    // Determine number of monsters (2-3 for most cases, occasionally more for higher levels)
+    const numMonsters = this.getEncounterSize(heroLevel, maxMonsters);
+    
+    // Calculate total target difficulty for the encounter
+    const singleMonsterDifficulty = this.getTargetDifficultyForLevel(heroLevel);
+    const totalTargetDifficulty = singleMonsterDifficulty * this.getMultiMonsterDifficultyMultiplier(numMonsters);
+    
+    // Choose encounter type: species-based or mixed
+    const useSpeciesGroup = Math.random() < 0.7; // 70% chance for species-based encounters
+    
+    if (useSpeciesGroup) {
+      return this.generateSpeciesEncounter(heroLevel, numMonsters, totalTargetDifficulty);
+    } else {
+      return this.generateMixedEncounter(heroLevel, numMonsters, totalTargetDifficulty);
+    }
+  }
+
+  /**
+   * Determines appropriate encounter size based on hero level
+   */
+  private getEncounterSize(heroLevel: number, maxMonsters: number): number {
+    if (heroLevel <= 3) {
+      // Early levels: mostly 2 monsters
+      return Math.random() < 0.8 ? 2 : 3;
+    } else if (heroLevel <= 6) {
+      // Mid levels: 2-3 monsters
+      return Math.random() < 0.6 ? 2 : 3;
+    } else {
+      // High levels: 2-4 monsters, but capped by maxMonsters
+      const weights = [0, 0, 0.4, 0.4, 0.2]; // 0% for 0-1, 40% for 2, 40% for 3, 20% for 4
+      const roll = Math.random();
+      let cumulative = 0;
+      for (let i = 2; i <= Math.min(4, maxMonsters); i++) {
+        cumulative += weights[i];
+        if (roll < cumulative) {
+          return i;
+        }
+      }
+      return 3; // fallback
+    }
+  }
+
+  /**
+   * Calculates difficulty multiplier for multi-monster encounters
+   * Multiple enemies should be somewhat easier individually to maintain balance
+   */
+  private getMultiMonsterDifficultyMultiplier(numMonsters: number): number {
+    // Slightly reduce individual monster difficulty as group size increases
+    switch (numMonsters) {
+      case 1: return 1.0;
+      case 2: return 0.9; // 90% difficulty per monster (180% total)
+      case 3: return 0.75; // 75% difficulty per monster (225% total)
+      case 4: return 0.65; // 65% difficulty per monster (260% total)
+      default: return 0.6;
+    }
+  }
+
+  /**
+   * Generates an encounter with monsters from the same species group
+   */
+  private generateSpeciesEncounter(heroLevel: number, numMonsters: number, totalTargetDifficulty: number): Monster[] {
+    // Choose a species group with sufficient monster types
+    const availableGroups = this.speciesGroups.filter(group => group.types.length >= 1);
+    const selectedGroup = availableGroups[Math.floor(Math.random() * availableGroups.length)];
+    
+    const monsters: Monster[] = [];
+    const targetDifficultyPerMonster = totalTargetDifficulty / numMonsters;
+    
+    for (let i = 0; i < numMonsters; i++) {
+      // Allow some variety within the species group
+      const monsterType = selectedGroup.types[Math.floor(Math.random() * selectedGroup.types.length)];
+      const monster = this.generateMonsterOfTargetDifficulty(monsterType, heroLevel, targetDifficultyPerMonster);
+      monsters.push(monster);
+    }
+    
+    return monsters;
+  }
+
+  /**
+   * Generates an encounter with monsters from different species groups
+   */
+  private generateMixedEncounter(heroLevel: number, numMonsters: number, totalTargetDifficulty: number): Monster[] {
+    const monsters: Monster[] = [];
+    const targetDifficultyPerMonster = totalTargetDifficulty / numMonsters;
+    
+    // Select different monster types for variety
+    const allTypes = Object.values(MonsterType);
+    const selectedTypes: MonsterType[] = [];
+    
+    for (let i = 0; i < numMonsters; i++) {
+      // Try to avoid duplicates, but allow them if we run out of types
+      let attempts = 0;
+      let monsterType: MonsterType;
+      
+      do {
+        monsterType = allTypes[Math.floor(Math.random() * allTypes.length)];
+        attempts++;
+      } while (selectedTypes.includes(monsterType) && attempts < 10);
+      
+      selectedTypes.push(monsterType);
+      const monster = this.generateMonsterOfTargetDifficulty(monsterType, heroLevel, targetDifficultyPerMonster);
+      monsters.push(monster);
+    }
+    
+    return monsters;
+  }
+
+  /**
+   * Generates a monster of a specific type with target difficulty
+   */
+  private generateMonsterOfTargetDifficulty(monsterType: MonsterType, heroLevel: number, targetDifficulty: number): Monster {
+    // Find the best tier for this monster type to match target difficulty
+    const tierTypes = Object.values(MonsterTier);
+    let bestTier = MonsterTier.MEDIUM;
+    let bestDifferenceDiff = Infinity;
+    
+    for (const tier of tierTypes) {
+      const effectiveDifficulty = this.getEffectiveDifficulty(monsterType, tier, heroLevel);
+      const difference = Math.abs(effectiveDifficulty - targetDifficulty);
+      
+      if (difference < bestDifferenceDiff) {
+        bestDifferenceDiff = difference;
+        bestTier = tier;
+      }
+    }
+    
+    return this.createMonster(monsterType, bestTier, heroLevel);
+  }
+
+  /**
+   * Calculates total difficulty for a group of monsters
+   */
+  public calculateGroupDifficulty(monsters: Monster[]): number {
+    return monsters.reduce((total, monster) => {
+      return total + this.calculateMonsterInstanceDifficulty(monster);
+    }, 0);
   }
 }

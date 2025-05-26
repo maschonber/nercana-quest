@@ -14,7 +14,8 @@ describe('QuestDomainService', () => {
   beforeEach(() => {    // Create Jest spy objects instead of Jasmine spies
     const monsterSpy = {
       generateRandomMonster: jest.fn(),
-      calculateMonsterInstanceDifficulty: jest.fn()
+      calculateMonsterInstanceDifficulty: jest.fn(),
+      generateMultiMonsterEncounter: jest.fn()
     };
       const combatSpy = {
       createTeamCombat: jest.fn()
@@ -41,9 +42,11 @@ describe('QuestDomainService', () => {
       speed: 5,
       experienceReward: 20,
       description: 'A test space slug'
-    };
-    
+    };    
     monsterServiceSpy.generateRandomMonster.mockReturnValue(mockMonster);
+    
+    // Mock the generateMultiMonsterEncounter method
+    monsterServiceSpy.generateMultiMonsterEncounter.mockReturnValue([mockMonster]);
     
     // Mock the calculateMonsterInstanceDifficulty method
     monsterServiceSpy.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
@@ -230,9 +233,8 @@ describe('QuestDomainService', () => {
         encounterSteps.forEach(step => {
           expect(step.monster).toBeDefined();
           expect(step.combatResult).toBeDefined();
-          
-          if (step.monster && step.combatResult) {
-            expect(monsterServiceSpy.generateRandomMonster).toHaveBeenCalled();
+            if (step.monster && step.combatResult) {
+            expect(monsterServiceSpy.generateMultiMonsterEncounter).toHaveBeenCalled();
             expect(combatServiceSpy.createTeamCombat).toHaveBeenCalled();
             
             // Verify combat rewards match step rewards

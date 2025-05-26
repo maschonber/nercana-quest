@@ -11,6 +11,7 @@ export interface LogEntry {
   experienceGained?: number;
   gooGained?: number;
   metalGained?: number;
-  monster?: Monster;
+  monster?: Monster; // Backward compatibility - single monster encounters
+  monsters?: Monster[]; // New - multi-monster encounters
   combatResult?: CombatResult;
 }

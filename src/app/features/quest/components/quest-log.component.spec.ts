@@ -38,8 +38,7 @@ describe('QuestLogComponent', () => {
       },
       combatResult: {
         outcome: CombatOutcome.HERO_VICTORY,
-        turns: [
-          {            turnNumber: 1,
+        turns: [          {            turnNumber: 1,
             actorId: 'hero-1',
             action: {
               type: CombatActionType.ATTACK,
@@ -54,7 +53,25 @@ describe('QuestLogComponent', () => {
             actorHealthAfter: 100,
             targetHealthAfter: 105,
             heroHealthAfter: 100,
-            monsterHealthAfter: 105
+            monsterHealthAfter: 105,
+            allCombatantsHealth: [
+              {
+                id: 'hero-1',
+                name: 'Hero',
+                health: 100,
+                maxHealth: 120,
+                isAlive: true,
+                type: CombatantType.HERO
+              },
+              {
+                id: 'monster-1',
+                name: 'Ancient Dragon',
+                health: 105,
+                maxHealth: 120,
+                isAlive: true,
+                type: CombatantType.MONSTER
+              }
+            ]
           }
         ],        summary: 'You defeated the dragon!',
         experienceGained: 50

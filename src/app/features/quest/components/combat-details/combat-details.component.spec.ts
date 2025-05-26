@@ -24,8 +24,7 @@ describe('CombatDetailsComponent', () => {
 
   const mockHeroFacade = {
     hero: signal<Hero>(mockHero)
-  };
-  const mockLogEntry: LogEntry = {
+  };  const mockLogEntry: LogEntry = {
     timestamp: new Date('2024-01-15T10:30:00Z'),
     message: 'You encountered a fierce Void Entity!',
     success: true,
@@ -57,7 +56,25 @@ describe('CombatDetailsComponent', () => {
           actorHealthAfter: 100,
           targetHealthAfter: 105,
           heroHealthAfter: 100,
-          monsterHealthAfter: 105
+          monsterHealthAfter: 105,
+          allCombatantsHealth: [
+            {
+              id: 'hero-1',
+              name: 'Test Hero',
+              health: 100,
+              maxHealth: 120,
+              isAlive: true,
+              type: CombatantType.HERO
+            },
+            {
+              id: 'monster-1',
+              name: 'Ancient Dragon',
+              health: 105,
+              maxHealth: 120,
+              isAlive: true,
+              type: CombatantType.MONSTER
+            }
+          ]
         },        {
           turnNumber: 2,
           actorId: 'monster-1',
@@ -74,7 +91,25 @@ describe('CombatDetailsComponent', () => {
           actorHealthAfter: 105,
           targetHealthAfter: 80,
           heroHealthAfter: 80,
-          monsterHealthAfter: 105
+          monsterHealthAfter: 105,
+          allCombatantsHealth: [
+            {
+              id: 'hero-1',
+              name: 'Test Hero',
+              health: 80,
+              maxHealth: 120,
+              isAlive: true,
+              type: CombatantType.HERO
+            },
+            {
+              id: 'monster-1',
+              name: 'Ancient Dragon',
+              health: 105,
+              maxHealth: 120,
+              isAlive: true,
+              type: CombatantType.MONSTER
+            }
+          ]
         }      ],
       summary: 'After a fierce battle, you emerged victorious!',
       experienceGained: 50    },

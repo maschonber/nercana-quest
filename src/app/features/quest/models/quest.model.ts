@@ -18,7 +18,8 @@ export interface QuestStep {
   gooGained?: number;
   metalGained?: number;
   // For encounter steps that involve combat
-  monster?: Monster;
+  monster?: Monster; // Backward compatibility - single monster encounters
+  monsters?: Monster[]; // New - multi-monster encounters
   combatResult?: CombatResult;
 }
 

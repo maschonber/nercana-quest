@@ -3,22 +3,52 @@
   <div class="combat-outcome" [ngClass]="getCombatOutcomeClass(entry.combatResult!.outcome)">
     {{ getCombatOutcomeText(entry.combatResult!.outcome) }}
   </div>
-  
-  <!-- Monster information -->
-  <div class="monster-info" *ngIf="entry.monster">
-    <div class="monster-header">
-      <h4>{{ entry.monster.name }}</h4>
-      <span class="monster-type">{{ entry.monster.type }}</span>
-    </div>
-    <p class="monster-description">{{ entry.monster.description }}</p>
-    <div class="stats-container">
-      <div class="stat-item">
-        <span class="stat-label">Attack</span>
-        <span class="stat-value">{{ entry.monster.attack }}</span>
+    <!-- Monster information -->
+  <div class="monster-info" *ngIf="entry.monster || entry.monsters">
+    <!-- Single monster (backward compatibility) -->
+    <div *ngIf="entry.monster && !entry.monsters" class="single-monster">
+      <div class="monster-header">
+        <h4>{{ entry.monster.name }}</h4>
+        <span class="monster-type">{{ entry.monster.type }}</span>
       </div>
-      <div class="stat-item">
-        <span class="stat-label">Defense</span>
-        <span class="stat-value">{{ entry.monster.defense }}</span>
+      <p class="monster-description">{{ entry.monster.description }}</p>
+      <div class="stats-container">
+        <div class="stat-item">
+          <span class="stat-label">Attack</span>
+          <span class="stat-value">{{ entry.monster.attack }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Defense</span>
+          <span class="stat-value">{{ entry.monster.defense }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Multiple monsters -->
+    <div *ngIf="entry.monsters" class="multi-monsters">
+      <h4>Multiple Enemies Encountered</h4>
+      <div class="monsters-grid">
+        <div *ngFor="let monster of entry.monsters; let i = index" class="monster-card">
+          <div class="monster-header">
+            <h5>{{ monster.name }}</h5>
+            <span class="monster-type">{{ monster.type }}</span>
+          </div>
+          <p class="monster-description">{{ monster.description }}</p>
+          <div class="stats-container">
+            <div class="stat-item">
+              <span class="stat-label">Attack</span>
+              <span class="stat-value">{{ monster.attack }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Defense</span>
+              <span class="stat-value">{{ monster.defense }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Health</span>
+              <span class="stat-value">{{ monster.maxHealth }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -41,26 +71,41 @@
         <span *ngIf="!turn.action.success" class="action-failed">
           (Failed)
         </span>
-      </div>
-      <!-- Health status after the turn -->
+      </div>      <!-- Health status after the turn -->
       <div class="turn-health-status">
         <div class="health-info">
-          <span class="health-label">You: {{ turn.heroHealthAfter }} HP</span>
-          <span class="health-label">{{ entry.monster?.name }}: {{ turn.monsterHealthAfter }} HP</span>
-        </div>
-          <!-- Health bars -->
-        <div class="health-bars">
-          <div class="health-bar-container">
-            <div class="health-bar">
+          <!-- Hero health display with inline health bar -->
+          <div class="combatant-health-row" *ngIf="getHeroHealthState(turn) as heroState">
+            <div class="combatant-info" [ngClass]="{'defeated': !heroState.isAlive}">
+              <span class="health-label">{{ heroState.name }}: {{ heroState.health }}/{{ heroState.maxHealth }} HP</span>
+              <span class="health-status" [ngClass]="{'defeated': !heroState.isAlive}">
+                {{ heroState.isAlive ? '' : '(Defeated)' }}
+              </span>
+            </div>
+            <div class="inline-health-bar">
               <div class="health-fill hero-health" 
-                   [style.width.%]="getHealthPercentage(turn.heroHealthAfter, hero().maxHealth)">
+                   [style.width.%]="getHealthPercentage(heroState.health, heroState.maxHealth)"
+                   [ngClass]="{'defeated': !heroState.isAlive}">
               </div>
             </div>
           </div>
-          <div class="health-bar-container">
-            <div class="health-bar">
-              <div class="health-fill monster-health" 
-                   [style.width.%]="getHealthPercentage(turn.monsterHealthAfter, entry.monster?.maxHealth || 100)">
+          
+          <!-- Individual enemy health displays with inline health bars -->
+          <div class="enemies-health">
+            <div class="combatant-health-row" 
+                 *ngFor="let enemyState of getEnemyHealthStates(turn)" 
+                 [ngClass]="{'defeated': !enemyState.isAlive}">
+              <div class="combatant-info" [ngClass]="{'defeated': !enemyState.isAlive}">
+                <span class="health-label">{{ enemyState.name }}: {{ enemyState.health }}/{{ enemyState.maxHealth }} HP</span>
+                <span class="health-status" [ngClass]="{'defeated': !enemyState.isAlive}">
+                  {{ enemyState.isAlive ? '' : '(Defeated)' }}
+                </span>
+              </div>
+              <div class="inline-health-bar">
+                <div class="health-fill monster-health" 
+                     [style.width.%]="getHealthPercentage(enemyState.health, enemyState.maxHealth)"
+                     [ngClass]="{'defeated': !enemyState.isAlive}">
+                </div>
               </div>
             </div>
           </div>

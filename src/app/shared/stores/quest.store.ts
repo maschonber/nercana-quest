@@ -89,6 +89,7 @@ export const QuestStore = signalStore(
           stepType: nextStep.type,
           experienceGained: nextStep.experienceGained,
           monster: nextStep.monster,
+          monsters: nextStep.monsters,
           combatResult: nextStep.combatResult,
           gooGained: nextStep.gooGained,
           metalGained: nextStep.metalGained
@@ -125,8 +126,7 @@ export const QuestStore = signalStore(
           entry.stepType === 'exploration' || 
           entry.stepType === 'encounter' || 
           entry.stepType === 'treasure'
-        );
-          // Convert log entries to quest steps for the result
+        );        // Convert log entries to quest steps for the result
         const steps: QuestStep[] = recentEntries.map(entry => ({
           type: entry.stepType as QuestStepType,
           message: entry.message,
@@ -134,6 +134,7 @@ export const QuestStore = signalStore(
           success: entry.success,
           experienceGained: entry.experienceGained || 0,
           monster: entry.monster,
+          monsters: entry.monsters,
           combatResult: entry.combatResult,
           gooGained: entry.gooGained,
           metalGained: entry.metalGained

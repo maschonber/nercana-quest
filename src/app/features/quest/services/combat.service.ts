@@ -11,7 +11,8 @@ import {
   Combatant,
   CombatantType,
   CombatTeam,
-  TeamSide
+  TeamSide,
+  CombatantHealthState
 } from '../models/combat.model';
 
 interface TurnQueueEntry {
@@ -96,10 +97,8 @@ export class CombatService {
       // No valid targets, combat should end
       this.checkCombatEnd(combat);
       return;
-    }
-
-    // Execute the turn
-    const turn = this.executeTurn(combat.currentTurn, actingCombatant, target);
+    }    // Execute the turn
+    const turn = this.executeTurn(combat.currentTurn, actingCombatant, target, combat);
     combat.turns.push(turn);
 
     // Update combatant states
@@ -400,13 +399,15 @@ export class CombatService {
 
   /**
    * Executes a turn between an actor and target
-   */
-  private executeTurn(turnNumber: number, actor: Combatant, target: Combatant): CombatTurn {
+   */  private executeTurn(turnNumber: number, actor: Combatant, target: Combatant, combat: Combat): CombatTurn {
     const action = this.determineAction(actor, target);
     const initialTargetHealth = target.health;
 
     // Execute the action
     this.executeAction(action, actor, target);
+
+    // Capture comprehensive health states after this turn
+    const allCombatantsHealth = this.captureAllCombatantsHealth(combat);
 
     return {
       turnNumber,
@@ -414,10 +415,30 @@ export class CombatService {
       action,
       actorHealthAfter: actor.health,
       targetHealthAfter: target.health,
+      allCombatantsHealth,
       // Legacy fields for backward compatibility
       heroHealthAfter: actor.type === CombatantType.HERO ? actor.health : target.health,
       monsterHealthAfter: actor.type === CombatantType.MONSTER ? actor.health : target.health
     };
+  }
+
+  /**
+   * Captures health states of all combatants at a given moment
+   */
+  private captureAllCombatantsHealth(combat: Combat): CombatantHealthState[] {
+    const allCombatants = [
+      ...combat.heroTeam.combatants,
+      ...combat.enemyTeam.combatants
+    ];
+
+    return allCombatants.map(combatant => ({
+      id: combatant.id,
+      name: combatant.name,
+      health: combatant.health,
+      maxHealth: combatant.maxHealth,
+      isAlive: combatant.isAlive,
+      type: combatant.type
+    }));
   }
 
   /**
