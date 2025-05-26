@@ -11,10 +11,10 @@ describe('QuestDomainService', () => {
   let service: QuestDomainService;
   let monsterServiceSpy: any;
   let combatServiceSpy: any;
-  beforeEach(() => {
-    // Create Jest spy objects instead of Jasmine spies
+  beforeEach(() => {    // Create Jest spy objects instead of Jasmine spies
     const monsterSpy = {
-      generateRandomMonster: jest.fn()
+      generateRandomMonster: jest.fn(),
+      calculateMonsterInstanceDifficulty: jest.fn()
     };
     
     const combatSpy = {
@@ -45,6 +45,9 @@ describe('QuestDomainService', () => {
     };
     
     monsterServiceSpy.generateRandomMonster.mockReturnValue(mockMonster);
+    
+    // Mock the calculateMonsterInstanceDifficulty method
+    monsterServiceSpy.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
     
     const mockCombatResult: CombatResult = {
       outcome: CombatOutcome.HERO_VICTORY,

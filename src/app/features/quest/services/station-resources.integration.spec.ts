@@ -24,9 +24,9 @@ describe('QuestDomainService - Station Resources Integration', () => {
     experience: 150
   };
 
-  beforeEach(() => {
-    const monsterServiceSpy = {
-      generateRandomMonster: jest.fn()
+  beforeEach(() => {    const monsterServiceSpy = {
+      generateRandomMonster: jest.fn(),
+      calculateMonsterInstanceDifficulty: jest.fn()
     };
 
     const combatServiceSpy = {
@@ -47,8 +47,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
   });
 
   describe('Station Resource Generation', () => {
-    it('should accumulate goo from successful encounters', () => {
-      // Mock successful combat for encounter steps
+    it('should accumulate goo from successful encounters', () => {      // Mock successful combat for encounter steps
       monsterService.generateRandomMonster.mockReturnValue({
         name: 'Test Monster',
         type: 'SPACE_SLUG' as any,
@@ -59,6 +58,9 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         experienceReward: 25
       });
+
+      // Mock the calculateMonsterInstanceDifficulty method
+      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
 
       combatService.simulateCombat.mockReturnValue({
         outcome: CombatOutcome.HERO_VICTORY,
@@ -92,8 +94,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       expect(context.accumulatedMetal).toBeGreaterThan(initialMetal);
     });
 
-    it('should not accumulate resources from failed encounters', () => {
-      // Mock failed combat for encounter steps
+    it('should not accumulate resources from failed encounters', () => {      // Mock failed combat for encounter steps
       monsterService.generateRandomMonster.mockReturnValue({
         name: 'Test Monster',
         type: 'SPACE_SLUG' as any,
@@ -104,6 +105,9 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         experienceReward: 25
       });
+
+      // Mock the calculateMonsterInstanceDifficulty method
+      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
 
       combatService.simulateCombat.mockReturnValue({
         outcome: CombatOutcome.HERO_DEFEAT,
@@ -122,9 +126,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       expect(step).toBeTruthy();
       expect(step!.success).toBe(false);
       expect(context.accumulatedGoo).toBe(initialGoo); // No change in goo
-    });
-
-    it('should scale resources with hero level', () => {
+    });    it('should scale resources with hero level', () => {
       const lowLevelHero: Hero = { ...testHero, level: 1 };
       const highLevelHero: Hero = { ...testHero, level: 10 };
 
@@ -139,6 +141,9 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         experienceReward: 25
       });
+
+      // Mock the calculateMonsterInstanceDifficulty method
+      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
 
       combatService.simulateCombat.mockReturnValue({
         outcome: CombatOutcome.HERO_VICTORY,
@@ -171,9 +176,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
 
       // High level hero should get more goo overall
       expect(highLevelGoo).toBeGreaterThan(lowLevelGoo);
-    });
-
-    it('should only award resources to station upon successful quest completion', () => {
+    });    it('should only award resources to station upon successful quest completion', () => {
       // Mock successful combat
       monsterService.generateRandomMonster.mockReturnValue({
         name: 'Test Monster',
@@ -185,6 +188,9 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         experienceReward: 25
       });
+
+      // Mock the calculateMonsterInstanceDifficulty method
+      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
 
       combatService.simulateCombat.mockReturnValue({
         outcome: CombatOutcome.HERO_VICTORY,
@@ -211,9 +217,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
       expect(finalResult.questStatus).toBe('successful');
       expect(finalResult.gooGained).toBeGreaterThan(0);
       expect(finalResult.metalGained).toBeGreaterThan(0);
-    });
-
-    it('should lose all accumulated resources on quest failure', () => {
+    });    it('should lose all accumulated resources on quest failure', () => {
       // Mock one successful encounter then one failed encounter
       let callCount = 0;
       monsterService.generateRandomMonster.mockImplementation(() => ({
@@ -226,6 +230,9 @@ describe('QuestDomainService - Station Resources Integration', () => {
         defense: 5,
         experienceReward: 25
       }));
+
+      // Mock the calculateMonsterInstanceDifficulty method
+      monsterService.calculateMonsterInstanceDifficulty.mockReturnValue(20.5);
 
       combatService.simulateCombat.mockImplementation(() => {
         callCount++;

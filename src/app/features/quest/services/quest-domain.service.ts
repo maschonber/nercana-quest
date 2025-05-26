@@ -175,10 +175,9 @@ export class QuestDomainService {
         success = combatResult.outcome === CombatOutcome.HERO_VICTORY;
         
         // Set rewards from combat (already scaled appropriately)
-        experienceGained = combatResult.experienceGained;
-          // Accumulate goo from encounters (only on success)
+        experienceGained = combatResult.experienceGained;        // Accumulate goo from encounters (only on success)
         if (success) {
-          gooGained = this.calculateGooFromEncounter(hero);
+          gooGained = this.calculateGooFromEncounter(hero, monster);
           context.accumulatedGoo += gooGained;
         }
         
@@ -290,17 +289,36 @@ export class QuestDomainService {
     // Final calculation with randomness for variety
     const varianceFactor = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
       return Math.floor(baseExperience * levelScaling * statMultiplier * varianceFactor);
-  }
-
-  /**
+  }  /**
    * Calculates goo gained from defeating a monster in an encounter
+   * Now primarily based on the effective difficulty of the defeated monster
    */
-  private calculateGooFromEncounter(hero: Hero): number {
-    const baseGoo = 1;
-    const levelMultiplier = 1 + (hero.level * 0.1);
-    const varianceFactor = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
+  private calculateGooFromEncounter(hero: Hero, monster: any): number {
+    if (!monster) {
+      // Fallback to old calculation if no monster provided
+      const baseGoo = 1;
+      const levelMultiplier = 1 + (hero.level * 0.1);
+      const varianceFactor = 0.8 + (Math.random() * 0.4);
+      return Math.floor((baseGoo + Math.random() * 2) * levelMultiplier * varianceFactor);
+    }
+
+    // Calculate the effective difficulty using the centralized method from MonsterService
+    const effectiveDifficulty = this.monsterService.calculateMonsterInstanceDifficulty(monster);
     
-    return Math.floor((baseGoo + Math.random() * 2) * levelMultiplier * varianceFactor); // 1-3 goo
+    // Base goo calculation primarily from monster difficulty
+    // Use a scaling factor to convert difficulty to reasonable goo amounts
+    const difficultyScalingFactor = 0.15; // Adjust this to balance goo rewards
+    const baseGooFromDifficulty = effectiveDifficulty * difficultyScalingFactor;
+    
+    // Small level bonus (much less influential than before)
+    const levelBonus = hero.level * 0.1;
+    
+    // Reduced variance to make rewards more predictable
+    const varianceFactor = 0.9 + (Math.random() * 0.2); // 0.9 to 1.1 (reduced from 0.8-1.2)
+    
+    // Final calculation with minimum of 1 goo
+    const finalGoo = Math.max(1, Math.floor((baseGooFromDifficulty + levelBonus) * varianceFactor));
+      return finalGoo;
   }
 
   /**
@@ -329,7 +347,7 @@ export class QuestDomainService {
     // Set message based on quest outcome
     switch (context.questStatus) {
       case 'successful':
-        message = 'Quest completed successfully! Your clone has returned with valuable experience.';
+        message = 'Quest completed successfully! Your clone has returned with valuable resources.';
         // Award accumulated resources only on success
         gooGained = context.accumulatedGoo;
         metalGained = context.accumulatedMetal;

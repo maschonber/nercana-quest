@@ -205,4 +205,24 @@ export class MonsterService {
     
     return result;
   }
+
+  /**
+   * Calculates the effective difficulty of a monster instance based on its actual stats
+   * This method uses the same weighted formula as the internal difficulty calculations
+   * @param monster The monster instance to calculate difficulty for
+   * @returns The effective difficulty value
+   */
+  public calculateMonsterInstanceDifficulty(monster: any): number {
+    if (!monster) {
+      return 10; // Default low difficulty for null/undefined monsters
+    }
+
+    // Use the same weighted formula as getMonsterBaseDifficulty
+    // Health contributes 40%, Attack 35%, Defense 25%
+    const difficulty = (monster.maxHealth * 0.4) + 
+                      (monster.attack * 0.35) + 
+                      (monster.defense * 0.25);
+
+    return difficulty;
+  }
 }
