@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { CombatService } from './combat.service';
 import { Hero } from '../../hero/models/hero.model';
 import { Monster, MonsterType } from '../models/monster.model';
-import { CombatOutcome, CombatantType } from '../models/combat.model';
+import { CombatOutcome, CombatantType, CombatActionType } from '../models/combat.model';
 
 describe('CombatService', () => {
   let service: CombatService;
@@ -16,41 +16,41 @@ describe('CombatService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('simulateCombat', () => {
-    it('should simulate complete combat and return valid result', () => {      const hero: Hero = {
-        name: 'Test Hero',
-        health: 100,
-        maxHealth: 100,
-        attack: 15,
-        defense: 10,
-        luck: 5,
-        speed: 8,
-        level: 3,
-        experience: 100
-      };
+  describe('Enhanced Combat System', () => {
+    describe('Defend Actions', () => {
+      it('should reduce damage when a combatant is defending', () => {
+        const heroTeam = [{
+          id: 'hero-1',
+          name: 'Defending Hero',
+          health: 100,
+          maxHealth: 100,
+          attack: 15,
+          defense: 10,
+          speed: 12, // Higher speed to act first
+          type: CombatantType.HERO,
+          isAlive: true,
+          hasFled: false
+        }];
 
-      const monster: Monster = {
-        type: MonsterType.SPACE_SLUG,
-        name: 'Space Slug',
-        health: 30,
-        maxHealth: 30,
-        attack: 8,
-        defense: 5,
-        speed: 5,
-        experienceReward: 20,
-        description: 'A slimy space creature that feeds on asteroids.'
-      };
+        const enemyTeam = [{
+          id: 'enemy-1',
+          name: 'Attacking Monster',
+          health: 50,
+          maxHealth: 50,
+          attack: 20,
+          defense: 5,
+          speed: 5, // Lower speed to act second
+          type: CombatantType.MONSTER,
+          isAlive: true,
+          hasFled: false
+        }];
 
-      const result = service.createTeamCombat([hero], [monster]);
-      
-      // Result should have required properties
-      expect(result).toHaveProperty('outcome');      expect(result).toHaveProperty('turns');
-      expect(result).toHaveProperty('experienceGained');
-      expect(result).toHaveProperty('summary');
+        // Run combat multiple times to test defend action probability
+        let defendActionsFound = 0;
+        let damageReductionVerified = false;
 
-      // Combat should have ended (not IN_PROGRESS)
-      expect(result.outcome).not.toBe(CombatOutcome.IN_PROGRESS);
-      
+        for (let i = 0; i < 20; i++) {
+          // Reset health for each test
       // Should have at least one turn
       expect(result.turns.length).toBeGreaterThan(0);
         // Each turn should have the required properties
