@@ -7,6 +7,7 @@ import { LogEntry } from '../../models/log-entry.model';
 import { Hero } from '../../features/hero/models/hero.model';
 import { HeroStore } from './hero.store';
 import { HeroFacadeService } from '../../features/hero/services/hero-facade.service';
+import { StationFacadeService } from '../services/station-facade.service';
 import { LogStore } from './log.store';
 
 interface QuestState {
@@ -22,10 +23,10 @@ const initialState: QuestState = {
 export const QuestStore = signalStore(
   { providedIn: 'root' },
   withState<QuestState>(initialState),
-  withMethods((store) => {
-    const questDomainService = inject(QuestDomainService);
+  withMethods((store) => {    const questDomainService = inject(QuestDomainService);
     const heroStore = inject(HeroStore);
     const heroFacade = inject(HeroFacadeService);
+    const stationFacade = inject(StationFacadeService);
     const logStore = inject(LogStore);
     
     return {      /**
@@ -66,13 +67,9 @@ export const QuestStore = signalStore(
         // Generate next step with current hero state
         const currentHero = heroFacade.hero();
         const nextStep = questDomainService.generateNextStep(currentHero, context);
-        
-        if (!nextStep) {
-          // All steps completed, mark quest as finished
-          patchState(store, { 
-            questInProgress: false,
-            questContext: null
-          });
+          if (!nextStep) {
+          // All steps completed, finalize quest
+          this.finalizeQuest(context);
           return;
         }
           // Apply combat health changes for encounter steps
@@ -84,43 +81,91 @@ export const QuestStore = signalStore(
             : initialHeroHealth;
             // Set health directly to the combat result value
           heroFacade.setHealth(combatFinalHealth);
-        }
-        
-        // Create log entry for the current step
+        }        // Create log entry for the current step
         let logEntry: LogEntry = {
           message: nextStep.message,
           timestamp: new Date(),
           success: nextStep.success,
           stepType: nextStep.type,
           experienceGained: nextStep.experienceGained,
-          goldGained: nextStep.goldGained,
           monster: nextStep.monster,
-          combatResult: nextStep.combatResult
-        };        // Apply rewards from this step
+          combatResult: nextStep.combatResult,
+          gooGained: nextStep.gooGained,
+          metalGained: nextStep.metalGained
+        };// Apply rewards from this step
         let levelUpMessage = '';
         
         if (nextStep.experienceGained > 0) {
           levelUpMessage = heroStore.addExperience(nextStep.experienceGained);
         }
-        
-        if (nextStep.goldGained > 0) {
-          heroStore.addGold(nextStep.goldGained);
-        }
-        
+
         // Add level up message if applicable
         if (levelUpMessage) {
           logEntry.message += levelUpMessage;
         }
-        
+
         // Add log entry
         logStore.addEntry(logEntry);
-          // Update quest context in store
+
+        // Update quest context in store
         patchState(store, { questContext: context });
-        
+
         // Process the next step after a delay
         setTimeout(() => {
           this.processNextQuestStep();
         }, 500); // 500ms delay between steps
+      },
+
+      /**
+       * Finalizes the quest and awards accumulated resources on success
+       */
+    finalizeQuest(context: QuestContext): void {
+        // Get quest steps from the log entries created during the quest
+        const recentEntries = logStore.entries().filter(entry => 
+          entry.stepType === 'exploration' || 
+          entry.stepType === 'encounter' || 
+          entry.stepType === 'treasure'
+        );
+          // Convert log entries to quest steps for the result
+        const steps: QuestStep[] = recentEntries.map(entry => ({
+          type: entry.stepType as QuestStepType,
+          message: entry.message,
+          timestamp: entry.timestamp,
+          success: entry.success,
+          experienceGained: entry.experienceGained || 0,
+          monster: entry.monster,
+          combatResult: entry.combatResult,
+          gooGained: entry.gooGained,
+          metalGained: entry.metalGained
+        }));
+        
+        const questResult = questDomainService.createQuestResult(context, steps);
+
+        // Award resources only if quest was successful
+        if (questResult.questStatus === 'successful') {
+          if (questResult.gooGained && questResult.gooGained > 0) {
+            stationFacade.addGoo(questResult.gooGained, 'Quest completion reward');
+          }
+          
+          if (questResult.metalGained && questResult.metalGained > 0) {
+            stationFacade.addMetal(questResult.metalGained, 'Quest completion reward');
+          }
+        }        // Create final log entry for quest completion
+        const finalLogEntry: LogEntry = {
+          message: questResult.message,
+          timestamp: new Date(),
+          success: questResult.questStatus === 'successful',
+          stepType: QuestStepType.QUEST_COMPLETE,
+          experienceGained: 0 // Experience was already awarded per step
+        };
+
+        logStore.addEntry(finalLogEntry);
+
+        // Mark quest as finished
+        patchState(store, { 
+          questInProgress: false,
+          questContext: null
+        });
       }
     };
   })

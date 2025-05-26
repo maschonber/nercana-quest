@@ -27,17 +27,13 @@ describe('MonsterService', () => {
         expect(monster).toHaveProperty('name');
         expect(monster).toHaveProperty('health');
         expect(monster).toHaveProperty('maxHealth');
-        expect(monster).toHaveProperty('attack');
-        expect(monster).toHaveProperty('defense');
+        expect(monster).toHaveProperty('attack');        expect(monster).toHaveProperty('defense');
         expect(monster).toHaveProperty('experienceReward');
-        expect(monster).toHaveProperty('goldReward');
-        expect(monster).toHaveProperty('description');        // Stats should be positive numbers (defense can be 0 for very weak monsters)
+        expect(monster).toHaveProperty('description');// Stats should be positive numbers (defense can be 0 for very weak monsters)
         expect(monster.health).toBeGreaterThan(0);
         expect(monster.maxHealth).toBe(monster.health);
         expect(monster.attack).toBeGreaterThan(0);
-        expect(monster.defense).toBeGreaterThanOrEqual(0);
-        expect(monster.experienceReward).toBeGreaterThan(0);
-        expect(monster.goldReward).toBeGreaterThan(0);
+        expect(monster.defense).toBeGreaterThanOrEqual(0);        expect(monster.experienceReward).toBeGreaterThan(0);
       });
     });
 

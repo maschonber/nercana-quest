@@ -32,9 +32,7 @@ describe('QuestLogComponent', () => {
         health: 0,
         maxHealth: 120,
         attack: 25,
-        defense: 18,
-        experienceReward: 50,
-        goldReward: 25
+        defense: 18,        experienceReward: 50
       },
       combatResult: {
         outcome: CombatOutcome.HERO_VICTORY,
@@ -55,13 +53,12 @@ describe('QuestLogComponent', () => {
             heroHealthAfter: 100,
             monsterHealthAfter: 105
           }
-        ],
-        summary: 'You defeated the dragon!',
-        experienceGained: 50,
-        goldGained: 25
+        ],        summary: 'You defeated the dragon!',
+        experienceGained: 50
       },
       experienceGained: 50,
-      goldGained: 25
+      gooGained: 15,
+      metalGained: 10
     }
   ];
 
@@ -195,8 +192,7 @@ describe('QuestLogComponent', () => {
   it('should display reward information correctly', () => {
     const compiled = fixture.nativeElement;
     const encounterEntry = compiled.querySelectorAll('li')[2];
-    
-    expect(encounterEntry.textContent).toContain('+50 XP');
-    expect(encounterEntry.textContent).toContain('+25 Gold');
+      expect(encounterEntry.textContent).toContain('+50 XP');
+    expect(encounterEntry.textContent).toContain('+15 Goo');
   });
 });

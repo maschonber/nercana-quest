@@ -3,29 +3,28 @@ import { Hero } from '../../hero/models/hero.model';
 import { QuestResult, QuestStep, QuestStepType } from '../models/quest.model';
 import { CombatOutcome, CombatResult } from '../models/combat.model';
 import { MonsterService } from './monster.service';
-import { CombatService } from './combat.service';
-
-/**
- * Context for tracking quest progress during dynamic step generation
- */
-export interface QuestContext {
-  /** Remaining step types to be generated */
-  remainingStepTypes: QuestStepType[];
-  /** Current quest status - starts as ongoing, changes based on encounters */
-  questStatus: 'ongoing' | 'successful' | 'failed';
-  /** Base experience reward for treasure steps */
-  baseExperience: number;
-  /** Base gold reward for treasure steps */
-  baseTreasureGold: number;
-  /** Total number of encounter steps planned */
-  encounterCount: number;
-  /** Total number of treasure steps planned */
-  treasureCount: number;
-  /** Current step index */
-  currentStepIndex: number;
-  /** Total number of steps in the quest */
-  totalSteps: number;
-}
+import { CombatService } from './combat.service';  /**
+   * Context for tracking quest progress during dynamic step generation
+   */
+  export interface QuestContext {
+    /** Remaining step types to be generated */
+    remainingStepTypes: QuestStepType[];
+    /** Current quest status - starts as ongoing, changes based on encounters */
+    questStatus: 'ongoing' | 'successful' | 'failed';
+    /** Base experience reward for treasure steps */
+    baseExperience: number;
+    /** Total number of encounter steps planned */
+    encounterCount: number;
+    /** Total number of treasure steps planned */
+    treasureCount: number;
+    /** Current step index */
+    currentStepIndex: number;
+    /** Total number of steps in the quest */
+    totalSteps: number;
+    /** Accumulated resources that will be awarded only on quest success */
+    accumulatedGoo: number;
+    accumulatedMetal: number;
+  }
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +32,7 @@ export interface QuestContext {
 export class QuestDomainService {
   private readonly monsterService = inject(MonsterService);
   private readonly combatService = inject(CombatService);
-    /**
+  /**
    * Creates initial quest context for dynamic step generation
    */
   createQuestContext(hero: Hero): QuestContext {
@@ -48,20 +47,20 @@ export class QuestDomainService {
     
     // Calculate base rewards
     const baseExperience = this.calculateExperience(hero);
-    const baseTreasureGold = this.calculateGoldReward(hero);
     
     return {
       remainingStepTypes: [...stepTypes],
       questStatus: 'ongoing',
       baseExperience,
-      baseTreasureGold,
       encounterCount,
       treasureCount,
       currentStepIndex: 0,
-      totalSteps: stepCount
+      totalSteps: stepCount,
+      accumulatedGoo: 0,
+      accumulatedMetal: 0
     };
   }
-    /**
+  /**
    * Generates the next quest step using current hero state
    */
   generateNextStep(hero: Hero, context: QuestContext): QuestStep | null {
@@ -78,9 +77,9 @@ export class QuestDomainService {
       context.currentStepIndex,
       context.totalSteps,
       context.baseExperience,
-      context.baseTreasureGold,
       context.encounterCount,
-      context.treasureCount
+      context.treasureCount,
+      context
     );
     
     // Update context for next step
@@ -144,15 +143,14 @@ export class QuestDomainService {
     stepIndex: number, 
     totalSteps: number,
     baseExperience: number,
-    baseTreasureGold: number,
     encounterCount: number,
-    treasureCount: number
-  ): QuestStep {
-    // Default values
+    treasureCount: number,
+    context: QuestContext  ): QuestStep {    // Default values
     let message = '';
     let success = true; // Individual step success (different from overall quest status)
     let experienceGained = 0;
-    let goldGained = 0;
+    let gooGained = 0;
+    let metalGained = 0;
     let monster = undefined;
     let combatResult = undefined;
     
@@ -178,26 +176,32 @@ export class QuestDomainService {
         
         // Set rewards from combat (already scaled appropriately)
         experienceGained = combatResult.experienceGained;
-        goldGained = combatResult.goldGained;        // Generate appropriate message based on combat outcome
+          // Accumulate goo from encounters (only on success)
+        if (success) {
+          gooGained = this.calculateGooFromEncounter(hero);
+          context.accumulatedGoo += gooGained;
+        }
+        
+        // Generate appropriate message based on combat outcome
         message = this.generateEncounterMessageFromCombat(combatResult, monster);
         break;
         
       case QuestStepType.TREASURE:
         message = this.generateTreasureMessage();
-        // Treasure steps provide rewards based on quest still being ongoing
-        if (questStatus === 'ongoing') {
-          goldGained = Math.floor(baseTreasureGold / Math.max(1, treasureCount));
-        }
+        // Treasure steps always succeed
+        success = true;
+        
+        // Accumulate metal from treasure
+        metalGained = this.calculateMetalFromTreasure(hero);        context.accumulatedMetal += metalGained;
         break;
-    }
-    
-    return {
+    }    return {
       type,
       message,
       success,
       timestamp: new Date(),
       experienceGained,
-      goldGained,
+      gooGained: gooGained > 0 ? gooGained : undefined,
+      metalGained: metalGained > 0 ? metalGained : undefined,
       monster,
       combatResult
     };
@@ -285,26 +289,73 @@ export class QuestDomainService {
     
     // Final calculation with randomness for variety
     const varianceFactor = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
-    
-    return Math.floor(baseExperience * levelScaling * statMultiplier * varianceFactor);
+      return Math.floor(baseExperience * levelScaling * statMultiplier * varianceFactor);
   }
 
   /**
-   * Calculates gold reward from successful quest
-   * Gold rewards scale with hero level and luck
+   * Calculates goo gained from defeating a monster in an encounter
    */
-  private calculateGoldReward(hero: Hero): number {
-    const baseGold = 5;
+  private calculateGooFromEncounter(hero: Hero): number {
+    const baseGoo = 1;
+    const levelMultiplier = 1 + (hero.level * 0.1);
+    const varianceFactor = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
     
-    // Increase base gold with level
-    const levelBonus = hero.level * 2;
-    
-    // Luck affects gold found
-    const luckMultiplier = 1 + hero.luck / 20;
-    
-    // Add randomness
-    const varianceFactor = 0.9 + (Math.random() * 0.3); // 0.9 to 1.2
-    
-    return Math.floor((baseGold + levelBonus) * luckMultiplier * varianceFactor);
+    return Math.floor((baseGoo + Math.random() * 2) * levelMultiplier * varianceFactor); // 1-3 goo
   }
+
+  /**
+   * Calculates metal gained from a treasure step
+   */
+  private calculateMetalFromTreasure(hero: Hero): number {
+    const baseMetal = 2;
+    const levelMultiplier = 1 + (hero.level * 0.1);
+    const varianceFactor = 0.8 + (Math.random() * 0.4); // 0.8 to 1.2
+    
+    return Math.floor((baseMetal + Math.random() * 3) * levelMultiplier * varianceFactor); // 2-5 metal
+  }
+
+  /**
+   * Creates a quest result with accumulated resources (only awarded on success)
+   */
+  createQuestResult(context: QuestContext, steps: QuestStep[]): QuestResult {
+    let message = '';
+    let totalExperience = 0;
+    let gooGained = 0;
+    let metalGained = 0;
+
+    // Calculate total experience from all steps
+    totalExperience = steps.reduce((total, step) => total + step.experienceGained, 0);
+
+    // Set message based on quest outcome
+    switch (context.questStatus) {
+      case 'successful':
+        message = 'Quest completed successfully! Your clone has returned with valuable experience.';
+        // Award accumulated resources only on success
+        gooGained = context.accumulatedGoo;
+        metalGained = context.accumulatedMetal;
+        break;
+      case 'failed':
+        message = 'Quest failed! Your clone was lost, and any gathered resources were abandoned.';
+        // No resources awarded on failure
+        gooGained = 0;
+        metalGained = 0;
+        break;
+      default:
+        message = 'Quest is ongoing...';
+        gooGained = 0;
+        metalGained = 0;
+        break;
+    }
+
+    return {
+      questStatus: context.questStatus,
+      message,
+      timestamp: new Date(),
+      experienceGained: totalExperience,
+      gooGained,
+      metalGained,
+      steps
+    };
+  }
+
 }

@@ -27,7 +27,6 @@ export interface Monster {
   attack: number;
   defense: number;
   experienceReward: number;
-  goldReward: number;
   description: string;
 }
 

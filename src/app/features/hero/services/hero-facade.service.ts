@@ -50,10 +50,6 @@ export class HeroFacadeService {
     return this.heroStore.addExperience(experience);
   }
 
-  addGold(gold: number): void {
-    this.heroStore.addGold(gold);
-  }
-
   // Health management methods
   takeDamage(damage: number): void {
     this.heroStore.takeDamage(damage);

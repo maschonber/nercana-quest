@@ -8,5 +8,4 @@ export interface Hero {
   luck: number;
   level: number;
   experience: number;
-  gold: number;
 }

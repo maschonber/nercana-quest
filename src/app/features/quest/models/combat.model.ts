@@ -54,7 +54,6 @@ export interface CombatResult {
   outcome: CombatOutcome;
   turns: CombatTurn[];
   experienceGained: number;
-  goldGained: number;
   summary: string;
 }
 

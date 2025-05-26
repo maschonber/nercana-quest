@@ -79,6 +79,22 @@
   );
 }
 
+@mixin goo-reward {
+  @include reward-badge(
+    rgba(76, 175, 80, 0.15),
+    var(--accent-secondary),
+    rgba(76, 175, 80, 0.3)
+  );
+}
+
+@mixin metal-reward {
+  @include reward-badge(
+    rgba(158, 158, 158, 0.15),
+    #9e9e9e,
+    rgba(158, 158, 158, 0.3)
+  );
+}
+
 // Monster Name Highlighting
 @mixin monster-name-highlight {
   background-color: rgba(220, 38, 127, 0.15);
@@ -182,6 +198,16 @@
   :global(.dark-theme) .gold-reward {
     background-color: rgba(246, 213, 92, 0.2);
     border-color: rgba(246, 213, 92, 0.4);
+  }
+
+  :global(.dark-theme) .goo-reward {
+    background-color: rgba(129, 199, 132, 0.2);
+    border-color: rgba(129, 199, 132, 0.4);
+  }
+
+  :global(.dark-theme) .metal-reward {
+    background-color: rgba(189, 189, 189, 0.2);
+    border-color: rgba(189, 189, 189, 0.4);
   }
 }
 

@@ -174,10 +174,8 @@ expect(() => fn()).toThrow('specific message');
 
 If tests fail unexpectedly:
 
-1. Run a single test file with `npm test -- path/to/file.spec.ts`
-2. Add .only to run specific tests: `it.only('should...', () => {})`
-3. Use console.log() in tests to debug values
-4. Check Jest output for detailed failure information
+1. Use console.log() in tests to debug values
+2. Check Jest output for detailed failure information
 
 # Playwright End-to-End Testing Guide
 

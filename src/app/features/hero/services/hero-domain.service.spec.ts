@@ -22,8 +22,7 @@ describe('HeroDomainService', () => {
         defense: 8,
         luck: 5,
         level: 1,
-        experience: 0,
-        gold: 0
+        experience: 0
       };
       
       expect(service.calculateTotalPower(hero)).toBe(125);
@@ -76,10 +75,8 @@ describe('HeroDomainService', () => {
         maxHealth: 100,
         attack: 12,
         defense: 8,
-        luck: 5,
-        level: 1,
-        experience: 100,
-        gold: 50
+        luck: 5,        level: 1,
+        experience: 100
       };
 
       const leveledHero = service.levelUpHero(hero);
@@ -90,7 +87,6 @@ describe('HeroDomainService', () => {
       expect(leveledHero.luck).toBe(6);
       expect(leveledHero.name).toBe('Test Hero');
       expect(leveledHero.experience).toBe(100);
-      expect(leveledHero.gold).toBe(50);
     });
       it('should increase hero stats for multiple levels', () => {
       const hero: Hero = {
@@ -99,10 +95,8 @@ describe('HeroDomainService', () => {
         maxHealth: 100,
         attack: 12,
         defense: 8,
-        luck: 5,
-        level: 1,
-        experience: 100,
-        gold: 50
+        luck: 5,        level: 1,
+        experience: 100
       };
 
       const leveledHero = service.levelUpHero(hero, 3);
@@ -119,11 +113,9 @@ describe('HeroDomainService', () => {
         health: 100,
         maxHealth: 100,
         attack: 12,
-        defense: 8,
-        luck: 5,
+        defense: 8,        luck: 5,
         level: 1,
-        experience: 0,
-        gold: 0
+        experience: 0
       };
 
       expect(service.validateHeroStats(validHero)).toBe(true);
@@ -133,11 +125,9 @@ describe('HeroDomainService', () => {
         health: 0,
         maxHealth: 100,
         attack: -5,
-        defense: 8,
-        luck: 5,
+        defense: 8,        luck: 5,
         level: 1,
-        experience: 0,
-        gold: 0
+        experience: 0
       };
 
       expect(service.validateHeroStats(invalidHero)).toBe(false);
@@ -148,10 +138,8 @@ describe('HeroDomainService', () => {
         maxHealth: 2000,
         attack: 200,
         defense: 200,
-        luck: 100,
-        level: 99,
-        experience: 9999,
-        gold: 9999
+        luck: 100,        level: 99,
+        experience: 9999
       };
 
       expect(service.validateHeroStats(overpoweredHero)).toBe(false);

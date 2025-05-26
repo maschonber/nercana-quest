@@ -5,7 +5,6 @@ export interface MonsterData {
   readonly baseAttack: number;
   readonly baseDefense: number;
   readonly baseExpReward: number;
-  readonly baseGoldReward: number;
   readonly name: string;
   readonly description: string;
   readonly tierNames?: Partial<Record<MonsterTier, string>>;

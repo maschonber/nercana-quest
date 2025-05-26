@@ -16,12 +16,10 @@ describe('CombatDetailsComponent', () => {
     name: 'Test Hero',
     health: 100,
     maxHealth: 120,
-    attack: 15,
-    defense: 10,
+    attack: 15,    defense: 10,
     luck: 7,
     level: 2,
-    experience: 150,
-    gold: 50
+    experience: 150
   };
 
   const mockHeroFacade = {
@@ -37,11 +35,9 @@ describe('CombatDetailsComponent', () => {
       type: MonsterType.VOID_ENTITY,
       description: 'A massive void entity that defies conventional understanding.',
       health: 0,
-      maxHealth: 120,
-      attack: 25,
+      maxHealth: 120,      attack: 25,
       defense: 18,
-      experienceReward: 50,
-      goldReward: 25
+      experienceReward: 50
     },
     combatResult: {
       outcome: CombatOutcome.HERO_VICTORY,
@@ -75,14 +71,12 @@ describe('CombatDetailsComponent', () => {
           targetHealthAfter: 80,
           heroHealthAfter: 80,
           monsterHealthAfter: 105
-        }
-      ],
+        }      ],
       summary: 'After a fierce battle, you emerged victorious!',
-      experienceGained: 50,
-      goldGained: 25
-    },
+      experienceGained: 50    },
     experienceGained: 50,
-    goldGained: 25
+    gooGained: 15,
+    metalGained: 10
   };
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -147,11 +141,11 @@ describe('CombatDetailsComponent', () => {
     expect(compiled.textContent).toContain('Turn 2');
     expect(compiled.textContent).toContain('You strike with your sword');
     expect(compiled.textContent).toContain('Ancient Dragon breathes fire');
-  });
-  it('should render combat rewards', () => {
+  });  it('should render combat rewards', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('+50 XP');
-    expect(compiled.textContent).toContain('+25 Gold');
+    expect(compiled.textContent).toContain('+15 Goo');
+    expect(compiled.textContent).toContain('+10 Metal');
   });
   it('should use hero max health for health bar calculation', () => {
     // Hero has maxHealth of 120, current health after turn is 80

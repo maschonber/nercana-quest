@@ -5,7 +5,8 @@ import { Monster } from './monster.model';
 export enum QuestStepType {
   EXPLORATION = 'exploration',
   ENCOUNTER = 'encounter',
-  TREASURE = 'treasure'
+  TREASURE = 'treasure',
+  QUEST_COMPLETE = 'quest_complete'
 }
 
 export interface QuestStep {
@@ -14,7 +15,8 @@ export interface QuestStep {
   timestamp: Date;
   success: boolean;
   experienceGained: number;
-  goldGained: number;
+  gooGained?: number;
+  metalGained?: number;
   // For encounter steps that involve combat
   monster?: Monster;
   combatResult?: CombatResult;
@@ -25,6 +27,7 @@ export interface QuestResult {
   message: string;
   timestamp: Date;
   experienceGained: number;
-  goldGained: number;
+  gooGained?: number;
+  metalGained?: number;
   steps: QuestStep[];
 }

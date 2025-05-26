@@ -72,17 +72,18 @@
   <!-- Combat summary -->
   <div class="combat-summary">
     <p>{{ entry.combatResult!.summary }}</p>
-  </div>
-  
-  <!-- Combat rewards recap -->
-  <div class="combat-rewards" *ngIf="entry.combatResult!.experienceGained > 0 || entry.combatResult!.goldGained > 0">
+  </div>    <!-- Combat rewards recap -->
+  <div class="combat-rewards" *ngIf="entry.combatResult!.experienceGained > 0 || (entry.gooGained && entry.gooGained > 0) || (entry.metalGained && entry.metalGained > 0)">
     <h4>Rewards</h4>
     <div class="rewards-container">
       <span *ngIf="entry.combatResult!.experienceGained > 0" class="experience-reward">
         +{{ entry.combatResult!.experienceGained }} XP
       </span>
-      <span *ngIf="entry.combatResult!.goldGained > 0" class="gold-reward">
-        +{{ entry.combatResult!.goldGained }} Gold
+      <span *ngIf="entry.gooGained && entry.gooGained > 0" class="goo-reward">
+        +{{ entry.gooGained }} Goo
+      </span>
+      <span *ngIf="entry.metalGained && entry.metalGained > 0" class="metal-reward">
+        +{{ entry.metalGained }} Metal
       </span>
     </div>
   </div>

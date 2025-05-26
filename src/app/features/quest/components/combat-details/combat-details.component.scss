@@ -279,8 +279,12 @@
   @include experience-reward;
 }
 
-.gold-reward {
-  @include gold-reward;
+.goo-reward {
+  @include goo-reward;
+}
+
+.metal-reward {
+  @include metal-reward;
 }
 
 /* Dark theme adjustments */

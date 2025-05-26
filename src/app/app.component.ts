@@ -5,13 +5,14 @@ import { HeroDetailsComponent } from './features/hero/components/hero-details.co
 import { HeroActionsComponent } from './features/hero/components/hero-actions.component';
 import { QuestLogComponent } from './features/quest/components/quest-log.component';
 import { ThemeToggleComponent } from './shared/components/theme-toggle.component';
+import { ResourceDisplayComponent } from './shared/components/resource-display.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   standalone: true,
-  imports: [HeroDetailsComponent, HeroActionsComponent, QuestLogComponent, ThemeToggleComponent]
+  imports: [HeroDetailsComponent, HeroActionsComponent, QuestLogComponent, ThemeToggleComponent, ResourceDisplayComponent]
 })
 export class AppComponent implements OnInit {
   private readonly themeStore = inject(ThemeStore);

@@ -51,8 +51,7 @@ export class QuestLogComponent implements OnChanges {
   isNewEntry(index: number): boolean {
     if (!this.newEntryTimestamp || !this.log[index]) return false;
     return this.log[index].timestamp.getTime() === this.newEntryTimestamp.getTime();
-  }
-    // Get the appropriate icon for each step type
+  }    // Get the appropriate icon for each step type
   getStepIcon(stepType?: QuestStepType): string {
     if (!stepType) return '';
     
@@ -63,15 +62,16 @@ export class QuestLogComponent implements OnChanges {
         return '⚡';
       case QuestStepType.TREASURE:
         return '🫧';
+      case QuestStepType.QUEST_COMPLETE:
+        return '✅';
       default:
         return '';
     }
-  }
-  
-  // Check if a log entry has any rewards to display
+  }// Check if a log entry has any rewards to display
   hasRewards(entry: LogEntry): boolean {
     return (entry.experienceGained !== undefined && entry.experienceGained > 0) || 
-           (entry.goldGained !== undefined && entry.goldGained > 0);
+           (entry.gooGained !== undefined && entry.gooGained > 0) ||
+           (entry.metalGained !== undefined && entry.metalGained > 0);
   }
 
   // Get experience gained from a log entry
@@ -79,9 +79,14 @@ export class QuestLogComponent implements OnChanges {
     return entry.experienceGained || 0;
   }
 
-  // Get gold gained from a log entry
-  getGoldFromEntry(entry: LogEntry): number {
-    return entry.goldGained || 0;
+  // Get goo gained from a log entry
+  getGooFromEntry(entry: LogEntry): number {
+    return entry.gooGained || 0;
+  }
+
+  // Get metal gained from a log entry
+  getMetalFromEntry(entry: LogEntry): number {
+    return entry.metalGained || 0;
   }
   
   // Check if a log entry has expandable details

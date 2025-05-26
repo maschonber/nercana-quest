@@ -17,8 +17,7 @@ const initialState: HeroState = {
     defense: 8,
     luck: 5,
     level: 1,
-    experience: 0,
-    gold: 0
+    experience: 0
   }
 };
 
@@ -60,16 +59,8 @@ export const HeroStore = signalStore(
         
         patchState(store, { hero: updatedHero });
         return levelUpMessage;
-      },      /**
-       * Adds gold to hero's inventory
-       */
-      addGold(gold: number): void {
-        const currentHero = store.hero();
-        patchState(store, { 
-          hero: { ...currentHero, gold: currentHero.gold + gold }
-        });
-      },
-
+      },     
+      
       /**
        * Applies damage to hero's health
        */

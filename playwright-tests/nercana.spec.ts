@@ -4,7 +4,6 @@ test.describe('Nercana Quest Application', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
-
   test('hero details are displayed correctly', async ({ page }) => {
     // Verify the page title
     const title = await page.title();
@@ -21,10 +20,27 @@ test.describe('Nercana Quest Application', () => {
     await expect(page.locator('.hero-details li:has-text("Defense:")')).toContainText('8');
     await expect(page.locator('.hero-details li:has-text("Luck:")')).toContainText('5');
   });
-
+  test('station resources are displayed in header', async ({ page }) => {
+    // Check if resource display component exists in header
+    const resourceDisplay = page.locator('.resource-display');
+    await expect(resourceDisplay).toBeVisible();
+    
+    // Verify goo resource is displayed
+    const gooResource = page.locator('.resource-item:has-text("🟢")');
+    await expect(gooResource).toBeVisible();
+    await expect(gooResource).toContainText('0'); // Initial value should be 0
+    
+    // Verify metal resource is displayed
+    const metalResource = page.locator('.resource-item:has-text("⚙️")');
+    await expect(metalResource).toBeVisible();
+    await expect(metalResource).toContainText('0'); // Initial value should be 0
+  });
   test('quest log updates after embarking on a quest', async ({ page }) => {
     // Count initial log entries (should be 0 initially)
     const initialLogEntries = await page.locator('.log-view li').count();
+      // Get initial resource values
+    const initialGoo = await page.locator('.resource-item:has-text("🟢") .resource-value').textContent();
+    const initialMetal = await page.locator('.resource-item:has-text("⚙️") .resource-value').textContent();
     
     // Click the "Embark on quest" button
     await page.click('button.quest-btn');
@@ -49,7 +65,14 @@ test.describe('Nercana Quest Application', () => {
     
     // At least one type of step should be present
     expect(hasExplorationSteps || hasEncounterSteps || hasTreasureSteps).toBeTruthy();
-  });  test('multiple quests can be completed and logged', async ({ page }) => {    // Click the "Embark on quest" button and wait for steps to complete
+      // Verify station resources may have increased
+    const updatedGoo = await page.locator('.resource-item:has-text("🟢") .resource-value').textContent();
+    const updatedMetal = await page.locator('.resource-item:has-text("⚙️") .resource-value').textContent();
+    
+    // Resources should be non-negative numbers
+    expect(parseInt(updatedGoo || '0')).toBeGreaterThanOrEqual(0);
+    expect(parseInt(updatedMetal || '0')).toBeGreaterThanOrEqual(0);
+  });test('multiple quests can be completed and logged', async ({ page }) => {    // Click the "Embark on quest" button and wait for steps to complete
     await page.click('button.quest-btn');
     await page.waitForTimeout(2000); // Wait for all quest steps to complete
     
@@ -98,8 +121,7 @@ test.describe('Nercana Quest Application', () => {
     const treasureSteps = await page.locator('.treasure-entry').count();
     
     expect(explorationSteps).toBeGreaterThan(0);
-    expect(encounterSteps).toBeGreaterThan(0);
-    expect(treasureSteps).toBeGreaterThan(0);
+    expect(encounterSteps).toBeGreaterThan(0);    expect(treasureSteps).toBeGreaterThan(0);
   });
 
   test('should toggle between light and dark themes', async ({ page }) => {

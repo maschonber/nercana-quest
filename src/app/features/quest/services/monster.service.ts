@@ -66,16 +66,13 @@ export class MonsterService {
     const tierData = this.monsterConfig.tiers[tier];
     if (!tierData) {
       throw new Error(`Monster tier ${tier} not found in configuration`);
-    }
-
-    // Apply tier multiplier and hero level scaling
+    }    // Apply tier multiplier and hero level scaling
     const levelScaling = 1 + (heroLevel * 0.1);
     const finalMultiplier = tierData.multiplier * levelScaling;    // Calculate final stats
     const health = Math.floor(monsterData.baseHealth * finalMultiplier);
     const attack = Math.floor(monsterData.baseAttack * finalMultiplier);
     const defense = Math.floor(monsterData.baseDefense * finalMultiplier);
     const experienceReward = Math.floor(monsterData.baseExpReward * finalMultiplier);
-    const goldReward = Math.floor(monsterData.baseGoldReward * finalMultiplier);
 
     // Choose appropriate name: use tier-specific name if available, otherwise fallback to prefix + base name
     const name = monsterData.tierNames?.[tier] || (tierData.prefix + monsterData.name);
@@ -89,7 +86,6 @@ export class MonsterService {
       attack,
       defense,
       experienceReward,
-      goldReward,
       description: monsterData.description
     };
   }

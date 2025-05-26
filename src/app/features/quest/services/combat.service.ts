@@ -37,14 +37,11 @@ export class CombatService {  /**
     }
 
     // Create a summary based on the outcome
-    const summary = this.generateCombatSummary(combat);
-
-    // Return the final combat result
+    const summary = this.generateCombatSummary(combat);    // Return the final combat result
     return {
       outcome: combat.outcome,
       turns: combat.turns,
       experienceGained: combat.outcome === CombatOutcome.HERO_VICTORY ? monster.experienceReward : Math.floor(monster.experienceReward * 0.2),
-      goldGained: combat.outcome === CombatOutcome.HERO_VICTORY ? monster.goldReward : 0,
       summary
     };
   }  /**

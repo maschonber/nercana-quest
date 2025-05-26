@@ -6,13 +6,11 @@ import { MonsterConfig, MonsterData, TierData } from '../../app/features/quest/m
  * This file provides compile-time type checking while keeping data separate from logic
  */
 
-const monsters: Record<MonsterType, MonsterData> = {
-  [MonsterType.SPACE_SLUG]: {
+const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: {
     baseHealth: 18,
     baseAttack: 6,
     baseDefense: 4,
     baseExpReward: 12,
-    baseGoldReward: 6,
     name: 'Space Slug',
     description: 'A gelatinous mollusk that feeds on asteroid minerals and station debris.',
     tierNames: {
@@ -21,13 +19,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Acidic Slug',
       [MonsterTier.BOSS]: 'Slug Queen'
     }
-  },
-  [MonsterType.XRIIT]: {
+  },  [MonsterType.XRIIT]: {
     baseHealth: 28,
     baseAttack: 12,
     baseDefense: 8,
     baseExpReward: 20,
-    baseGoldReward: 15,
     name: 'Xriit',
     description: 'Cunning alien strategists with advanced technology and tactical prowess.',
     tierNames: {
@@ -36,13 +32,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Xriit Tactician',
       [MonsterTier.BOSS]: 'Xriit Overlord'
     }
-  },
-  [MonsterType.MOGGO]: {
+  },  [MonsterType.MOGGO]: {
     baseHealth: 35,
     baseAttack: 14,
     baseDefense: 6,
     baseExpReward: 18,
-    baseGoldReward: 10,
     name: 'Moggo',
     description: 'Aggressive, thick-furred brutes that rely on overwhelming strength and pack tactics.',
     tierNames: {
@@ -51,13 +45,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Moggo Alpha',
       [MonsterTier.BOSS]: 'Moggo Warchief'
     }
-  },
-  [MonsterType.CRITTER]: {
+  },  [MonsterType.CRITTER]: {
     baseHealth: 8,
     baseAttack: 4,
     baseDefense: 2,
     baseExpReward: 6,
-    baseGoldReward: 3,
     name: 'Critter',
     description: 'Small vermin infesting maintenance shafts and abandoned station sectors.',
     tierNames: {
@@ -66,13 +58,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Critter Swarm',
       [MonsterTier.BOSS]: 'Hive Mother'
     }
-  },
-  [MonsterType.SPACE_MERC]: {
+  },  [MonsterType.SPACE_MERC]: {
     baseHealth: 32,
     baseAttack: 11,
     baseDefense: 9,
     baseExpReward: 22,
-    baseGoldReward: 25,
     name: 'Space Merc',
     description: 'Zealous humanoid raiders equipped with stolen tech, pursuing glory and salvage.',
     tierNames: {
@@ -81,13 +71,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Merc Veteran',
       [MonsterTier.BOSS]: 'Merc Captain'
     }
-  },
-  [MonsterType.SLUG_SWARM]: {
+  },  [MonsterType.SLUG_SWARM]: {
     baseHealth: 25,
     baseAttack: 8,
     baseDefense: 3,
     baseExpReward: 16,
-    baseGoldReward: 8,
     name: 'Slug Swarm',
     description: 'A writhing mass of interconnected slugs that overwhelm targets with numbers.',
     tierNames: {
@@ -96,13 +84,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Acidic Swarm',
       [MonsterTier.BOSS]: 'Mega Swarm'
     }
-  },
-  [MonsterType.XRIIT_SCOUT]: {
+  },  [MonsterType.XRIIT_SCOUT]: {
     baseHealth: 22,
     baseAttack: 10,
     baseDefense: 7,
     baseExpReward: 15,
-    baseGoldReward: 12,
     name: 'Xriit Scout',
     description: 'Fast-moving Xriit reconnaissance units equipped with stealth technology.',
     tierNames: {
@@ -111,13 +97,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Stealth Scout',
       [MonsterTier.BOSS]: 'Elite Infiltrator'
     }
-  },
-  [MonsterType.XRIIT_COMMANDER]: {
+  },  [MonsterType.XRIIT_COMMANDER]: {
     baseHealth: 45,
     baseAttack: 16,
     baseDefense: 12,
     baseExpReward: 35,
-    baseGoldReward: 30,
     name: 'Xriit Commander',
     description: 'High-ranking Xriit officers with powerful weaponry and tactical command abilities.',
     tierNames: {
@@ -126,13 +110,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'War Commander',
       [MonsterTier.BOSS]: 'Supreme Leader'
     }
-  },
-  [MonsterType.MOGGO_BRUTE]: {
+  },  [MonsterType.MOGGO_BRUTE]: {
     baseHealth: 50,
     baseAttack: 18,
     baseDefense: 5,
     baseExpReward: 25,
-    baseGoldReward: 12,
     name: 'Moggo Brute',
     description: 'Massive Moggo warriors with enhanced strength and intimidating presence.',
     tierNames: {
@@ -141,13 +123,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Moggo Destroyer',
       [MonsterTier.BOSS]: 'Apex Predator'
     }
-  },
-  [MonsterType.MOGGO_PACK]: {
+  },  [MonsterType.MOGGO_PACK]: {
     baseHealth: 30,
     baseAttack: 12,
     baseDefense: 4,
     baseExpReward: 20,
-    baseGoldReward: 14,
     name: 'Moggo Pack',
     description: 'Coordinated groups of Moggos that use pack hunting tactics.',
     tierNames: {
@@ -156,13 +136,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'War Pack',
       [MonsterTier.BOSS]: 'Moggo Clan'
     }
-  },
-  [MonsterType.CRITTER_NEST]: {
+  },  [MonsterType.CRITTER_NEST]: {
     baseHealth: 15,
     baseAttack: 6,
     baseDefense: 1,
     baseExpReward: 10,
-    baseGoldReward: 5,
     name: 'Critter Nest',
     description: 'A breeding ground of critters that spawns new threats continuously.',
     tierNames: {
@@ -171,13 +149,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Infested Nest',
       [MonsterTier.BOSS]: 'Queen\'s Chamber'
     }
-  },
-  [MonsterType.MERC_RAIDER]: {
+  },  [MonsterType.MERC_RAIDER]: {
     baseHealth: 28,
     baseAttack: 13,
     baseDefense: 7,
     baseExpReward: 18,
-    baseGoldReward: 20,
     name: 'Merc Raider',
     description: 'Aggressive space mercenaries specialized in hit-and-run tactics.',
     tierNames: {
@@ -186,13 +162,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Elite Raider',
       [MonsterTier.BOSS]: 'Raid Leader'
     }
-  },
-  [MonsterType.MERC_CAPTAIN]: {
+  },  [MonsterType.MERC_CAPTAIN]: {
     baseHealth: 55,
     baseAttack: 17,
     baseDefense: 11,
     baseExpReward: 40,
-    baseGoldReward: 35,
     name: 'Merc Captain',
     description: 'Veteran mercenary leaders with advanced armor and military experience.',
     tierNames: {
@@ -201,13 +175,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'War Captain',
       [MonsterTier.BOSS]: 'Fleet Admiral'
     }
-  },
-  [MonsterType.STATION_DEFENSE]: {
+  },  [MonsterType.STATION_DEFENSE]: {
     baseHealth: 40,
     baseAttack: 15,
     baseDefense: 14,
     baseExpReward: 30,
-    baseGoldReward: 18,
     name: 'Station Defense',
     description: 'Automated defense systems protecting abandoned stations and facilities.',
     tierNames: {
@@ -216,13 +188,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Defense Turret',
       [MonsterTier.BOSS]: 'Command Core'
     }
-  },
-  [MonsterType.ROGUE_AI]: {
+  },  [MonsterType.ROGUE_AI]: {
     baseHealth: 60,
     baseAttack: 14,
     baseDefense: 16,
     baseExpReward: 45,
-    baseGoldReward: 40,
     name: 'Rogue AI',
     description: 'Malfunctioning artificial intelligence controlling station systems and drones.',
     tierNames: {
@@ -231,13 +201,11 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.HARD]: 'Hostile AI',
       [MonsterTier.BOSS]: 'AI Overlord'
     }
-  },
-  [MonsterType.VOID_ENTITY]: {
+  },  [MonsterType.VOID_ENTITY]: {
     baseHealth: 70,
     baseAttack: 20,
     baseDefense: 10,
     baseExpReward: 55,
-    baseGoldReward: 50,
     name: 'Void Entity',
     description: 'Mysterious beings from deep space that defy conventional understanding.',
     tierNames: {

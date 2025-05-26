@@ -16,12 +16,10 @@ describe('Multi-Encounter Health Persistence Integration', () => {
   let heroStore: any;
   let heroFacade: HeroFacadeService;
   let questDomainService: QuestDomainService;
-  let combatService: any;
-    const mockHero: Hero = {
+  let combatService: any;    const mockHero: Hero = {
     name: 'Test Hero',
     level: 5,
     experience: 100,
-    gold: 50,
     health: 80,
     maxHealth: 100,
     attack: 15,
@@ -84,10 +82,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               targetHealthAfter: 0,
               heroHealthAfter: healthAfterFirstEncounter,
               monsterHealthAfter: 0
-            }
-          ],
+            }          ],
           experienceGained: 25,
-          goldGained: 10,
           summary: 'Hero victory!'
         };
       } else if (encounterCount === 2) {
@@ -112,32 +108,30 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               targetHealthAfter: 0,
               heroHealthAfter: healthAfterSecondEncounter,
               monsterHealthAfter: 0
-            }
-          ],
+            }          ],
           experienceGained: 30,
-          goldGained: 15,
           summary: 'Hero victory!'
         };
       }
-      
-      // Fallback return for unexpected calls
+        // Fallback return for unexpected calls
       return {
         outcome: CombatOutcome.HERO_VICTORY,
-        turns: [],
-        experienceGained: 0,
-        goldGained: 0,
+        turns: [],        experienceGained: 0,
         summary: 'Default victory'
       };
-    });    // Mock quest context to ensure we get exactly 2 encounters
+    });
+
+    // Mock quest context to ensure we get exactly 2 encounters
     jest.spyOn(questDomainService, 'createQuestContext').mockReturnValue({
       remainingStepTypes: [QuestStepType.ENCOUNTER, QuestStepType.ENCOUNTER],
       questStatus: 'ongoing',
       baseExperience: 50,
-      baseTreasureGold: 100,
       encounterCount: 2,
       treasureCount: 0,
       currentStepIndex: 0,
-      totalSteps: 2
+      totalSteps: 2,
+      accumulatedGoo: 0,
+      accumulatedMetal: 0
     });
 
     // Mock generateNextStep to control step generation
@@ -153,22 +147,18 @@ describe('Multi-Encounter Health Persistence Integration', () => {
           type: 'goblin' as any,
           name: 'Test Monster', 
           health: 30, 
-          maxHealth: 30,
-          attack: 10, 
+          maxHealth: 30,          attack: 10, 
           defense: 5,
           experienceReward: 25,
-          goldReward: 10,
           description: 'A test monster'
         };
         const combatResult = combatService.simulateCombat(hero, monster);
         
         return {
-          type: QuestStepType.ENCOUNTER,
-          message: `Encounter ${context.currentStepIndex}`,
+          type: QuestStepType.ENCOUNTER,          message: `Encounter ${context.currentStepIndex}`,
           timestamp: new Date(),
           success: combatResult.outcome === CombatOutcome.HERO_VICTORY,
           experienceGained: combatResult.experienceGained,
-          goldGained: combatResult.goldGained,
           monster: monster,
           combatResult: combatResult
         };
@@ -219,10 +209,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               targetHealthAfter: 0,
               heroHealthAfter: 10, // Hero barely survives
               monsterHealthAfter: 0
-            }
-          ],
+            }          ],
           experienceGained: 20,
-          goldGained: 8,
           summary: 'Hero victory!'
         };
       } else if (encounterCount === 2) {
@@ -246,31 +234,28 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               targetHealthAfter: 35,
               heroHealthAfter: 0, // Hero is defeated
               monsterHealthAfter: 35
-            }
-          ],
+            }          ],
           experienceGained: 0,
-          goldGained: 0,
           summary: 'Hero defeated!'
         };
       }
-      
-      return {
+        return {
         outcome: CombatOutcome.HERO_VICTORY,
         turns: [],
         experienceGained: 0,
-        goldGained: 0,
         summary: 'Default victory'
       };
-    });      // Mock quest context for 2 encounters
+    });    // Mock quest context for 2 encounters
     jest.spyOn(questDomainService, 'createQuestContext').mockReturnValue({
       remainingStepTypes: [QuestStepType.ENCOUNTER, QuestStepType.ENCOUNTER],
       questStatus: 'ongoing',
       baseExperience: 50,
-      baseTreasureGold: 100,
       encounterCount: 2,
       treasureCount: 0,
       currentStepIndex: 0,
-      totalSteps: 2
+      totalSteps: 2,
+      accumulatedGoo: 0,
+      accumulatedMetal: 0
     });
     
     // Start quest
@@ -317,30 +302,26 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               heroHealthAfter: 55,
               monsterHealthAfter: 0
             }
-          ],
-          experienceGained: 20,
-          goldGained: 10,
+          ],          experienceGained: 20,
           summary: 'Hero victory!'
         };
       }
       
       return {
         outcome: CombatOutcome.HERO_VICTORY,
-        turns: [],
-        experienceGained: 0,
-        goldGained: 0,
+        turns: [],        experienceGained: 0,
         summary: 'Default victory'
       };
     });      // Mock quest with exploration -> encounter -> treasure pattern
     jest.spyOn(questDomainService, 'createQuestContext').mockReturnValue({
-      remainingStepTypes: [QuestStepType.EXPLORATION, QuestStepType.ENCOUNTER, QuestStepType.TREASURE],
-      questStatus: 'ongoing',
+      remainingStepTypes: [QuestStepType.EXPLORATION, QuestStepType.ENCOUNTER, QuestStepType.TREASURE],      questStatus: 'ongoing',
       baseExperience: 50,
-      baseTreasureGold: 100,
       encounterCount: 1,
       treasureCount: 1,
       currentStepIndex: 0,
-      totalSteps: 3
+      totalSteps: 3,
+      accumulatedGoo: 0,
+      accumulatedMetal: 0
     });
     
     questStore.embarkOnQuest();

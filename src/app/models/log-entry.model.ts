@@ -9,7 +9,8 @@ export interface LogEntry {
   success: boolean;
   stepType?: QuestStepType;
   experienceGained?: number;
-  goldGained?: number;
+  gooGained?: number;
+  metalGained?: number;
   monster?: Monster;
   combatResult?: CombatResult;
 }
