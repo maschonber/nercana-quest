@@ -11,7 +11,7 @@ Nercana is an auto battling text-based roleplaying game.
 
 This project implements a fantasy-themed auto-battling game where players control a hero who embarks on quests with randomized outcomes based on their stats.
 
-The application is hosted on github under https://github.com/maschonber/nercana-quest
+The application is hosted on github under https://github.com/maschonber/nercana
 
 ## Features
 
