@@ -31,6 +31,7 @@ export interface CombatAction {
   description: string;
   damage?: number;
   healing?: number;
+  statusEffects?: string[]; // Future: status effects applied
   actorId: string; // ID of acting combatant
   actorName: string;
   targetId: string; // ID of target combatant
