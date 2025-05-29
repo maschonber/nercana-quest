@@ -6,15 +6,14 @@
         <app-theme-toggle></app-theme-toggle>
       </div>
     </div>
-    
-    <div class="content-section">
-      <app-hero-details></app-hero-details>
-      
+      <div class="content-section">
       <app-quest-log 
         [log]="log()">
       </app-quest-log>
-    </div>
-    
-    <app-hero-actions></app-hero-actions>
+      
+      <app-hero-details></app-hero-details>    </div>
   </div>
+  
+  <!-- Floating action bar -->
+  <app-hero-actions class="floating-actions"></app-hero-actions>
 </main>

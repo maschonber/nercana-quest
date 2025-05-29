@@ -1,8 +1,8 @@
 @use '../../../shared/styles/quest-shared' as *;
 
 :host {
-  flex: 999 1 400px; /* Force high growth factor with 400px base */
-  min-width: 400px;
+  flex: 1 1 60%; /* Give quest log more space as main content */
+  min-width: 0; /* Allow shrinking */
   display: flex;
 }
 
@@ -306,12 +306,15 @@ app-combat-details {
 @media (max-width: 900px) {
   :host {
     flex: 1 1 100%;
-    min-width: 300px;
+    min-width: 0; /* Remove fixed min-width to allow proper mobile scaling */
+    display: block; /* Change from flex to block for better mobile behavior */
   }
   
   .log-view {
-    max-height: 400px;
+    max-height: 50vh; /* Use viewport height for better mobile experience */
+    min-height: 300px; /* Ensure minimum visibility */
     padding: 0.75rem 1rem;
+    width: 100%;
   }
   
   .log-view li {
@@ -326,6 +329,8 @@ app-combat-details {
   
   .entry-message {
     margin-left: 1rem; /* Reduced margin for mobile */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   
   .entry-rewards {
@@ -335,6 +340,14 @@ app-combat-details {
   
   app-combat-details {
     margin-left: 1rem; /* Match reduced margin for mobile */
+  }
+  
+  .log-content {
+    height: 100%;
+  }
+  
+  .log-view ul {
+    padding-right: 0.5rem; /* Add some padding for better mobile scrolling */
   }
 }
 
