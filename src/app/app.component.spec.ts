@@ -10,7 +10,7 @@ import { signal } from '@angular/core';
 // Mock window.matchMedia for testing
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -18,8 +18,8 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: jest.fn(), // deprecated
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
+    dispatchEvent: jest.fn()
+  }))
 });
 
 // Mock localStorage for testing
@@ -29,8 +29,8 @@ Object.defineProperty(window, 'localStorage', {
     getItem: jest.fn(() => null),
     setItem: jest.fn(),
     removeItem: jest.fn(),
-    clear: jest.fn(),
-  },
+    clear: jest.fn()
+  }
 });
 
 // Create a mock QuestFacadeService
@@ -39,7 +39,7 @@ const mockQuestFacade = {
   log: signal<LogEntry[]>([]),
   recentLogEntries: signal<LogEntry[]>([]),
   hasLogEntries: signal<boolean>(false),
-  
+
   embarkOnQuest: jest.fn(() => {
     // Update the log signal when called
     const currentLog = mockQuestFacade.log();
@@ -52,7 +52,7 @@ const mockQuestFacade = {
       ...currentLog
     ]);
   }),
-  
+
   addLogEntry: jest.fn(),
   clearLog: jest.fn()
 };
@@ -61,7 +61,7 @@ const mockQuestFacade = {
 const mockThemeStore = {
   isDarkMode: signal<boolean>(false),
   theme: signal<'light' | 'dark'>('light'),
-  
+
   toggleTheme: jest.fn(),
   setTheme: jest.fn(),
   initializeTheme: jest.fn(),

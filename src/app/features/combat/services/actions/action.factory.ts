@@ -9,7 +9,6 @@ import { FleeActionStrategy } from './flee-action.strategy';
   providedIn: 'root'
 })
 export class ActionFactory {
-  
   constructor(
     private attackAction: AttackActionStrategy,
     private defendAction: DefendActionStrategy,

@@ -8,10 +8,7 @@ import { CombatOrchestrator } from './combat-orchestrator.service';
   providedIn: 'root'
 })
 export class CombatService {
-
-  constructor(
-    private combatOrchestrator: CombatOrchestrator
-  ) {}
+  constructor(private combatOrchestrator: CombatOrchestrator) {}
 
   /**
    * Creates a team combat scenario from individual heroes and monsters

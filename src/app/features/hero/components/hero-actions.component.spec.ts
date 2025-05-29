@@ -10,7 +10,8 @@ describe('HeroActionsComponent', () => {
   let mockHeroFacade: jest.Mocked<HeroFacadeService>;
   let mockQuestFacade: jest.Mocked<QuestFacadeService>;
   let isHeroReadySignal: WritableSignal<boolean>;
-  let questInProgressSignal: WritableSignal<boolean>;  beforeEach(async () => {
+  let questInProgressSignal: WritableSignal<boolean>;
+  beforeEach(async () => {
     // Create writable signal mocks
     isHeroReadySignal = signal(true);
     questInProgressSignal = signal(false);
@@ -18,20 +19,20 @@ describe('HeroActionsComponent', () => {
     // Create mock facades with writable signals
     mockHeroFacade = {
       isHeroReady: isHeroReadySignal,
-      fullHeal: jest.fn(),
+      fullHeal: jest.fn()
     } as any;
 
     mockQuestFacade = {
       questInProgress: questInProgressSignal,
-      embarkOnQuest: jest.fn(),
+      embarkOnQuest: jest.fn()
     } as any;
 
     await TestBed.configureTestingModule({
       imports: [HeroActionsComponent],
       providers: [
         { provide: HeroFacadeService, useValue: mockHeroFacade },
-        { provide: QuestFacadeService, useValue: mockQuestFacade },
-      ],
+        { provide: QuestFacadeService, useValue: mockQuestFacade }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HeroActionsComponent);
@@ -41,7 +42,8 @@ describe('HeroActionsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });  it('should enable quest button when hero is ready and no quest in progress', () => {
+  });
+  it('should enable quest button when hero is ready and no quest in progress', () => {
     isHeroReadySignal.set(true);
     questInProgressSignal.set(false);
     fixture.detectChanges();
@@ -88,7 +90,7 @@ describe('HeroActionsComponent', () => {
   it('should call heroFacade.fullHeal when heal button is clicked', () => {
     // Add mock method for fullHeal
     mockHeroFacade.fullHeal = jest.fn();
-    
+
     component.onFullHeal();
 
     expect(mockHeroFacade.fullHeal).toHaveBeenCalledTimes(1);
@@ -100,7 +102,9 @@ describe('HeroActionsComponent', () => {
 
     expect(healButton).toBeTruthy();
     expect(healButton?.textContent?.trim()).toBe('🔋 Full Heal');
-    expect(healButton?.getAttribute('title')).toBe('Debug: Heal clone to full health');
+    expect(healButton?.getAttribute('title')).toBe(
+      'Debug: Heal clone to full health'
+    );
   });
 
   it('should call onFullHeal when heal button is clicked', () => {

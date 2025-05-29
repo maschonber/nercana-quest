@@ -15,7 +15,7 @@ export class HeroActionsComponent {
   private readonly questFacade = inject(QuestFacadeService);
   // Hero readiness state from hero facade
   isHeroReady = this.heroFacade.isHeroReady;
-  
+
   // Mission progress state from quest facade
   questInProgress = this.questFacade.questInProgress;
 

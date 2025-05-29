@@ -6,7 +6,8 @@ import { signal } from '@angular/core';
 
 describe('HeroDetailsComponent', () => {
   let component: HeroDetailsComponent;
-  let fixture: ComponentFixture<HeroDetailsComponent>;  const mockHero: Hero = {
+  let fixture: ComponentFixture<HeroDetailsComponent>;
+  const mockHero: Hero = {
     name: 'Test Hero',
     health: 100,
     maxHealth: 100,
@@ -36,9 +37,7 @@ describe('HeroDetailsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HeroDetailsComponent],
-      providers: [
-        { provide: HeroFacadeService, useValue: mockHeroFacade }
-      ]
+      providers: [{ provide: HeroFacadeService, useValue: mockHeroFacade }]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HeroDetailsComponent);
@@ -52,7 +51,7 @@ describe('HeroDetailsComponent', () => {
 
   it('should display hero stats correctly', () => {
     const compiled = fixture.nativeElement;
-    
+
     expect(compiled.textContent).toContain('Test Hero');
     expect(compiled.textContent).toContain('100');
     expect(compiled.textContent).toContain('15');

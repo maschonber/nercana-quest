@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { 
-  Combatant, 
-  CombatAction, 
+import {
+  Combatant,
+  CombatAction,
   CombatActionType,
   CombatTurn,
   Combat
@@ -13,7 +13,6 @@ import { CombatStateManager } from './combat-state-manager.service';
   providedIn: 'root'
 })
 export class ActionExecutor {
-
   constructor(
     private actionFactory: ActionFactory,
     private stateManager: CombatStateManager
@@ -23,9 +22,9 @@ export class ActionExecutor {
    * Executes a combat turn between an actor and target
    */
   executeTurn(
-    turnNumber: number, 
-    actor: Combatant, 
-    target: Combatant, 
+    turnNumber: number,
+    actor: Combatant,
+    target: Combatant,
     actionType: CombatActionType,
     combat: Combat
   ): CombatTurn {
@@ -36,7 +35,7 @@ export class ActionExecutor {
     if (actionResult.damage) {
       this.stateManager.applyDamage(target, actionResult.damage);
     }
-    
+
     if (actionResult.healing) {
       this.stateManager.applyHealing(actor, actionResult.healing);
     }
@@ -60,7 +59,8 @@ export class ActionExecutor {
     };
 
     // Capture comprehensive health states after this turn
-    const allCombatantsHealth = this.stateManager.captureAllCombatantsHealth(combat);
+    const allCombatantsHealth =
+      this.stateManager.captureAllCombatantsHealth(combat);
 
     return {
       turnNumber,
@@ -71,7 +71,8 @@ export class ActionExecutor {
       allCombatantsHealth,
       // Legacy fields for backward compatibility (can be removed later)
       heroHealthAfter: actor.type === 'hero' ? actor.health : target.health,
-      monsterHealthAfter: actor.type === 'monster' ? actor.health : target.health
+      monsterHealthAfter:
+        actor.type === 'monster' ? actor.health : target.health
     };
   }
 }

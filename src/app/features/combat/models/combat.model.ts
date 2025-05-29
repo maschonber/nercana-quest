@@ -66,7 +66,7 @@ export interface CombatTurn {
   actorId: string; // ID of acting combatant
   action: CombatAction;
   actorHealthAfter: number;
-  targetHealthAfter: number;  // Comprehensive health tracking for all combatants after this turn
+  targetHealthAfter: number; // Comprehensive health tracking for all combatants after this turn
   allCombatantsHealth?: CombatantHealthState[];
   // Legacy fields maintained for current functionality - could be refactored to use allCombatantsHealth
   heroHealthAfter: number;

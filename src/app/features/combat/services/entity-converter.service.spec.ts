@@ -151,7 +151,8 @@ describe('EntityConverter', () => {
           level: 8,
           experience: 600
         }
-      ];      const monsters: Monster[] = [
+      ];
+      const monsters: Monster[] = [
         {
           name: 'Xriit Scout',
           health: 40,
@@ -165,12 +166,15 @@ describe('EntityConverter', () => {
         }
       ];
 
-      const { heroTeam, enemyTeam } = service.createCombatantTeams(heroes, monsters);
+      const { heroTeam, enemyTeam } = service.createCombatantTeams(
+        heroes,
+        monsters
+      );
 
       expect(heroTeam).toHaveLength(2);
       expect(heroTeam[0].maxHealth).toBe(100); // First hero's actual maxHealth
       expect(heroTeam[1].maxHealth).toBe(200); // Second hero's actual maxHealth
-      
+
       expect(enemyTeam).toHaveLength(1);
       expect(enemyTeam[0].maxHealth).toBe(50);
     });

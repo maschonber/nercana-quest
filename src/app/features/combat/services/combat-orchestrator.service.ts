@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Hero } from '../../hero/models/hero.model';
 import { Monster } from '../../quest/models/monster.model';
-import { 
-  Combatant, 
-  CombatResult, 
+import {
+  Combatant,
+  CombatResult,
   CombatOutcome,
   Combat
 } from '../models/combat.model';
@@ -17,7 +17,6 @@ import { EntityConverter } from './entity-converter.service';
   providedIn: 'root'
 })
 export class CombatOrchestrator {
-
   constructor(
     private turnManager: TurnManager,
     private combatAI: CombatAI,
@@ -30,7 +29,10 @@ export class CombatOrchestrator {
    * Creates a team combat scenario from individual heroes and monsters
    */
   createTeamCombat(heroes: Hero[], monsters: Monster[]): CombatResult {
-    const { heroTeam, enemyTeam } = this.entityConverter.createCombatantTeams(heroes, monsters);
+    const { heroTeam, enemyTeam } = this.entityConverter.createCombatantTeams(
+      heroes,
+      monsters
+    );
     return this.simulateCombat(heroTeam, enemyTeam);
   }
 
@@ -40,17 +42,19 @@ export class CombatOrchestrator {
   simulateCombat(heroTeam: Combatant[], enemyTeam: Combatant[]): CombatResult {
     // Initialize combat state
     const combat = this.stateManager.createCombatState(heroTeam, enemyTeam);
-    
+
     // Reset turn manager for new combat
     this.turnManager.reset();
-    
+
     // Simulate turns until combat ends
     while (combat.outcome === CombatOutcome.IN_PROGRESS) {
       this.executeCombatTurn(combat);
     }
 
     // Calculate total experience reward from defeated enemies
-    const experienceGained = this.stateManager.calculateExperienceGained(combat.enemyTeam);
+    const experienceGained = this.stateManager.calculateExperienceGained(
+      combat.enemyTeam
+    );
 
     // Create a summary based on the outcome
     const summary = this.stateManager.generateCombatSummary(combat);
@@ -80,20 +84,19 @@ export class CombatOrchestrator {
 
     // Get the next acting combatant
     const actingCombatant = this.turnManager.getNextActor();
-    
+
     if (!actingCombatant || !actingCombatant.isAlive) {
       // Skip turn if no valid actor
       return;
     }
 
     // Determine opposing team
-    const opposingTeam = actingCombatant.type === 'hero' 
-      ? combat.enemyTeam 
-      : combat.heroTeam;
+    const opposingTeam =
+      actingCombatant.type === 'hero' ? combat.enemyTeam : combat.heroTeam;
 
     // Select target using AI
     const target = this.combatAI.selectTarget(opposingTeam);
-    
+
     if (!target) {
       // No valid targets, combat should end
       this.stateManager.checkCombatEnd(combat);
@@ -101,13 +104,16 @@ export class CombatOrchestrator {
     }
 
     // Determine action using AI
-    const actionType = this.combatAI.determineAction(actingCombatant, opposingTeam);
+    const actionType = this.combatAI.determineAction(
+      actingCombatant,
+      opposingTeam
+    );
 
     // Execute the turn
     const turn = this.actionExecutor.executeTurn(
-      combat.currentTurn, 
-      actingCombatant, 
-      target, 
+      combat.currentTurn,
+      actingCombatant,
+      target,
       actionType,
       combat
     );

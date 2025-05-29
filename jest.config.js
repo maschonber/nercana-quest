@@ -1,7 +1,8 @@
 // jest.config.js
 module.exports = {
   preset: 'jest-preset-angular',
-  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],  testPathIgnorePatterns: [
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+  testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/dist/',
     '<rootDir>/frontend/', // Ignore old frontend directory
@@ -11,8 +12,6 @@ module.exports = {
     '^src/(.*)$': '<rootDir>/src/$1'
   },
   reporters: ['default'],
-  transformIgnorePatterns: [
-    'node_modules/(?!.*\\.mjs$)'
-  ],
+  transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
   testEnvironment: 'jsdom'
 };

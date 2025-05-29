@@ -44,23 +44,25 @@ const mockDependency = {
 
 describe('YourComponent', () => {
   let component: YourComponent;
-  
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [/* Required modules */],
-      declarations: [/* Required components if not standalone */],
-      providers: [
-        { provide: DependencyService, useValue: mockDependency }
-      ]
+      imports: [
+        /* Required modules */
+      ],
+      declarations: [
+        /* Required components if not standalone */
+      ],
+      providers: [{ provide: DependencyService, useValue: mockDependency }]
     });
-    
+
     component = TestBed.createComponent(YourComponent).componentInstance;
   });
-  
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  
+
   // More test cases...
 });
 ```
@@ -107,7 +109,7 @@ import { signal } from '@angular/core';
 const mockStore = {
   // Mock signals
   data: signal(['item1', 'item2']),
-  
+
   // Mock methods
   updateData: jest.fn()
 };
@@ -120,9 +122,9 @@ it('should handle async operations', async () => {
   // Using async/await
   const result = await component.asyncMethod();
   expect(result).toBe('expected');
-  
+
   // Or using done callback
-  component.asyncMethod().then(result => {
+  component.asyncMethod().then((result) => {
     expect(result).toBe('expected');
     done();
   });
@@ -184,14 +186,18 @@ In addition to Jest for unit testing, Nercana uses Playwright for end-to-end tes
 ## Running Playwright Tests
 
 # Run all Playwright tests
+
 npm run playwright:test
 
 # Run tests with UI mode
+
 npm run playwright:ui
 
 # View test report after running tests
+
 npm run playwright:report
-```
+
+````
 
 ## Writing Playwright Tests
 
@@ -203,11 +209,11 @@ import { test, expect } from '@playwright/test';
 test('basic test', async ({ page }) => {
   // Navigate to the page
   await page.goto('http://localhost:4200/');
-  
+
   // Interact with elements
   await page.getByRole('button', { name: 'Start Quest' }).click();
-  
+
   // Assert conditions
   await expect(page.locator('.quest-results')).toBeVisible();
 });
-```
+````

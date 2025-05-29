@@ -16,13 +16,13 @@ export class QuestFacadeService {
 
   // Expose quest state
   questInProgress = this.questStore.questInProgress;
-  
+
   // Expose log state
   log = this.logStore.entries;
 
   // Computed values
   recentLogEntries = computed(() => this.logStore.getRecentEntries(15));
-  
+
   hasLogEntries = computed(() => this.log().length > 0);
 
   // Quest management methods

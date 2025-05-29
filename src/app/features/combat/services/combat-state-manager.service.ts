@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { 
-  Combatant, 
-  CombatTeam, 
-  CombatOutcome, 
+import {
+  Combatant,
+  CombatTeam,
+  CombatOutcome,
   Combat,
   CombatantHealthState,
   TeamSide
@@ -12,7 +12,6 @@ import {
   providedIn: 'root'
 })
 export class CombatStateManager {
-
   /**
    * Creates initial combat state from teams
    */
@@ -35,7 +34,7 @@ export class CombatStateManager {
       ...combat.enemyTeam.combatants
     ];
 
-    allCombatants.forEach(combatant => {
+    allCombatants.forEach((combatant) => {
       combatant.isAlive = combatant.health > 0 && !combatant.hasFled;
     });
   }
@@ -44,9 +43,9 @@ export class CombatStateManager {
    * Checks if combat should end and updates the outcome
    */
   checkCombatEnd(combat: Combat): void {
-    const aliveHeroes = combat.heroTeam.combatants.filter(c => c.isAlive);
-    const aliveEnemies = combat.enemyTeam.combatants.filter(c => c.isAlive);
-    const fledHeroes = combat.heroTeam.combatants.filter(c => c.hasFled);
+    const aliveHeroes = combat.heroTeam.combatants.filter((c) => c.isAlive);
+    const aliveEnemies = combat.enemyTeam.combatants.filter((c) => c.isAlive);
+    const fledHeroes = combat.heroTeam.combatants.filter((c) => c.hasFled);
 
     if (aliveEnemies.length === 0) {
       combat.outcome = CombatOutcome.HERO_VICTORY;
@@ -66,7 +65,7 @@ export class CombatStateManager {
       ...combat.enemyTeam.combatants
     ];
 
-    return allCombatants.map(combatant => ({
+    return allCombatants.map((combatant) => ({
       id: combatant.id,
       name: combatant.name,
       health: combatant.health,
@@ -88,7 +87,10 @@ export class CombatStateManager {
    * Applies healing to a combatant
    */
   applyHealing(combatant: Combatant, healing: number): void {
-    combatant.health = Math.min(combatant.maxHealth, combatant.health + healing);
+    combatant.health = Math.min(
+      combatant.maxHealth,
+      combatant.health + healing
+    );
   }
 
   /**
@@ -104,8 +106,8 @@ export class CombatStateManager {
    */
   getAliveCombatants(combat: Combat): Combatant[] {
     return [
-      ...combat.heroTeam.combatants.filter(c => c.isAlive),
-      ...combat.enemyTeam.combatants.filter(c => c.isAlive)
+      ...combat.heroTeam.combatants.filter((c) => c.isAlive),
+      ...combat.enemyTeam.combatants.filter((c) => c.isAlive)
     ];
   }
 
@@ -114,7 +116,7 @@ export class CombatStateManager {
    */
   calculateExperienceGained(enemyTeam: CombatTeam): number {
     return enemyTeam.combatants
-      .filter(enemy => !enemy.isAlive && !enemy.hasFled)
+      .filter((enemy) => !enemy.isAlive && !enemy.hasFled)
       .reduce((total, enemy) => {
         // Experience based on enemy stats
         const enemyPower = enemy.attack + enemy.defense + enemy.speed;
@@ -127,20 +129,20 @@ export class CombatStateManager {
    */
   generateCombatSummary(combat: Combat): string {
     const { outcome, turns, heroTeam, enemyTeam } = combat;
-    
-    const heroNames = heroTeam.combatants.map(c => c.name).join(', ');
-    const enemyNames = enemyTeam.combatants.map(c => c.name).join(', ');
-    
+
+    const heroNames = heroTeam.combatants.map((c) => c.name).join(', ');
+    const enemyNames = enemyTeam.combatants.map((c) => c.name).join(', ');
+
     switch (outcome) {
       case CombatOutcome.HERO_VICTORY:
         return `After ${turns.length} turns, the hero team (${heroNames}) emerged victorious against the enemy team (${enemyNames})!`;
-        
+
       case CombatOutcome.HERO_DEFEAT:
         return `After ${turns.length} turns, the hero team (${heroNames}) was defeated by the enemy team (${enemyNames})!`;
-        
+
       case CombatOutcome.HERO_FLED:
         return `After ${turns.length} turns of combat, the hero team (${heroNames}) managed to escape from the enemy team (${enemyNames}).`;
-        
+
       default:
         return `The battle between the hero team (${heroNames}) and the enemy team (${enemyNames}) continues...`;
     }

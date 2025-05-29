@@ -3,6 +3,7 @@
 Nercana is an auto battling text-based roleplaying game.
 
 > **Note**: This README provides a high-level overview of the project. For more details, see:
+>
 > - [SPECS.md](./docs/SPECS.md) - Detailed specifications of the game features and design
 > - [GUIDELINES.md](./docs/GUIDELINES.md) - Development guidelines and best practices
 > - [TESTING.md](./docs/TESTING.md) - Jest testing guide and best practices

@@ -1,7 +1,16 @@
 import { computed } from '@angular/core';
-import { signalStore, withState, withMethods, withComputed } from '@ngrx/signals';
+import {
+  signalStore,
+  withState,
+  withMethods,
+  withComputed
+} from '@ngrx/signals';
 import { patchState } from '@ngrx/signals';
-import { StationResources, ResourceType, ResourceChange } from '../../models/station-resources.model';
+import {
+  StationResources,
+  ResourceType,
+  ResourceChange
+} from '../../models/station-resources.model';
 
 interface StationState {
   resources: StationResources;
@@ -42,7 +51,7 @@ export const StationStore = signalStore(
       const currentResources = store.resources();
       const previousAmount = currentResources.goo;
       const newAmount = Math.max(0, previousAmount + amount);
-      
+
       patchState(store, {
         resources: {
           ...currentResources,
@@ -66,7 +75,7 @@ export const StationStore = signalStore(
       const currentResources = store.resources();
       const previousAmount = currentResources.metal;
       const newAmount = Math.max(0, previousAmount + amount);
-      
+
       patchState(store, {
         resources: {
           ...currentResources,
@@ -86,16 +95,19 @@ export const StationStore = signalStore(
     /**
      * Spends goo from station resources
      */
-    spendGoo(amount: number, source: string = 'Unknown'): ResourceChange | null {
+    spendGoo(
+      amount: number,
+      source: string = 'Unknown'
+    ): ResourceChange | null {
       const currentResources = store.resources();
       const previousAmount = currentResources.goo;
-      
+
       if (previousAmount < amount) {
         return null; // Insufficient resources
       }
-      
+
       const newAmount = previousAmount - amount;
-      
+
       patchState(store, {
         resources: {
           ...currentResources,
@@ -115,16 +127,19 @@ export const StationStore = signalStore(
     /**
      * Spends metal from station resources
      */
-    spendMetal(amount: number, source: string = 'Unknown'): ResourceChange | null {
+    spendMetal(
+      amount: number,
+      source: string = 'Unknown'
+    ): ResourceChange | null {
       const currentResources = store.resources();
       const previousAmount = currentResources.metal;
-      
+
       if (previousAmount < amount) {
         return null; // Insufficient resources
       }
-      
+
       const newAmount = previousAmount - amount;
-      
+
       patchState(store, {
         resources: {
           ...currentResources,

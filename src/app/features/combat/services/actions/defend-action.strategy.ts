@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { CombatActionStrategy, CombatActionResult } from './combat-action.interface';
+import {
+  CombatActionStrategy,
+  CombatActionResult
+} from './combat-action.interface';
 import { Combatant, CombatActionType } from '../../models/combat.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DefendActionStrategy implements CombatActionStrategy {
-  
   execute(actor: Combatant, target: Combatant): CombatActionResult {
     // Defending provides temporary defense boost (will be handled by combat state manager)
     return {

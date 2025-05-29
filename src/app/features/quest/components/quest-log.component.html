@@ -1,33 +1,62 @@
 <div class="log-view">
   <div class="log-header">
     <h2>Quest Log</h2>
-    <span class="log-counter" *ngIf="log.length > 0">{{ log.length }} entries</span>
+    <span class="log-counter" *ngIf="log.length > 0"
+      >{{ log.length }} entries</span
+    >
   </div>
-  
+
   <div class="log-content">
-    <ng-container *ngIf="log.length > 0; else emptyLog">      <ul>        <li *ngFor="let entry of log; let i = index" 
-            [ngClass]="{'success-entry': entry.success, 'fail-entry': !entry.success, 'new-entry': isNewEntry(i),
-                       'exploration-entry': entry.stepType === 'exploration',                       'encounter-entry': entry.stepType === 'encounter',
-                       'treasure-entry': entry.stepType === 'treasure',
-                       'quest-complete-entry': entry.stepType === 'quest_complete',
-                       'has-details': hasExpandableDetails(entry),
-                       'expanded': isEntryExpanded(i)}"
-            (click)="hasExpandableDetails(entry) ? toggleEntryDetails(i) : null"
-            [attr.aria-expanded]="hasExpandableDetails(entry) ? isEntryExpanded(i) : null"
-            [attr.role]="hasExpandableDetails(entry) ? 'button' : null"
-            [attr.tabindex]="hasExpandableDetails(entry) ? '0' : null"
-            [title]="hasExpandableDetails(entry) ? (isEntryExpanded(i) ? 'Click to hide details' : 'Click to show details') : null">
-          
+    <ng-container *ngIf="log.length > 0; else emptyLog">
+      <ul>
+        <li
+          *ngFor="let entry of log; let i = index"
+          [ngClass]="{
+            'success-entry': entry.success,
+            'fail-entry': !entry.success,
+            'new-entry': isNewEntry(i),
+            'exploration-entry': entry.stepType === 'exploration',
+            'encounter-entry': entry.stepType === 'encounter',
+            'treasure-entry': entry.stepType === 'treasure',
+            'quest-complete-entry': entry.stepType === 'quest_complete',
+            'has-details': hasExpandableDetails(entry),
+            expanded: isEntryExpanded(i)
+          }"
+          (click)="hasExpandableDetails(entry) ? toggleEntryDetails(i) : null"
+          [attr.aria-expanded]="
+            hasExpandableDetails(entry) ? isEntryExpanded(i) : null
+          "
+          [attr.role]="hasExpandableDetails(entry) ? 'button' : null"
+          [attr.tabindex]="hasExpandableDetails(entry) ? '0' : null"
+          [title]="
+            hasExpandableDetails(entry)
+              ? isEntryExpanded(i)
+                ? 'Click to hide details'
+                : 'Click to show details'
+              : null
+          "
+        >
           <!-- Entry header with timestamp, icon, and rewards -->
           <div class="entry-header">
-            <span class="entry-time">[{{ entry.timestamp | date:'shortTime' }}]</span>            <span class="entry-icon" *ngIf="entry.stepType">              <i class="step-icon" [ngClass]="{
-                'exploration-icon': entry.stepType === 'exploration',
-                'encounter-icon': entry.stepType === 'encounter',
-                'treasure-icon': entry.stepType === 'treasure',
-                'quest-complete-icon': entry.stepType === 'quest_complete'
-              }">{{ getStepIcon(entry.stepType, entry.success) }}</i>
-            </span><span class="entry-rewards" *ngIf="hasRewards(entry)">
-              <span class="experience-reward" *ngIf="getExperienceFromEntry(entry) > 0">
+            <span class="entry-time"
+              >[{{ entry.timestamp | date: 'shortTime' }}]</span
+            >
+            <span class="entry-icon" *ngIf="entry.stepType">
+              <i
+                class="step-icon"
+                [ngClass]="{
+                  'exploration-icon': entry.stepType === 'exploration',
+                  'encounter-icon': entry.stepType === 'encounter',
+                  'treasure-icon': entry.stepType === 'treasure',
+                  'quest-complete-icon': entry.stepType === 'quest_complete'
+                }"
+                >{{ getStepIcon(entry.stepType, entry.success) }}</i
+              > </span
+            ><span class="entry-rewards" *ngIf="hasRewards(entry)">
+              <span
+                class="experience-reward"
+                *ngIf="getExperienceFromEntry(entry) > 0"
+              >
                 +{{ getExperienceFromEntry(entry) }} XP
               </span>
               <span class="goo-reward" *ngIf="getGooFromEntry(entry) > 0">
@@ -37,28 +66,36 @@
                 +{{ getMetalFromEntry(entry) }} Metal
               </span>
             </span>
-            
+
             <!-- Visual indicator for expandable entries -->
             <span *ngIf="hasExpandableDetails(entry)" class="expand-indicator">
               <span *ngIf="!isEntryExpanded(i)">▼</span>
               <span *ngIf="isEntryExpanded(i)">▲</span>
             </span>
           </div>
-          
+
           <!-- Entry message in its own row -->
           <div class="entry-message" [innerHTML]="entry.message"></div>
-          
+
           <!-- Expanded combat details section -->
-          <app-combat-details 
-            *ngIf="entry.stepType === 'encounter' && entry.combatResult && isEntryExpanded(i)"
-            [entry]="entry">
+          <app-combat-details
+            *ngIf="
+              entry.stepType === 'encounter' &&
+              entry.combatResult &&
+              isEntryExpanded(i)
+            "
+            [entry]="entry"
+          >
           </app-combat-details>
         </li>
       </ul>
     </ng-container>
     <ng-template #emptyLog>
       <div class="empty-log">
-        <p>No quests completed yet. Embark on a quest to see your adventures here!</p>
+        <p>
+          No quests completed yet. Embark on a quest to see your adventures
+          here!
+        </p>
       </div>
     </ng-template>
   </div>

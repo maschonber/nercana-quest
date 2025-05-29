@@ -9,10 +9,10 @@ describe('ThemeStore', () => {
       providers: [ThemeStore]
     });
     store = TestBed.inject(ThemeStore);
-    
+
     // Clear localStorage before each test
     localStorage.clear();
-    
+
     // Reset document body classes
     document.body.className = '';
   });
@@ -32,7 +32,7 @@ describe('ThemeStore', () => {
 
   it('should toggle theme from light to dark', () => {
     store.toggleTheme();
-    
+
     expect(store.isDarkMode()).toBe(true);
     expect(localStorage.getItem('nercana-theme')).toBe('dark');
     expect(document.body.classList.contains('dark-theme')).toBe(true);
@@ -41,10 +41,10 @@ describe('ThemeStore', () => {
   it('should toggle theme from dark to light', () => {
     // Set to dark first
     store.setTheme(true);
-    
+
     // Then toggle back to light
     store.toggleTheme();
-    
+
     expect(store.isDarkMode()).toBe(false);
     expect(localStorage.getItem('nercana-theme')).toBe('light');
     expect(document.body.classList.contains('light-theme')).toBe(true);
@@ -52,7 +52,7 @@ describe('ThemeStore', () => {
 
   it('should set theme to dark mode', () => {
     store.setTheme(true);
-    
+
     expect(store.isDarkMode()).toBe(true);
     expect(localStorage.getItem('nercana-theme')).toBe('dark');
     expect(document.body.classList.contains('dark-theme')).toBe(true);
@@ -60,7 +60,7 @@ describe('ThemeStore', () => {
 
   it('should set theme to light mode', () => {
     store.setTheme(false);
-    
+
     expect(store.isDarkMode()).toBe(false);
     expect(localStorage.getItem('nercana-theme')).toBe('light');
     expect(document.body.classList.contains('light-theme')).toBe(true);
@@ -68,18 +68,18 @@ describe('ThemeStore', () => {
 
   it('should initialize theme from localStorage when saved preference exists', () => {
     localStorage.setItem('nercana-theme', 'dark');
-    
+
     store.initializeTheme();
-    
+
     expect(store.isDarkMode()).toBe(true);
     expect(document.body.classList.contains('dark-theme')).toBe(true);
   });
 
   it('should initialize theme from localStorage when light preference exists', () => {
     localStorage.setItem('nercana-theme', 'light');
-    
+
     store.initializeTheme();
-    
+
     expect(store.isDarkMode()).toBe(false);
     expect(document.body.classList.contains('light-theme')).toBe(true);
   });
@@ -91,30 +91,30 @@ describe('ThemeStore', () => {
       media: query,
       onchange: null,
       addListener: jest.fn(),
-      removeListener: jest.fn(),
+      removeListener: jest.fn()
     }));
-    
+
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
-      value: mockMatchMedia,
+      value: mockMatchMedia
     });
 
     store.initializeTheme();
-    
+
     expect(store.isDarkMode()).toBe(true);
     expect(mockMatchMedia).toHaveBeenCalledWith('(prefers-color-scheme: dark)');
   });
 
   it('should apply correct body classes for dark theme', () => {
     store.setTheme(true);
-    
+
     expect(document.body.classList.contains('dark-theme')).toBe(true);
     expect(document.body.classList.contains('light-theme')).toBe(false);
   });
 
   it('should apply correct body classes for light theme', () => {
     store.setTheme(false);
-    
+
     expect(document.body.classList.contains('light-theme')).toBe(true);
     expect(document.body.classList.contains('dark-theme')).toBe(false);
   });
@@ -122,7 +122,7 @@ describe('ThemeStore', () => {
   it('should persist theme preference to localStorage', () => {
     store.setTheme(true);
     expect(localStorage.getItem('nercana-theme')).toBe('dark');
-    
+
     store.setTheme(false);
     expect(localStorage.getItem('nercana-theme')).toBe('light');
   });

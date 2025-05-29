@@ -5,7 +5,6 @@ import { Hero } from '../models/hero.model';
   providedIn: 'root'
 })
 export class HeroDomainService {
-  
   /**
    * Calculates the total power of a hero based on their stats
    */
@@ -46,7 +45,7 @@ export class HeroDomainService {
     const expNeededForNextLevel = this.getExperienceForLevel(nextLevel);
     return expNeededForNextLevel - currentExperience;
   }
-  
+
   /**
    * Determines if hero can level up based on old and new experience values
    * @param oldExperience Experience before gain
@@ -63,11 +62,11 @@ export class HeroDomainService {
    * @param hero Hero to level up
    * @param levels Number of levels gained
    * @returns Updated hero with improved stats
-   */  levelUpHero(hero: Hero, levels: number = 1): Hero {
+   */ levelUpHero(hero: Hero, levels: number = 1): Hero {
     let updatedHero = { ...hero };
-    
+
     // Apply stat increases for each level gained
-    for (let i = 0; i < levels; i++) {      
+    for (let i = 0; i < levels; i++) {
       const healthIncrease = 5;
       updatedHero = {
         ...updatedHero,
@@ -78,7 +77,7 @@ export class HeroDomainService {
         luck: updatedHero.luck + 1
       };
     }
-    
+
     return updatedHero;
   }
 
@@ -86,13 +85,15 @@ export class HeroDomainService {
    * Validates hero stats are within acceptable ranges
    */
   validateHeroStats(hero: Hero): boolean {
-    return hero.health > 0 && 
-           hero.attack > 0 && 
-           hero.defense > 0 && 
-           hero.luck >= 0 &&
-           hero.health <= 1000 &&
-           hero.attack <= 100 &&
-           hero.defense <= 100 &&
-           hero.luck <= 50;
+    return (
+      hero.health > 0 &&
+      hero.attack > 0 &&
+      hero.defense > 0 &&
+      hero.luck >= 0 &&
+      hero.health <= 1000 &&
+      hero.attack <= 100 &&
+      hero.defense <= 100 &&
+      hero.luck <= 50
+    );
   }
 }

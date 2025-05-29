@@ -1,6 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { StationStore } from '../stores/station.store';
-import { ResourceType, ResourceChange } from '../../models/station-resources.model';
+import {
+  ResourceType,
+  ResourceChange
+} from '../../models/station-resources.model';
 
 /**
  * Facade service for station resource management
@@ -34,14 +37,20 @@ export class StationFacadeService {
   /**
    * Spends goo from station resources
    */
-  spendGoo(amount: number, source: string = 'Station upgrade'): ResourceChange | null {
+  spendGoo(
+    amount: number,
+    source: string = 'Station upgrade'
+  ): ResourceChange | null {
     return this.stationStore.spendGoo(amount, source);
   }
 
   /**
    * Spends metal from station resources
    */
-  spendMetal(amount: number, source: string = 'Station upgrade'): ResourceChange | null {
+  spendMetal(
+    amount: number,
+    source: string = 'Station upgrade'
+  ): ResourceChange | null {
     return this.stationStore.spendMetal(amount, source);
   }
 

@@ -19,10 +19,10 @@ export const ThemeStore = signalStore(
     toggleTheme(): void {
       const currentMode = store.isDarkMode();
       patchState(store, { isDarkMode: !currentMode });
-      
+
       // Persist theme preference to localStorage
       localStorage.setItem('nercana-theme', !currentMode ? 'dark' : 'light');
-      
+
       // Apply theme class to body
       this.applyThemeToBody(!currentMode);
     },
@@ -32,10 +32,10 @@ export const ThemeStore = signalStore(
      */
     setTheme(isDark: boolean): void {
       patchState(store, { isDarkMode: isDark });
-      
+
       // Persist theme preference to localStorage
       localStorage.setItem('nercana-theme', isDark ? 'dark' : 'light');
-      
+
       // Apply theme class to body
       this.applyThemeToBody(isDark);
     },

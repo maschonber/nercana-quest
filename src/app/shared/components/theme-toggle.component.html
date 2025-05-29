@@ -1,8 +1,11 @@
-<button 
-  class="theme-toggle-btn" 
+<button
+  class="theme-toggle-btn"
   (click)="onToggleTheme()"
-  [attr.aria-label]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'"
-  type="button">
+  [attr.aria-label]="
+    isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'
+  "
+  type="button"
+>
   <span class="theme-icon">
     {{ isDarkMode() ? '☀️' : '🌙' }}
   </span>

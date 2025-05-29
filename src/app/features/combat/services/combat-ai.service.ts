@@ -1,15 +1,22 @@
 import { Injectable } from '@angular/core';
-import { Combatant, CombatantType, CombatActionType, CombatTeam } from '../models/combat.model';
+import {
+  Combatant,
+  CombatantType,
+  CombatActionType,
+  CombatTeam
+} from '../models/combat.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CombatAI {
-
   /**
    * Determines what action a combatant should take
    */
-  determineAction(actor: Combatant, opposingTeam: CombatTeam): CombatActionType {
+  determineAction(
+    actor: Combatant,
+    opposingTeam: CombatTeam
+  ): CombatActionType {
     if (actor.type === CombatantType.HERO) {
       return this.determineHeroAction(actor, opposingTeam);
     } else {
@@ -21,8 +28,10 @@ export class CombatAI {
    * Selects the best target from the opposing team
    */
   selectTarget(opposingTeam: CombatTeam): Combatant | null {
-    const availableTargets = opposingTeam.combatants.filter(c => c.isAlive && !c.hasFled);
-    
+    const availableTargets = opposingTeam.combatants.filter(
+      (c) => c.isAlive && !c.hasFled
+    );
+
     if (availableTargets.length === 0) {
       return null;
     }
@@ -33,7 +42,7 @@ export class CombatAI {
     }
 
     // Calculate threat scores for each target
-    const targetScores = availableTargets.map(target => {
+    const targetScores = availableTargets.map((target) => {
       const healthPercent = (target.health / target.maxHealth) * 100;
       let score = 0;
 
@@ -68,7 +77,7 @@ export class CombatAI {
       }
 
       // Randomization factor (±10%) to prevent predictable behavior
-      const randomFactor = 0.9 + (Math.random() * 0.2);
+      const randomFactor = 0.9 + Math.random() * 0.2;
       score *= randomFactor;
 
       return { target, score };
@@ -79,7 +88,10 @@ export class CombatAI {
     return targetScores[0].target;
   }
 
-  private determineHeroAction(hero: Combatant, opposingTeam: CombatTeam): CombatActionType {
+  private determineHeroAction(
+    hero: Combatant,
+    opposingTeam: CombatTeam
+  ): CombatActionType {
     // Hero logic: 10% chance to flee if health is very low
     if (hero.health <= hero.maxHealth * 0.2 && Math.random() < 0.1) {
       return CombatActionType.FLEE;
@@ -94,7 +106,10 @@ export class CombatAI {
     return CombatActionType.ATTACK;
   }
 
-  private determineMonsterAction(monster: Combatant, opposingTeam: CombatTeam): CombatActionType {
+  private determineMonsterAction(
+    monster: Combatant,
+    opposingTeam: CombatTeam
+  ): CombatActionType {
     // Monster logic: 5% chance to defend if heavily damaged
     if (monster.health <= monster.maxHealth * 0.3 && Math.random() < 0.05) {
       return CombatActionType.DEFEND;

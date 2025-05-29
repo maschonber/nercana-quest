@@ -17,11 +17,11 @@
   &.outcome-victory {
     @include outcome-victory;
   }
-  
+
   &.outcome-defeat {
     @include outcome-defeat;
   }
-  
+
   &.outcome-fled {
     @include outcome-fled;
   }
@@ -177,7 +177,7 @@
 
 .hero-turn {
   border-left: 4px solid var(--accent-secondary);
-  
+
   .turn-actor {
     background-color: rgba(76, 175, 80, 0.1);
     color: var(--accent-secondary);
@@ -187,7 +187,7 @@
 
 .monster-turn {
   border-left: 4px solid var(--accent-danger);
-  
+
   .turn-actor {
     background-color: rgba(244, 67, 54, 0.1);
     color: var(--accent-danger);
@@ -226,7 +226,7 @@
 .combatant-info {
   flex: 1;
   min-width: 0; // Allow text to truncate if needed
-  
+
   .health-label {
     font-weight: 500;
     color: var(--text-primary);
@@ -237,7 +237,7 @@
   .health-status {
     font-size: 0.8rem;
     color: var(--text-secondary);
-    
+
     &.defeated {
       color: var(--accent-danger);
       font-weight: 500;
@@ -268,8 +268,6 @@
   border-top: 1px solid var(--border-color);
 }
 
-
-
 .health-fill {
   height: 100%;
   transition: width 0.3s ease;
@@ -277,19 +275,19 @@
   min-width: 2px; // Ensure visibility even at very low health
 
   &.hero-health {
-    background: #4CAF50; // Green for hero
-    
+    background: #4caf50; // Green for hero
+
     &.defeated {
-      background: #F44336; // Red for defeated
+      background: #f44336; // Red for defeated
       opacity: 0.8;
     }
   }
 
   &.monster-health {
-    background: #FF9800; // Orange for monsters
-    
+    background: #ff9800; // Orange for monsters
+
     &.defeated {
-      background: #F44336; // Red for defeated
+      background: #f44336; // Red for defeated
       opacity: 0.8;
     }
   }
@@ -348,8 +346,8 @@
 @include dark-theme-reward-adjustments;
 
 :global(.dark-theme) .hero-turn {
-  border-left-color: #4CAF50;
-  
+  border-left-color: #4caf50;
+
   .turn-actor {
     background-color: rgba(76, 175, 80, 0.15);
     border-color: rgba(76, 175, 80, 0.4);
@@ -357,8 +355,8 @@
 }
 
 :global(.dark-theme) .monster-turn {
-  border-left-color: #F44336;
-  
+  border-left-color: #f44336;
+
   .turn-actor {
     background-color: rgba(244, 67, 54, 0.15);
     border-color: rgba(244, 67, 54, 0.4);
@@ -399,7 +397,7 @@
 
   .monster-header {
     margin-bottom: 0.5rem;
-    
+
     h5 {
       font-size: 1rem;
       font-weight: 600;
@@ -442,7 +440,7 @@
 
   .monster-card {
     padding: 0.5rem;
-    
+
     .stats-container {
       .stat-item {
         min-width: 40px;

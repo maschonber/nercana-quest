@@ -3,7 +3,11 @@ import { signal } from '@angular/core';
 import { CombatDetailsComponent } from './combat-details.component';
 import { LogEntry } from '../../../models/log-entry.model';
 import { QuestStepType } from '../../quest/models/quest.model';
-import { CombatOutcome, CombatantType, CombatActionType } from '../models/combat.model';
+import {
+  CombatOutcome,
+  CombatantType,
+  CombatActionType
+} from '../models/combat.model';
 import { MonsterType } from '../../quest/models/monster.model';
 import { HeroFacadeService } from '../../hero/services/hero-facade.service';
 import { Hero } from '../../hero/models/hero.model';
@@ -15,7 +19,8 @@ describe('CombatDetailsComponent', () => {
     name: 'Test Hero',
     health: 100,
     maxHealth: 120,
-    attack: 15,    defense: 10,
+    attack: 15,
+    defense: 10,
     luck: 7,
     speed: 15,
     level: 2,
@@ -24,23 +29,28 @@ describe('CombatDetailsComponent', () => {
 
   const mockHeroFacade = {
     hero: signal<Hero>(mockHero)
-  };  const mockLogEntry: LogEntry = {
+  };
+  const mockLogEntry: LogEntry = {
     timestamp: new Date('2024-01-15T10:30:00Z'),
     message: 'You encountered a fierce Void Entity!',
     success: true,
-    stepType: QuestStepType.ENCOUNTER,    monster: {
+    stepType: QuestStepType.ENCOUNTER,
+    monster: {
       name: 'Ancient Void Entity',
       type: MonsterType.VOID_ENTITY,
-      description: 'A massive void entity that defies conventional understanding.',
+      description:
+        'A massive void entity that defies conventional understanding.',
       health: 0,
-      maxHealth: 120,      attack: 25,
+      maxHealth: 120,
+      attack: 25,
       defense: 18,
       speed: 25,
       experienceReward: 50
     },
     combatResult: {
       outcome: CombatOutcome.HERO_VICTORY,
-      turns: [        {
+      turns: [
+        {
           turnNumber: 1,
           actorId: 'hero-1',
           action: {
@@ -75,7 +85,8 @@ describe('CombatDetailsComponent', () => {
               type: CombatantType.MONSTER
             }
           ]
-        },        {
+        },
+        {
           turnNumber: 2,
           actorId: 'monster-1',
           action: {
@@ -110,9 +121,11 @@ describe('CombatDetailsComponent', () => {
               type: CombatantType.MONSTER
             }
           ]
-        }      ],
+        }
+      ],
       summary: 'After a fierce battle, you emerged victorious!',
-      experienceGained: 50    },
+      experienceGained: 50
+    },
     experienceGained: 50,
     gooGained: 15,
     metalGained: 10
@@ -120,9 +133,7 @@ describe('CombatDetailsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CombatDetailsComponent],
-      providers: [
-        { provide: HeroFacadeService, useValue: mockHeroFacade }
-      ]
+      providers: [{ provide: HeroFacadeService, useValue: mockHeroFacade }]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CombatDetailsComponent);
@@ -136,15 +147,27 @@ describe('CombatDetailsComponent', () => {
   });
 
   it('should display combat outcome correctly', () => {
-    expect(component.getCombatOutcomeText(CombatOutcome.HERO_VICTORY)).toBe('Victory!');
-    expect(component.getCombatOutcomeText(CombatOutcome.HERO_DEFEAT)).toBe('Defeat');
-    expect(component.getCombatOutcomeText(CombatOutcome.HERO_FLED)).toBe('Fled');
+    expect(component.getCombatOutcomeText(CombatOutcome.HERO_VICTORY)).toBe(
+      'Victory!'
+    );
+    expect(component.getCombatOutcomeText(CombatOutcome.HERO_DEFEAT)).toBe(
+      'Defeat'
+    );
+    expect(component.getCombatOutcomeText(CombatOutcome.HERO_FLED)).toBe(
+      'Fled'
+    );
   });
 
   it('should get correct CSS classes for combat outcomes', () => {
-    expect(component.getCombatOutcomeClass(CombatOutcome.HERO_VICTORY)).toBe('outcome-victory');
-    expect(component.getCombatOutcomeClass(CombatOutcome.HERO_DEFEAT)).toBe('outcome-defeat');
-    expect(component.getCombatOutcomeClass(CombatOutcome.HERO_FLED)).toBe('outcome-fled');
+    expect(component.getCombatOutcomeClass(CombatOutcome.HERO_VICTORY)).toBe(
+      'outcome-victory'
+    );
+    expect(component.getCombatOutcomeClass(CombatOutcome.HERO_DEFEAT)).toBe(
+      'outcome-defeat'
+    );
+    expect(component.getCombatOutcomeClass(CombatOutcome.HERO_FLED)).toBe(
+      'outcome-fled'
+    );
   });
 
   it('should calculate health percentage correctly', () => {
@@ -154,8 +177,9 @@ describe('CombatDetailsComponent', () => {
   });
 
   it('should get correct turn actor names', () => {
-    const heroTurn = { actor: CombatantType.HERO };    const monsterTurn = { actor: CombatantType.MONSTER };
-    
+    const heroTurn = { actor: CombatantType.HERO };
+    const monsterTurn = { actor: CombatantType.MONSTER };
+
     expect(component.getTurnActorName(heroTurn)).toBe('You');
     expect(component.getTurnActorName(monsterTurn)).toBe('Ancient Void Entity');
   });
@@ -163,7 +187,7 @@ describe('CombatDetailsComponent', () => {
   it('should get correct CSS classes for turn actors', () => {
     const heroTurn = { actor: CombatantType.HERO };
     const monsterTurn = { actor: CombatantType.MONSTER };
-    
+
     expect(component.getTurnActorClass(heroTurn)).toBe('hero-turn');
     expect(component.getTurnActorClass(monsterTurn)).toBe('monster-turn');
   });
@@ -180,7 +204,8 @@ describe('CombatDetailsComponent', () => {
     expect(compiled.textContent).toContain('Turn 2');
     expect(compiled.textContent).toContain('You strike with your sword');
     expect(compiled.textContent).toContain('Ancient Dragon breathes fire');
-  });  it('should render combat rewards', () => {
+  });
+  it('should render combat rewards', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('+50 XP');
     expect(compiled.textContent).toContain('+15 Goo');
@@ -192,8 +217,10 @@ describe('CombatDetailsComponent', () => {
     const heroHealthAfter = 80;
     const heroMaxHealth = component.hero().maxHealth; // 120
     const expectedPercentage = (heroHealthAfter / heroMaxHealth) * 100; // 66.66666666666666
-    
-    expect(component.getHealthPercentage(heroHealthAfter, heroMaxHealth)).toBeCloseTo(expectedPercentage);
+
+    expect(
+      component.getHealthPercentage(heroHealthAfter, heroMaxHealth)
+    ).toBeCloseTo(expectedPercentage);
     expect(expectedPercentage).toBeCloseTo(66.67); // 80/120 * 100 = 66.67
   });
 });

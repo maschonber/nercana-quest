@@ -13,7 +13,9 @@ describe('HeroDomainService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-  describe('calculateTotalPower', () => {    it('should calculate total power correctly', () => {      const hero: Hero = {
+  describe('calculateTotalPower', () => {
+    it('should calculate total power correctly', () => {
+      const hero: Hero = {
         name: 'Test Hero',
         health: 100,
         maxHealth: 100,
@@ -24,7 +26,7 @@ describe('HeroDomainService', () => {
         level: 1,
         experience: 0
       };
-      
+
       expect(service.calculateTotalPower(hero)).toBe(125);
     });
   });
@@ -61,14 +63,15 @@ describe('HeroDomainService', () => {
   describe('canLevelUp', () => {
     it('should determine if hero can level up based on old and new experience', () => {
       expect(service.canLevelUp(40, 45)).toBe(false); // Both level 1
-      expect(service.canLevelUp(40, 60)).toBe(true);  // Level 1 to 2
+      expect(service.canLevelUp(40, 60)).toBe(true); // Level 1 to 2
       expect(service.canLevelUp(180, 210)).toBe(true); // Level 2 to 3
       expect(service.canLevelUp(210, 220)).toBe(false); // Both level 3
-      expect(service.canLevelUp(10, 500)).toBe(true);  // Multiple level gain
+      expect(service.canLevelUp(10, 500)).toBe(true); // Multiple level gain
     });
   });
-  
-  describe('levelUpHero', () => {    it('should increase hero stats for a single level', () => {
+
+  describe('levelUpHero', () => {
+    it('should increase hero stats for a single level', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
@@ -89,7 +92,8 @@ describe('HeroDomainService', () => {
       expect(leveledHero.luck).toBe(6);
       expect(leveledHero.name).toBe('Test Hero');
       expect(leveledHero.experience).toBe(100);
-    });    it('should increase hero stats for multiple levels', () => {
+    });
+    it('should increase hero stats for multiple levels', () => {
       const hero: Hero = {
         name: 'Test Hero',
         health: 100,
@@ -110,7 +114,8 @@ describe('HeroDomainService', () => {
       expect(leveledHero.luck).toBe(8);
     });
   });
-  describe('validateHeroStats', () => {    it('should validate correct hero stats', () => {
+  describe('validateHeroStats', () => {
+    it('should validate correct hero stats', () => {
       const validHero: Hero = {
         name: 'Valid Hero',
         health: 100,
@@ -124,7 +129,8 @@ describe('HeroDomainService', () => {
       };
 
       expect(service.validateHeroStats(validHero)).toBe(true);
-    });    it('should reject hero with invalid stats', () => {
+    });
+    it('should reject hero with invalid stats', () => {
       const invalidHero: Hero = {
         name: 'Invalid Hero',
         health: 0,
@@ -138,7 +144,8 @@ describe('HeroDomainService', () => {
       };
 
       expect(service.validateHeroStats(invalidHero)).toBe(false);
-    });    it('should reject hero with stats too high', () => {
+    });
+    it('should reject hero with stats too high', () => {
       const overpoweredHero: Hero = {
         name: 'OP Hero',
         health: 2000,

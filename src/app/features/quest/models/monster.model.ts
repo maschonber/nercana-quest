@@ -33,10 +33,10 @@ export interface Monster {
 
 // Monster difficulty tiers for appropriate challenges
 export enum MonsterTier {
-  EASY = 'easy',     // For low-level clones
+  EASY = 'easy', // For low-level clones
   MEDIUM = 'medium', // For mid-level clones
-  HARD = 'hard',     // For high-level clones
-  BOSS = 'boss'      // Special encounters
+  HARD = 'hard', // For high-level clones
+  BOSS = 'boss' // Special encounters
 }
 
 // Function to determine appropriate monster tier based on clone level

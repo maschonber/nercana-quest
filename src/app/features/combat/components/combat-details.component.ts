@@ -1,7 +1,11 @@
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogEntry } from '../../../models/log-entry.model';
-import { CombatOutcome, CombatantType, CombatantHealthState } from '../models/combat.model';
+import {
+  CombatOutcome,
+  CombatantType,
+  CombatantHealthState
+} from '../models/combat.model';
 import { HeroFacadeService } from '../../hero/services/hero-facade.service';
 
 @Component({
@@ -13,15 +17,15 @@ import { HeroFacadeService } from '../../hero/services/hero-facade.service';
 })
 export class CombatDetailsComponent {
   @Input() entry!: LogEntry;
-  
+
   private readonly heroFacade = inject(HeroFacadeService);
-  
+
   // Access hero data for health calculations
   hero = this.heroFacade.hero;
-  
+
   // Expose enums for template
   CombatantType = CombatantType;
-  
+
   // Get combat outcome text
   getCombatOutcomeText(outcome: CombatOutcome): string {
     switch (outcome) {
@@ -35,7 +39,7 @@ export class CombatDetailsComponent {
         return 'Unknown';
     }
   }
-  
+
   // Get combat outcome CSS class
   getCombatOutcomeClass(outcome: CombatOutcome): string {
     switch (outcome) {
@@ -49,7 +53,7 @@ export class CombatDetailsComponent {
         return '';
     }
   }
-  
+
   // Get health percentage for health bars
   getHealthPercentage(current: number, max: number): number {
     return Math.max(0, Math.min(100, (current / max) * 100));
@@ -67,7 +71,7 @@ export class CombatDetailsComponent {
       return this.entry.monster?.name || 'Monster';
     }
   }
-  
+
   // Get CSS class for turn based on actor type
   getTurnActorClass(turn: any): string {
     return turn.actor === CombatantType.HERO ? 'hero-turn' : 'monster-turn';
@@ -76,12 +80,12 @@ export class CombatDetailsComponent {
   getActiveEnemiesCount(turn: any): number {
     // Use the comprehensive health tracking if available
     if (turn.allCombatantsHealth) {
-      return turn.allCombatantsHealth
-        .filter((state: CombatantHealthState) => 
+      return turn.allCombatantsHealth.filter(
+        (state: CombatantHealthState) =>
           state.type === CombatantType.MONSTER && state.isAlive
-        ).length;
+      ).length;
     }
-    
+
     // Fallback for legacy data
     if (this.entry.monsters) {
       return this.entry.monsters.length;
@@ -92,31 +96,37 @@ export class CombatDetailsComponent {
   // Get all enemy health states for a given turn
   getEnemyHealthStates(turn: any): CombatantHealthState[] {
     if (turn.allCombatantsHealth) {
-      return turn.allCombatantsHealth
-        .filter((state: CombatantHealthState) => state.type === CombatantType.MONSTER);
+      return turn.allCombatantsHealth.filter(
+        (state: CombatantHealthState) => state.type === CombatantType.MONSTER
+      );
     }
-    
+
     // Fallback for legacy single monster data
     if (this.entry.monster) {
-      return [{
-        id: 'legacy-monster',
-        name: this.entry.monster.name,
-        health: turn.monsterHealthAfter,
-        maxHealth: this.entry.monster.maxHealth,
-        isAlive: turn.monsterHealthAfter > 0,
-        type: CombatantType.MONSTER
-      }];
+      return [
+        {
+          id: 'legacy-monster',
+          name: this.entry.monster.name,
+          health: turn.monsterHealthAfter,
+          maxHealth: this.entry.monster.maxHealth,
+          isAlive: turn.monsterHealthAfter > 0,
+          type: CombatantType.MONSTER
+        }
+      ];
     }
-    
+
     return [];
   }
   // Get hero health state for a given turn
   getHeroHealthState(turn: any): CombatantHealthState | null {
     if (turn.allCombatantsHealth) {
-      return turn.allCombatantsHealth
-        .find((state: CombatantHealthState) => state.type === CombatantType.HERO) || null;
+      return (
+        turn.allCombatantsHealth.find(
+          (state: CombatantHealthState) => state.type === CombatantType.HERO
+        ) || null
+      );
     }
-    
+
     // Fallback for legacy data
     return {
       id: 'legacy-hero',
@@ -133,12 +143,15 @@ export class CombatDetailsComponent {
     if (!this.entry.monsters) {
       return this.getHealthPercentage(turn.monsterHealthAfter, 100);
     }
-    
+
     // Simplified aggregate health calculation
     // In a real implementation, the turn data would track individual enemy health
-    const totalMaxHealth = this.entry.monsters.reduce((sum, monster) => sum + monster.maxHealth, 0);
+    const totalMaxHealth = this.entry.monsters.reduce(
+      (sum, monster) => sum + monster.maxHealth,
+      0
+    );
     const estimatedCurrentHealth = totalMaxHealth * 0.5; // Placeholder logic
-    
+
     return this.getHealthPercentage(estimatedCurrentHealth, totalMaxHealth);
   }
 }
