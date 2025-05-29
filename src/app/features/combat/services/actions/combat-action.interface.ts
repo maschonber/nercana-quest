@@ -1,4 +1,4 @@
-import { Combatant } from '../../models/combat.model';
+import { Combatant, CombatActionType } from '../../models/combat.model';
 
 export interface CombatActionResult {
   damage?: number;
@@ -11,5 +11,5 @@ export interface CombatActionResult {
 export interface CombatActionStrategy {
   execute(actor: Combatant, target: Combatant): CombatActionResult;
   canExecute(actor: Combatant, target: Combatant): boolean;
-  getActionName(): string;
+  getActionName(): CombatActionType;
 }

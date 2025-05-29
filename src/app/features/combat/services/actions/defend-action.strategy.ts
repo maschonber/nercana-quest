@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CombatActionStrategy, CombatActionResult } from './combat-action.interface';
-import { Combatant } from '../../models/combat.model';
+import { Combatant, CombatActionType } from '../../models/combat.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +19,7 @@ export class DefendActionStrategy implements CombatActionStrategy {
   canExecute(actor: Combatant, target: Combatant): boolean {
     return actor.isAlive && !actor.hasFled;
   }
-
-  getActionName(): string {
-    return 'Defend';
+  getActionName(): CombatActionType {
+    return CombatActionType.DEFEND;
   }
 }
