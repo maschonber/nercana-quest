@@ -47,6 +47,7 @@ describe('QuestLogComponent', () => {
         turns: [
           {
             turnNumber: 1,
+            combatTime: 50,
             actorId: 'hero-1',
             action: {
               type: CombatActionType.ATTACK,

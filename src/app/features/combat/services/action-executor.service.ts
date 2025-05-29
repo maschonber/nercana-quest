@@ -9,6 +9,7 @@ import {
 import { ActionFactory } from './actions/action.factory';
 import { CombatStateManager } from './combat-state-manager.service';
 import { StatusEffectManager } from './status-effect-manager.service';
+import { TurnManager } from './turn-manager.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class ActionExecutor {
   constructor(
     private actionFactory: ActionFactory,
     private stateManager: CombatStateManager,
-    private statusEffectManager: StatusEffectManager
+    private statusEffectManager: StatusEffectManager,
+    private turnManager: TurnManager
   ) {}
 
   /**
@@ -74,6 +76,7 @@ export class ActionExecutor {
 
     return {
       turnNumber,
+      combatTime: this.turnManager.getCurrentTime(),
       actorId: actor.id,
       action,
       actorHealthAfter: actor.health,

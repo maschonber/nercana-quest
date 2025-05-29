@@ -84,6 +84,7 @@ export class CombatOrchestrator {
       // Create a pseudo-turn for status effects
       const statusTurn = {
         turnNumber: combat.currentTurn,
+        combatTime: this.turnManager.getCurrentTime(),
         actorId: 'system',
         action: {
           type: 'system' as any,
@@ -124,6 +125,7 @@ export class CombatOrchestrator {
       // Create a turn entry for the skipped action
       const skipTurn = {
         turnNumber: combat.currentTurn + 1,
+        combatTime: this.turnManager.getCurrentTime(),
         actorId: actingCombatant.id,
         action: {
           type: 'skip' as any,

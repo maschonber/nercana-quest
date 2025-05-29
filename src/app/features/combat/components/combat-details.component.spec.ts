@@ -52,6 +52,7 @@ describe('CombatDetailsComponent', () => {
       turns: [
         {
           turnNumber: 1,
+          combatTime: 50,
           actorId: 'hero-1',
           action: {
             type: CombatActionType.ATTACK,
@@ -88,6 +89,7 @@ describe('CombatDetailsComponent', () => {
         },
         {
           turnNumber: 2,
+          combatTime: 120,
           actorId: 'monster-1',
           action: {
             type: CombatActionType.ATTACK,
@@ -200,8 +202,8 @@ describe('CombatDetailsComponent', () => {
 
   it('should render combat turns', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Turn 1');
-    expect(compiled.textContent).toContain('Turn 2');
+    expect(compiled.textContent).toContain('Click 50');
+    expect(compiled.textContent).toContain('Click 120');
     expect(compiled.textContent).toContain('You strike with your sword');
     expect(compiled.textContent).toContain('Ancient Dragon breathes fire');
   });

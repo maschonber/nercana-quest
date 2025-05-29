@@ -74,6 +74,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
             turns: [
               {
                 turnNumber: 1,
+                combatTime: 50,
                 actorId: 'hero-1',
                 action: {
                   type: 'attack' as any,
@@ -121,6 +122,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
             turns: [
               {
                 turnNumber: 1,
+                combatTime: 50,
                 actorId: 'hero-1',
                 action: {
                   type: 'attack' as any,
@@ -252,6 +254,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
             turns: [
               {
                 turnNumber: 1,
+                combatTime: 50,
                 actorId: 'hero-1',
                 action: {
                   type: 'attack' as any,
@@ -298,6 +301,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
             turns: [
               {
                 turnNumber: 1,
+                combatTime: 50,
                 actorId: 'hero-1',
                 action: {
                   type: 'attack' as any,
@@ -386,6 +390,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
             turns: [
               {
                 turnNumber: 1,
+                combatTime: 50,
                 actorId: 'hero-1',
                 action: {
                   type: 'attack' as any,

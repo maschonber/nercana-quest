@@ -68,7 +68,7 @@
       [ngClass]="getTurnActorClass(turn)"
     >
       <div class="turn-info">
-        <span class="turn-number">Turn {{ turn.turnNumber }}</span>
+        <span class="turn-number">Click {{ turn.combatTime || turn.turnNumber }}</span>
         <span class="turn-actor">{{ getTurnActorName(turn) }}</span>
       </div>
       <div class="turn-action">

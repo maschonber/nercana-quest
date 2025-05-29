@@ -41,9 +41,8 @@ export class StatusEffectManager {
     combatant.statusEffects = combatant.statusEffects.filter(
       effect => effect.type !== effectType
     );
-  }
-  /**
-   * Process status effects at the start of a turn (damage/healing over time)
+  }  /**
+   * Process status effects at the start of each action (damage/healing over time)
    */
   processStatusEffects(combatant: Combatant): { damage: number; healing: number; expiredEffects: AppliedStatusEffect[] } {
     let totalDamage = 0;
@@ -130,9 +129,8 @@ export class StatusEffectManager {
     const currentTime = this.turnManager.getCurrentTime();
     const effectNames = combatant.statusEffects.map(effect => {
       const timeRemaining = Math.max(0, effect.expiresAt - currentTime);
-      const turnsRemaining = Math.ceil(timeRemaining / 70); // Approximate turns remaining (avg ~70 time units per turn)
-      const duration = turnsRemaining > 1 ? 
-        ` (~${turnsRemaining} turns)` : 
+      const duration = timeRemaining > 20 ? 
+        ` (${timeRemaining} clicks)` : 
         ' (ending soon)';
       return effect.name + duration;
     });

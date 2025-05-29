@@ -65,6 +65,7 @@ export interface CombatantHealthState {
 
 export interface CombatTurn {
   turnNumber: number;
+  combatTime: number; // Time in clicks when this turn occurred
   actorId: string; // ID of acting combatant
   action: CombatAction;
   actorHealthAfter: number;

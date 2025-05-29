@@ -53,7 +53,7 @@ export class CombatStateManager {
   }
 
   /**
-   * Process status effects for all combatants at the start of a turn
+   * Process status effects for all combatants at the start of each action
    */
   processStatusEffectsForAllCombatants(combat: Combat): string[] {
     const statusMessages: string[] = [];
@@ -190,13 +190,13 @@ export class CombatStateManager {
 
     switch (outcome) {
       case CombatOutcome.HERO_VICTORY:
-        return `After ${turns.length} turns, the hero team (${heroNames}) emerged victorious against the enemy team (${enemyNames})!`;
+        return `After ${turns.length} actions, the hero team (${heroNames}) emerged victorious against the enemy team (${enemyNames})!`;
 
       case CombatOutcome.HERO_DEFEAT:
-        return `After ${turns.length} turns, the hero team (${heroNames}) was defeated by the enemy team (${enemyNames})!`;
+        return `After ${turns.length} actions, the hero team (${heroNames}) was defeated by the enemy team (${enemyNames})!`;
 
       case CombatOutcome.HERO_FLED:
-        return `After ${turns.length} turns of combat, the hero team (${heroNames}) managed to escape from the enemy team (${enemyNames}).`;
+        return `After ${turns.length} actions of combat, the hero team (${heroNames}) managed to escape from the enemy team (${enemyNames}).`;
 
       default:
         return `The battle between the hero team (${heroNames}) and the enemy team (${enemyNames}) continues...`;

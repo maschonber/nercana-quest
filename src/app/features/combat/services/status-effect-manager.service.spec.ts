@@ -86,9 +86,7 @@ describe('StatusEffectManager', () => {
 
       const damageReduction = service.calculateDamageReduction(mockCombatant);
       expect(damageReduction).toBe(0.4); // 40% damage reduction
-    });
-
-    it('should provide status effect description with time remaining', () => {
+    });    it('should provide status effect description with time remaining', () => {
       turnManager.initializeTurnQueue([mockCombatant]);
       
       const defendEffect = StatusEffectFactory.createDefending();
@@ -96,7 +94,7 @@ describe('StatusEffectManager', () => {
 
       const description = service.getStatusEffectDescription(mockCombatant);
       expect(description).toContain('Defending');
-      expect(description).toMatch(/\(\~\d+ turns\)|ending soon/);
+      expect(description).toMatch(/\(\d+ clicks\)|ending soon/);
     });
 
     it('should handle multiple status effects with different expiration times', () => {
