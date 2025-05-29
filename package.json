@@ -14,8 +14,8 @@
     "playwright:report": "playwright show-report",
     "playwright:ui": "playwright test --ui",
     "playwright:codegen": "playwright codegen",
-    "build:prod": "ng build --configuration production --base-href '/nercana-quest/'",
-    "deploy": "ng build --configuration production --base-href '/nercana-quest/' && npx angular-cli-ghpages --dir=dist/nercana-quest"
+    "build:prod": "ng build --configuration production --base-href '/nercana/'",
+    "deploy": "ng build --configuration production --base-href '/nercana/' && npx angular-cli-ghpages --dir=dist/nercana"
   },
   "private": true,
   "dependencies": {
