@@ -5,11 +5,14 @@ import {
   CombatActionType,
   CombatTeam
 } from '../models/combat.model';
+import { StatusEffectManager } from './status-effect-manager.service';
+import { StatusEffectType } from '../models/status-effect.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CombatAI {
+  constructor(private statusEffectManager: StatusEffectManager) {}
   /**
    * Determines what action a combatant should take
    */
@@ -92,14 +95,30 @@ export class CombatAI {
     hero: Combatant,
     opposingTeam: CombatTeam
   ): CombatActionType {
+    const healthPercent = (hero.health / hero.maxHealth) * 100;
+    const isDefending = this.statusEffectManager.hasStatusEffect(hero, StatusEffectType.DEFENDING);
+    
     // Hero logic: 10% chance to flee if health is very low
-    if (hero.health <= hero.maxHealth * 0.2 && Math.random() < 0.1) {
+    if (healthPercent <= 20 && Math.random() < 0.1) {
       return CombatActionType.FLEE;
     }
 
-    // 15% chance to defend if health is low
-    if (hero.health <= hero.maxHealth * 0.4 && Math.random() < 0.15) {
-      return CombatActionType.DEFEND;
+    // Strategic defending logic
+    if (!isDefending) {
+      // Higher chance to defend when health is low
+      if (healthPercent <= 30 && Math.random() < 0.4) {
+        return CombatActionType.DEFEND;
+      }
+      
+      // Moderate chance when health is moderate
+      if (healthPercent <= 50 && Math.random() < 0.25) {
+        return CombatActionType.DEFEND;
+      }
+      
+      // Small chance even when healthy (tactical defending)
+      if (Math.random() < 0.1) {
+        return CombatActionType.DEFEND;
+      }
     }
 
     // Otherwise, attack
@@ -110,9 +129,25 @@ export class CombatAI {
     monster: Combatant,
     opposingTeam: CombatTeam
   ): CombatActionType {
-    // Monster logic: 5% chance to defend if heavily damaged
-    if (monster.health <= monster.maxHealth * 0.3 && Math.random() < 0.05) {
-      return CombatActionType.DEFEND;
+    const healthPercent = (monster.health / monster.maxHealth) * 100;
+    const isDefending = this.statusEffectManager.hasStatusEffect(monster, StatusEffectType.DEFENDING);
+    
+    // Monster logic: Strategic defending when damaged and not already defending
+    if (!isDefending) {
+      // High chance to defend when severely wounded
+      if (healthPercent <= 25 && Math.random() < 0.3) {
+        return CombatActionType.DEFEND;
+      }
+      
+      // Moderate chance when moderately wounded
+      if (healthPercent <= 50 && Math.random() < 0.15) {
+        return CombatActionType.DEFEND;
+      }
+      
+      // Small chance even when healthy (unpredictable behavior)
+      if (Math.random() < 0.05) {
+        return CombatActionType.DEFEND;
+      }
     }
 
     // Otherwise, always attack (monsters are aggressive)

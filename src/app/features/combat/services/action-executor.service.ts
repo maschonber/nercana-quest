@@ -8,6 +8,7 @@ import {
 } from '../models/combat.model';
 import { ActionFactory } from './actions/action.factory';
 import { CombatStateManager } from './combat-state-manager.service';
+import { StatusEffectManager } from './status-effect-manager.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,8 @@ import { CombatStateManager } from './combat-state-manager.service';
 export class ActionExecutor {
   constructor(
     private actionFactory: ActionFactory,
-    private stateManager: CombatStateManager
+    private stateManager: CombatStateManager,
+    private statusEffectManager: StatusEffectManager
   ) {}
 
   /**
@@ -40,6 +42,13 @@ export class ActionExecutor {
       this.stateManager.applyHealing(actor, actionResult.healing);
     }
 
+    // Apply status effects
+    if (actionResult.statusEffects) {
+      actionResult.statusEffects.forEach(statusEffect => {
+        this.statusEffectManager.applyStatusEffect(actor, statusEffect, turnNumber);
+      });
+    }
+
     // Handle special action results
     if (actionType === CombatActionType.FLEE && actionResult.success) {
       this.stateManager.setCombatantFled(actor);
@@ -51,6 +60,7 @@ export class ActionExecutor {
       description: actionResult.description,
       damage: actionResult.damage,
       healing: actionResult.healing,
+      statusEffects: actionResult.statusEffects,
       actorId: actor.id,
       actorName: actor.name,
       targetId: target.id,

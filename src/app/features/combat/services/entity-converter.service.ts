@@ -27,7 +27,8 @@ export class EntityConverter {
       speed: entity.speed,
       type,
       isAlive: entity.health > 0,
-      hasFled: false
+      hasFled: false,
+      statusEffects: [] // Initialize with empty status effects
     };
   }
 

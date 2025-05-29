@@ -1,5 +1,6 @@
 // Combat feature exports
 export * from './models/combat.model';
+export * from './models/status-effect.model';
 export * from './services/combat.service';
 export * from './services/combat-orchestrator.service';
 export * from './services/turn-manager.service';
@@ -7,6 +8,7 @@ export * from './services/combat-ai.service';
 export * from './services/combat-state-manager.service';
 export * from './services/action-executor.service';
 export * from './services/entity-converter.service';
+export * from './services/status-effect-manager.service';
 export * from './services/actions/action.factory';
 export * from './services/actions/combat-action.interface';
 export * from './services/actions/attack-action.strategy';

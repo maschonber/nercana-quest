@@ -7,18 +7,31 @@ import {
   CombatantHealthState,
   TeamSide
 } from '../models/combat.model';
+import { StatusEffectManager } from './status-effect-manager.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CombatStateManager {
+  constructor(private statusEffectManager: StatusEffectManager) {}
   /**
    * Creates initial combat state from teams
    */
   createCombatState(heroTeam: Combatant[], enemyTeam: Combatant[]): Combat {
+    // Ensure all combatants have empty status effects array
+    const initHeroTeam = heroTeam.map(hero => ({
+      ...hero,
+      statusEffects: hero.statusEffects || []
+    }));
+    
+    const initEnemyTeam = enemyTeam.map(enemy => ({
+      ...enemy,
+      statusEffects: enemy.statusEffects || []
+    }));
+
     return {
-      heroTeam: { side: TeamSide.HERO, combatants: [...heroTeam] },
-      enemyTeam: { side: TeamSide.ENEMY, combatants: [...enemyTeam] },
+      heroTeam: { side: TeamSide.HERO, combatants: initHeroTeam },
+      enemyTeam: { side: TeamSide.ENEMY, combatants: initEnemyTeam },
       turns: [],
       currentTurn: 0,
       outcome: CombatOutcome.IN_PROGRESS
@@ -37,6 +50,48 @@ export class CombatStateManager {
     allCombatants.forEach((combatant) => {
       combatant.isAlive = combatant.health > 0 && !combatant.hasFled;
     });
+  }
+
+  /**
+   * Process status effects for all combatants at the start of a turn
+   */
+  processStatusEffectsForAllCombatants(combat: Combat): string[] {
+    const statusMessages: string[] = [];
+    const allCombatants = [
+      ...combat.heroTeam.combatants,
+      ...combat.enemyTeam.combatants
+    ];
+
+    allCombatants.forEach(combatant => {
+      if (!combatant.isAlive) return;
+
+      const { damage, healing, expiredEffects } = this.statusEffectManager.processStatusEffects(combatant);
+
+      // Apply damage over time
+      if (damage > 0) {
+        this.applyDamage(combatant, damage);
+        statusMessages.push(`${combatant.name} takes ${damage} damage from status effects!`);
+      }
+
+      // Apply healing over time
+      if (healing > 0) {
+        this.applyHealing(combatant, healing);
+        statusMessages.push(`${combatant.name} recovers ${healing} health from status effects!`);
+      }
+
+      // Report expired effects
+      expiredEffects.forEach(effect => {
+        statusMessages.push(`${combatant.name}'s ${effect.name} effect has worn off.`);
+      });
+
+      // Show current status effects
+      const statusDescription = this.statusEffectManager.getStatusEffectDescription(combatant);
+      if (statusDescription) {
+        statusMessages.push(`${combatant.name} ${statusDescription}`);
+      }
+    });
+
+    return statusMessages;
   }
 
   /**

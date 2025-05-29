@@ -12,6 +12,7 @@ import { CombatAI } from './combat-ai.service';
 import { CombatStateManager } from './combat-state-manager.service';
 import { ActionExecutor } from './action-executor.service';
 import { EntityConverter } from './entity-converter.service';
+import { StatusEffectManager } from './status-effect-manager.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,8 @@ export class CombatOrchestrator {
     private combatAI: CombatAI,
     private stateManager: CombatStateManager,
     private actionExecutor: ActionExecutor,
-    private entityConverter: EntityConverter
+    private entityConverter: EntityConverter,
+    private statusEffectManager: StatusEffectManager
   ) {}
 
   /**
@@ -74,11 +76,38 @@ export class CombatOrchestrator {
   private executeCombatTurn(combat: Combat): void {
     combat.currentTurn++;
 
+    // Process status effects at the start of each turn
+    const statusMessages = this.stateManager.processStatusEffectsForAllCombatants(combat);
+    
+    // Add status effect messages to combat log if any
+    if (statusMessages.length > 0) {
+      // Create a pseudo-turn for status effects
+      const statusTurn = {
+        turnNumber: combat.currentTurn,
+        actorId: 'system',
+        action: {
+          type: 'system' as any,
+          description: statusMessages.join(' '),
+          actorId: 'system',
+          actorName: 'System',
+          targetId: 'all',
+          targetName: 'All',
+          success: true
+        },
+        actorHealthAfter: 0,
+        targetHealthAfter: 0,
+        allCombatantsHealth: this.stateManager.captureAllCombatantsHealth(combat),
+        heroHealthAfter: 0,
+        monsterHealthAfter: 0
+      };
+      combat.turns.push(statusTurn);
+    }
+
     // Get all alive combatants from both teams
     const allCombatants = this.stateManager.getAliveCombatants(combat);
 
     // Initialize turn queue on first turn
-    if (combat.turns.length === 0) {
+    if (combat.turns.length === 0 || (combat.turns.length === 1 && statusMessages.length > 0)) {
       this.turnManager.initializeTurnQueue(allCombatants);
     }
 
@@ -87,6 +116,31 @@ export class CombatOrchestrator {
 
     if (!actingCombatant || !actingCombatant.isAlive) {
       // Skip turn if no valid actor
+      return;
+    }
+
+    // Check if combatant can act (not stunned)
+    if (!this.statusEffectManager.canAct(actingCombatant)) {
+      // Create a turn entry for the skipped action
+      const skipTurn = {
+        turnNumber: combat.currentTurn + 1,
+        actorId: actingCombatant.id,
+        action: {
+          type: 'skip' as any,
+          description: `${actingCombatant.name} is unable to act due to status effects!`,
+          actorId: actingCombatant.id,
+          actorName: actingCombatant.name,
+          targetId: actingCombatant.id,
+          targetName: actingCombatant.name,
+          success: false
+        },
+        actorHealthAfter: actingCombatant.health,
+        targetHealthAfter: actingCombatant.health,
+        allCombatantsHealth: this.stateManager.captureAllCombatantsHealth(combat),
+        heroHealthAfter: actingCombatant.type === 'hero' ? actingCombatant.health : 0,
+        monsterHealthAfter: actingCombatant.type === 'monster' ? actingCombatant.health : 0
+      };
+      combat.turns.push(skipTurn);
       return;
     }
 
@@ -111,7 +165,7 @@ export class CombatOrchestrator {
 
     // Execute the turn
     const turn = this.actionExecutor.executeTurn(
-      combat.currentTurn,
+      combat.currentTurn + 1,
       actingCombatant,
       target,
       actionType,
