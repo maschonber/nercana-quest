@@ -1,8 +1,8 @@
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LogEntry } from '../../../../models/log-entry.model';
-import { CombatOutcome, CombatantType, CombatantHealthState } from '../../models/combat.model';
-import { HeroFacadeService } from '../../../hero/services/hero-facade.service';
+import { LogEntry } from '../../../models/log-entry.model';
+import { CombatOutcome, CombatantType, CombatantHealthState } from '../models/combat.model';
+import { HeroFacadeService } from '../../hero/services/hero-facade.service';
 
 @Component({
   selector: 'app-combat-details',

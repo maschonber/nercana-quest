@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LogEntry } from '../../../models/log-entry.model';
 import { QuestStepType } from '../models/quest.model';
-import { CombatDetailsComponent } from './combat-details/combat-details.component';
+import { CombatDetailsComponent } from '../../combat';
 
 @Component({
   selector: 'app-quest-log',

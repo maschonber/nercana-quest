@@ -5,11 +5,11 @@ import { LogStore } from '../../../shared/stores/log.store';
 import { HeroFacadeService } from '../../hero/services/hero-facade.service';
 import { QuestDomainService, QuestContext } from './quest-domain.service';
 import { MonsterService } from './monster.service';
-import { CombatService } from './combat.service';
+import { CombatService, CombatOutcome, CombatResult } from '../../combat';
 import { Hero } from '../../hero/models/hero.model';
 import { Monster } from '../models/monster.model';
 import { QuestStepType, QuestStep } from '../models/quest.model';
-import { CombatOutcome, CombatResult } from '../models/combat.model';
+
 
 describe('Multi-Encounter Health Persistence Integration', () => {
   let questStore: any;

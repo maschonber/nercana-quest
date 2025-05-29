@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { EntityConverter } from './entity-converter.service';
 import { Hero } from '../../hero/models/hero.model';
-import { Monster, MonsterType } from '../models/monster.model';
+import { Monster, MonsterType } from '../../quest/models/monster.model';
 import { CombatantType } from '../models/combat.model';
 
 describe('EntityConverter', () => {

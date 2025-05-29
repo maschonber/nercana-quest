@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { CombatDetailsComponent } from './combat-details.component';
-import { LogEntry } from '../../../../models/log-entry.model';
-import { QuestStepType } from '../../models/quest.model';
-import { CombatOutcome, CombatantType, CombatActionType } from '../../models/combat.model';
-import { MonsterType } from '../../models/monster.model';
-import { HeroFacadeService } from '../../../hero/services/hero-facade.service';
-import { Hero } from '../../../hero/models/hero.model';
+import { LogEntry } from '../../../models/log-entry.model';
+import { QuestStepType } from '../../quest/models/quest.model';
+import { CombatOutcome, CombatantType, CombatActionType } from '../models/combat.model';
+import { MonsterType } from '../../quest/models/monster.model';
+import { HeroFacadeService } from '../../hero/services/hero-facade.service';
+import { Hero } from '../../hero/models/hero.model';
 
 describe('CombatDetailsComponent', () => {
   let component: CombatDetailsComponent;

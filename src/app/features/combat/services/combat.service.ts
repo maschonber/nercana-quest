@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Hero } from '../../hero/models/hero.model';
-import { Monster } from '../models/monster.model';
+import { Monster } from '../../quest/models/monster.model';
 import { CombatResult } from '../models/combat.model';
 import { CombatOrchestrator } from './combat-orchestrator.service';
 

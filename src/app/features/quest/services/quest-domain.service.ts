@@ -1,9 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Hero } from '../../hero/models/hero.model';
 import { QuestResult, QuestStep, QuestStepType } from '../models/quest.model';
-import { CombatOutcome, CombatResult } from '../models/combat.model';
-import { MonsterService } from './monster.service';
-import { CombatService } from './combat.service';  /**
+import { CombatOutcome, CombatResult, CombatService } from '../../combat';
+import { MonsterService } from './monster.service';/**
    * Context for tracking quest progress during dynamic step generation
    */
   export interface QuestContext {

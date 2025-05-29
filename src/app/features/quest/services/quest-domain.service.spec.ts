@@ -1,10 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { QuestDomainService } from './quest-domain.service';
 import { MonsterService } from './monster.service';
-import { CombatService } from './combat.service';
+import { CombatService, CombatOutcome, CombatResult } from '../../combat';
 import { Hero } from '../../hero/models/hero.model';
 import { QuestStepType } from '../models/quest.model';
-import { CombatOutcome, CombatResult } from '../models/combat.model';
 import { Monster, MonsterType } from '../models/monster.model';
 
 describe('QuestDomainService', () => {

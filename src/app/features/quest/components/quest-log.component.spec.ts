@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { QuestLogComponent } from './quest-log.component';
 import { LogEntry } from '../../../models/log-entry.model';
 import { QuestStepType } from '../models/quest.model';
-import { CombatOutcome, CombatantType, CombatActionType } from '../models/combat.model';
+import { CombatOutcome, CombatantType, CombatActionType } from '../../combat/models/combat.model';
 import { MonsterType } from '../models/monster.model';
 
 describe('QuestLogComponent', () => {

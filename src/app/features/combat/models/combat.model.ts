@@ -1,6 +1,6 @@
 // Model for combat system in Nercana
 import { Hero } from '../../hero/models/hero.model';
-import { Monster } from './monster.model';
+import { Monster } from '../../quest/models/monster.model';
 
 export enum CombatActionType {
   ATTACK = 'attack',
@@ -66,10 +66,9 @@ export interface CombatTurn {
   actorId: string; // ID of acting combatant
   action: CombatAction;
   actorHealthAfter: number;
-  targetHealthAfter: number;
-  // Comprehensive health tracking for all combatants after this turn
+  targetHealthAfter: number;  // Comprehensive health tracking for all combatants after this turn
   allCombatantsHealth?: CombatantHealthState[];
-  // Legacy fields for backward compatibility - can be removed later
+  // Legacy fields maintained for current functionality - could be refactored to use allCombatantsHealth
   heroHealthAfter: number;
   monsterHealthAfter: number;
 }
@@ -92,8 +91,4 @@ export interface Combat {
   turns: CombatTurn[];
   currentTurn: number;
   outcome: CombatOutcome;
-  
-  // Legacy fields for backward compatibility - can be removed later
-  hero?: Hero;
-  monster?: Monster;
 }

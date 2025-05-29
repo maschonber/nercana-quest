@@ -1,5 +1,5 @@
 // Model for quest-related data in Nercana
-import { CombatResult } from './combat.model';
+import { CombatResult } from '../../combat/models/combat.model';
 import { Monster } from './monster.model';
 
 export enum QuestStepType {
