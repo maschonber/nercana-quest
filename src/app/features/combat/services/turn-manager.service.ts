@@ -22,8 +22,8 @@ export class TurnManager {
 
     combatants.forEach((combatant) => {
       // Calculate initial action delay based on speed (lower delay = faster action)
-      // Base delay is 100, reduced by speed. Minimum delay is 10.
-      const actionDelay = Math.max(10, 100 - combatant.speed * 3);
+      // Base delay is 100, reduced by speed. Minimum delay is 30.
+      const actionDelay = Math.max(30, 100 - combatant.speed);
 
       this.turnQueue.push({
         combatant,
@@ -57,7 +57,7 @@ export class TurnManager {
 
     // Schedule this combatant's next action
     // Action delay is based on speed: faster combatants act more frequently
-    const actionDelay = Math.max(10, 100 - actingCombatant.speed * 3);
+    const actionDelay = Math.max(30, 100 - actingCombatant.speed);
     nextEntry.nextActionTime = this.currentTime + actionDelay;
 
     // Resort the queue for next turn

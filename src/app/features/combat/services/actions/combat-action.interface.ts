@@ -1,10 +1,10 @@
 import { Combatant, CombatActionType } from "../../models/combat.model";
-import { AppliedStatusEffect } from "../../models/status-effect.model";
+import { StatusEffect } from "../../models/status-effect.model";
 
 export interface CombatActionResult {
   damage?: number;
   healing?: number;
-  statusEffects?: AppliedStatusEffect[];
+  statusEffects?: StatusEffect[];
   success: boolean;
   description: string;
 }

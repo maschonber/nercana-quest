@@ -45,7 +45,7 @@ export class ActionExecutor {
     // Apply status effects
     if (actionResult.statusEffects) {
       actionResult.statusEffects.forEach(statusEffect => {
-        this.statusEffectManager.applyStatusEffect(actor, statusEffect, turnNumber);
+        this.statusEffectManager.applyStatusEffect(actor, statusEffect);
       });
     }
 

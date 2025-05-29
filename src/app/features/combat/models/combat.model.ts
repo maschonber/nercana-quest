@@ -1,7 +1,7 @@
 // Model for combat system in Nercana
 import { Hero } from '../../hero/models/hero.model';
 import { Monster } from '../../quest/models/monster.model';
-import { AppliedStatusEffect } from './status-effect.model';
+import { AppliedStatusEffect, StatusEffect } from './status-effect.model';
 
 export enum CombatActionType {
   ATTACK = 'attack',
@@ -32,7 +32,7 @@ export interface CombatAction {
   description: string;
   damage?: number;
   healing?: number;
-  statusEffects?: AppliedStatusEffect[]; // Status effects applied by this action
+  statusEffects?: StatusEffect[]; // Status effects applied by this action
   actorId: string; // ID of acting combatant
   actorName: string;
   targetId: string; // ID of target combatant

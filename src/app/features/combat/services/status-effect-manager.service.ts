@@ -5,20 +5,24 @@ import {
   StatusEffect, 
   StatusEffectType 
 } from '../models/status-effect.model';
+import { TurnManager } from './turn-manager.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StatusEffectManager {
+
+  constructor(private turnManager: TurnManager) {}
   
   /**
    * Apply a status effect to a combatant
    */
-  applyStatusEffect(combatant: Combatant, statusEffect: StatusEffect, turnNumber: number): void {
+  applyStatusEffect(combatant: Combatant, statusEffect: StatusEffect): void {
+    const currentTime = this.turnManager.getCurrentTime();
     const appliedEffect: AppliedStatusEffect = {
       ...statusEffect,
-      appliedAt: turnNumber,
-      remainingDuration: statusEffect.duration
+      appliedAt: currentTime,
+      expiresAt: currentTime + statusEffect.duration
     };
 
     // Check if effect is stackable
@@ -38,7 +42,6 @@ export class StatusEffectManager {
       effect => effect.type !== effectType
     );
   }
-
   /**
    * Process status effects at the start of a turn (damage/healing over time)
    */
@@ -46,6 +49,7 @@ export class StatusEffectManager {
     let totalDamage = 0;
     let totalHealing = 0;
     const expiredEffects: AppliedStatusEffect[] = [];
+    const currentTime = this.turnManager.getCurrentTime();
 
     combatant.statusEffects.forEach(effect => {
       // Apply damage over time
@@ -58,11 +62,8 @@ export class StatusEffectManager {
         totalHealing += effect.healingOverTime;
       }
 
-      // Decrease duration
-      effect.remainingDuration--;
-
-      // Mark for removal if expired
-      if (effect.remainingDuration <= 0) {
+      // Check if effect has expired
+      if (currentTime >= effect.expiresAt) {
         expiredEffects.push(effect);
       }
     });
@@ -119,19 +120,20 @@ export class StatusEffectManager {
   getActiveStatusEffects(combatant: Combatant): AppliedStatusEffect[] {
     return [...combatant.statusEffects];
   }
-
   /**
    * Generate a description of active status effects for combat log
-   */
-  getStatusEffectDescription(combatant: Combatant): string {
+   */  getStatusEffectDescription(combatant: Combatant): string {
     if (combatant.statusEffects.length === 0) {
       return '';
     }
 
+    const currentTime = this.turnManager.getCurrentTime();
     const effectNames = combatant.statusEffects.map(effect => {
-      const duration = effect.remainingDuration > 1 ? 
-        ` (${effect.remainingDuration} turns)` : 
-        ' (1 turn)';
+      const timeRemaining = Math.max(0, effect.expiresAt - currentTime);
+      const turnsRemaining = Math.ceil(timeRemaining / 70); // Approximate turns remaining (avg ~70 time units per turn)
+      const duration = turnsRemaining > 1 ? 
+        ` (~${turnsRemaining} turns)` : 
+        ' (ending soon)';
       return effect.name + duration;
     });
 
