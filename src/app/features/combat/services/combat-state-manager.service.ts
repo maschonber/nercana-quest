@@ -96,12 +96,13 @@ export class CombatStateManager {
     const aliveEnemies = combat.enemyTeam.combatants.filter((c) => c.isAlive);
     const fledHeroes = combat.heroTeam.combatants.filter((c) => c.hasFled);
 
-    if (aliveEnemies.length === 0) {
+    // Check flee first - if any hero has fled, it's a flee outcome
+    if (fledHeroes.length > 0) {
+      combat.outcome = CombatOutcome.HERO_FLED;
+    } else if (aliveEnemies.length === 0) {
       combat.outcome = CombatOutcome.HERO_VICTORY;
     } else if (aliveHeroes.length === 0) {
       combat.outcome = CombatOutcome.HERO_DEFEAT;
-    } else if (fledHeroes.length > 0 && aliveHeroes.length === 0) {
-      combat.outcome = CombatOutcome.HERO_FLED;
     }
   }
 

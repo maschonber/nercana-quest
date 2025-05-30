@@ -68,9 +68,7 @@ describe('CombatEncounterNarratorService', () => {
       expect(narrative).toContain('Xriit Commander');
       // Check for defeat-related concepts rather than specific words
       expect(narrative.toLowerCase()).toMatch(/defeat|termination|eliminated|failed|catastrophic|destroyed|overwhelm/);
-    });
-
-    it('should generate flee narrative', () => {
+    });    it('should generate flee narrative', () => {
       const combat = createMockCombat({
         outcome: CombatOutcome.HERO_FLED,
         enemies: [{ name: 'Space Merc' }],
@@ -79,7 +77,7 @@ describe('CombatEncounterNarratorService', () => {
 
       expect(narrative).toContain('Space Merc');
       // Check for retreat/escape-related concepts rather than specific words
-      expect(narrative.toLowerCase()).toMatch(/retreat|withdraw|escape|fled|tactical.*retreat|emergency.*protocol/);
+      expect(narrative.toLowerCase()).toMatch(/retreat|withdraw|withdrew|escape|fled|tactical.*retreat|emergency.*protocol/);
     });
 
     it('should describe different combat intensities appropriately', () => {

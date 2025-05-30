@@ -240,78 +240,6 @@ export class CombatEncounterNarratorService {
   }
 
   /**
-   * Analyzes status effects throughout combat for narrative purposes
-   */
-  private analyzeStatusEffects(combat: Combat): string[] {
-    const events: string[] = [];
-
-    combat.turns.forEach((turn) => {
-      if (turn.action.statusEffects && turn.action.statusEffects.length > 0) {
-        turn.action.statusEffects.forEach((effect) => {
-          switch (effect.type) {
-            case StatusEffectType.DEFENDING:
-              events.push('defensive');
-              break;
-            case StatusEffectType.POISONED:
-              events.push('poisoned');
-              break;
-            case StatusEffectType.STUNNED:
-              events.push('stunned');
-              break;
-            case StatusEffectType.EMPOWERED:
-              events.push('empowered');
-              break;
-            case StatusEffectType.REGENERATING:
-              events.push('regenerating');
-              break;
-          }
-        });
-      }
-    });
-
-    return [...new Set(events)]; // Remove duplicates
-  }
-
-  /**
-   * Creates narrative text for significant status effects
-   */
-  private getStatusEffectNarrative(effects: string[]): string {
-    if (effects.includes('poisoned') || effects.includes('stunned')) {
-      const debuffDescriptions = [
-        'Debilitating effects took their toll during the engagement.',
-        'Tactical systems were compromised by enemy countermeasures.',
-        'The battle was complicated by disorienting status effects.'
-      ];
-      return debuffDescriptions[
-        Math.floor(Math.random() * debuffDescriptions.length)
-      ];
-    } else if (
-      effects.includes('empowered') ||
-      effects.includes('regenerating')
-    ) {
-      const buffDescriptions = [
-        'Advanced systems provided crucial tactical advantages.',
-        'Combat enhancement protocols proved decisive.',
-        'Superior technology shifted the balance of engagement.'
-      ];
-      return buffDescriptions[
-        Math.floor(Math.random() * buffDescriptions.length)
-      ];
-    } else if (effects.includes('defensive')) {
-      const defensiveDescriptions = [
-        'Defensive positioning played a crucial role in the outcome.',
-        'Tactical cover and protection systems were essential.',
-        'Strategic defense protocols influenced the engagement significantly.'
-      ];
-      return defensiveDescriptions[
-        Math.floor(Math.random() * defensiveDescriptions.length)
-      ];
-    }
-
-    return '';
-  }
-
-  /**
    * Generates dramatic outcome descriptions based on combat result
    */
   private generateOutcomeDescription(combat: Combat): string {
@@ -325,28 +253,50 @@ export class CombatEncounterNarratorService {
       default:
         return 'The outcome remains uncertain.';
     }
-  }
-
-  /**
-   * Generates victory outcome descriptions
+  }  /**
+   * Generates victory outcome descriptions based on survivors and health damage taken during battle
    */
   private getVictoryDescription(combat: Combat): string {
     const heroSurvivors = combat.heroTeam.combatants.filter(
       (c) => c.isAlive
     ).length;
-    const enemyCount = combat.enemyTeam.combatants.length;
-
-    if (heroSurvivors === combat.heroTeam.combatants.length) {
-      // Flawless victory
-      const descriptions = [
-        'Your clone emerged triumphant, systems intact and mission parameters exceeded.',
-        'Victory was achieved with tactical excellence - your clone sustained minimal damage.',
-        'The engagement concluded with your clone standing victorious over the fallen hostiles.',
-        'Mission success confirmed: your clone neutralized all threats with superior execution.'
-      ];
-      return descriptions[Math.floor(Math.random() * descriptions.length)];
+    const totalHeroes = combat.heroTeam.combatants.length;
+    
+    // Calculate percentage of health lost during this battle
+    const healthLossPercentage = this.calculateBattleHealthLossPercentage(combat.heroTeam.combatants);
+    
+    if (heroSurvivors === totalHeroes) {
+      // All survived - differentiate by health damage taken during battle
+      if (healthLossPercentage <= 0.2) {
+        // Minimal damage taken (≤20% health lost)
+        const descriptions = [
+          'Your clone emerged triumphant, systems intact and mission parameters exceeded.',
+          'Victory was achieved with tactical excellence - your clone sustained minimal damage.',
+          'The engagement concluded with your clone standing victorious over the fallen hostiles.',
+          'Mission success confirmed: your clone neutralized all threats with superior execution.'
+        ];
+        return descriptions[Math.floor(Math.random() * descriptions.length)];
+      } else if (healthLossPercentage <= 0.4) {
+        // Moderate damage taken (21-40% health lost)
+        const descriptions = [
+          'Your clone achieved victory despite taking significant damage in the fierce engagement.',
+          'Victory was secured, though your clone bears the scars of a hard-fought battle.',
+          'The hostile forces were neutralized, but not without testing your clone\'s resilience.',
+          'Mission success confirmed, though your clone\'s systems show considerable battle damage.'
+        ];
+        return descriptions[Math.floor(Math.random() * descriptions.length)];
+      } else {
+        // Heavy damage taken (>40% health lost)
+        const descriptions = [
+          'Your clone claimed victory by the narrowest of margins, systems critically damaged but operational.',
+          'Against overwhelming odds, your clone emerged victorious despite severe battle trauma.',
+          'Victory was achieved through sheer determination as your clone fought through critical damage.',
+          'The engagement ended in success, though your clone barely survived the brutal confrontation.'
+        ];
+        return descriptions[Math.floor(Math.random() * descriptions.length)];
+      }
     } else {
-      // Costly victory
+      // Some clones died - this is always a costly victory regardless of remaining health
       const descriptions = [
         "Victory came at a price, but your clone's sacrifice secured the mission objective.",
         'Despite heavy losses, the engagement ended with tactical superiority confirmed.',
@@ -358,6 +308,27 @@ export class CombatEncounterNarratorService {
   }
 
   /**
+   * Calculates the percentage of health lost during the battle across all heroes
+   */
+  private calculateBattleHealthLossPercentage(heroes: Combatant[]): number {
+    if (heroes.length === 0) return 0;
+    
+    let totalHealthLost = 0;
+    let totalStartingHealth = 0;
+    
+    heroes.forEach(hero => {
+      // Assume heroes started at maxHealth at the beginning of battle
+      const startingHealth = hero.maxHealth;
+      const currentHealth = hero.isAlive ? hero.health : 0;
+      const healthLost = startingHealth - currentHealth;
+      
+      totalHealthLost += healthLost;
+      totalStartingHealth += startingHealth;
+    });
+    
+    return totalStartingHealth > 0 ? totalHealthLost / totalStartingHealth : 0;
+  }
+  /**
    * Generates defeat outcome descriptions
    */
   private getDefeatDescription(combat: Combat): string {
@@ -365,21 +336,19 @@ export class CombatEncounterNarratorService {
       'The engagement ended in catastrophic failure - clone termination confirmed.',
       'Hostile forces proved overwhelming; your clone was eliminated in the conflict.',
       'Mission failure: your clone was destroyed by superior enemy forces.',
-      'The tactical situation collapsed, resulting in complete clone unit loss.',
-      'Enemy superiority was absolute - your clone did not survive the encounter.'
+      'The tactical situation collapsed - your clone was eliminated in the failed engagement.',
+      'Enemy superiority was absolute - your clone was eliminated in the encounter.'
     ];
     return descriptions[Math.floor(Math.random() * descriptions.length)];
-  }
-
-  /**
+  }  /**
    * Generates flee outcome descriptions
    */
   private getFleeDescription(combat: Combat): string {
     const descriptions = [
       'Your clone executed emergency withdrawal protocols, preserving unit integrity.',
       'Tactical retreat was initiated when mission parameters became untenable.',
-      'Your clone disengaged from combat, citing unfavorable odds assessment.',
-      'Emergency egress procedures were activated to prevent total unit loss.',
+      'Your clone withdrew from combat, citing unfavorable odds assessment.',
+      'Emergency protocols were activated to prevent total unit loss.',
       'Your clone withdrew from the engagement zone to fight another day.'
     ];
     return descriptions[Math.floor(Math.random() * descriptions.length)];
