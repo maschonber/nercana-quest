@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { TurnManager } from './turn-manager.service';
-import { StatusEffectManager } from './status-effect-manager.service';
-import { ActionExecutor } from './action-executor.service';
-import { ActionFactory } from './actions/action.factory';
-import { CombatStateManager } from './combat-state-manager.service';
+import { TurnManager } from '../services/turn-manager.service';
+import { StatusEffectManager } from '../services/status-effect-manager.service';
+import { ActionExecutor } from '../services/action-executor.service';
+import { ActionFactory } from '../services/actions/action.factory';
+import { CombatStateManager } from '../services/combat-state-manager.service';
 import { CombatActionType, Combatant } from '../models/combat.model';
 import { StatusEffectType, StatusEffectFactory } from '../models/status-effect.model';
 

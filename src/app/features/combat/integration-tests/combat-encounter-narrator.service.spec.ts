@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { CombatEncounterNarratorService } from './combat-encounter-narrator.service';
+import { CombatEncounterNarratorService } from '../services/combat-encounter-narrator.service';
 import { Combat, CombatOutcome, CombatantType, TeamSide, CombatActionType } from '../models/combat.model';
 import { StatusEffectType } from '../models/status-effect.model';
 

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { CombatDetailsComponent } from './combat-details.component';
+import { CombatDetailsComponent } from '../components/combat-details.component';
 import { LogEntry } from '../../../models/log-entry.model';
 import { QuestStepType } from '../../quest/models/quest.model';
 import {

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CombatDetailsComponent } from './combat-details.component';
+import { CombatDetailsComponent } from '../components/combat-details.component';
 import { LogEntry } from '../../../models/log-entry.model';
 import { HeroFacadeService } from '../../hero/services/hero-facade.service';
 import { HeroStore } from '../../../shared/stores/hero.store';

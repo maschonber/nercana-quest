@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { QuestDomainService } from './quest-domain.service';
-import { MonsterService } from './monster.service';
 import { CombatService, CombatOutcome } from '../../combat';
 import { QuestStepType } from '../models/quest.model';
 import { Hero } from '../../hero/models/hero.model';
+import { QuestDomainService } from '../services/quest-domain.service';
+import { MonsterService } from '../services/monster.service';
 
 /**
  * Integration tests for station resource generation in quest domain service

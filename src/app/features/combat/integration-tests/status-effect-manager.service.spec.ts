@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { StatusEffectManager } from './status-effect-manager.service';
-import { TurnManager } from './turn-manager.service';
+import { StatusEffectManager } from '../services/status-effect-manager.service';
+import { TurnManager } from '../services/turn-manager.service';
 import { StatusEffectFactory, StatusEffectType } from '../models/status-effect.model';
 import { Combatant } from '../models/combat.model';
 
