@@ -10,6 +10,7 @@ describe('QuestDomainService', () => {
   let service: QuestDomainService;
   let monsterServiceSpy: any;
   let combatServiceSpy: any;
+
   beforeEach(() => {
     // Create Jest spy objects instead of Jasmine spies
     const monsterSpy = {
@@ -57,7 +58,8 @@ describe('QuestDomainService', () => {
       outcome: CombatOutcome.HERO_VICTORY,
       turns: [],
       experienceGained: 20,
-      summary: 'Test combat summary'
+      summary: 'Test combat summary',
+      enhancedNarrative: 'Enhanced dramatic narrative for quest log'
     };
 
     combatServiceSpy.createTeamCombat.mockReturnValue(mockCombatResult);

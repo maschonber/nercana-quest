@@ -2,7 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { Hero } from '../../hero/models/hero.model';
 import { QuestResult, QuestStep, QuestStepType } from '../models/quest.model';
 import { CombatOutcome, CombatResult, CombatService } from '../../combat';
-import { MonsterService } from './monster.service'; /**
+import { MonsterService } from './monster.service';
+
+/**
  * Context for tracking quest progress during dynamic step generation
  */
 export interface QuestContext {
@@ -151,7 +153,7 @@ export class QuestDomainService {
         // Clone hero to avoid modifying the original during combat simulation
         const heroCopy = { ...hero };
 
-        // Simulate combat between hero and monster(s) using team combat API
+        // Simulate combat between hero and monster(s)
         combatResult = this.combatService.createTeamCombat(
           [heroCopy],
           encounterMonsters
@@ -171,11 +173,8 @@ export class QuestDomainService {
           );
           context.accumulatedGoo += gooGained;
         }
-        // Generate appropriate message based on combat outcome
-        message = this.generateEncounterMessageFromCombat(
-          combatResult,
-          encounterMonsters
-        );
+        // Use enhanced narrative if available, fallback to regular summary
+        message = combatResult.enhancedNarrative || combatResult.summary;
         break;
 
       case QuestStepType.TREASURE:
@@ -231,68 +230,6 @@ export class QuestDomainService {
       'Some interesting components are discovered along the way.'
     ];
     return messages[Math.floor(Math.random() * messages.length)];
-  } /**
-   * Generates message for encounter step based on combat result
-   */
-  private generateEncounterMessageFromCombat(
-    combatResult: CombatResult,
-    monsters: any[] | any
-  ): string {
-    // Handle both single monster (backward compatibility) and multiple monsters
-    const monsterArray = Array.isArray(monsters) ? monsters : [monsters];
-    const monsterCount = monsterArray.length;
-
-    let monsterDescription: string;
-
-    if (monsterCount === 1) {
-      monsterDescription = monsterArray[0]?.name || 'the hostile entity';
-    } else if (monsterCount === 2) {
-      monsterDescription = `${monsterArray[0]?.name || 'enemy'} and ${monsterArray[1]?.name || 'enemy'}`;
-    } else {
-      // 3 or more monsters
-      const firstTwo = monsterArray
-        .slice(0, 2)
-        .map((m) => m?.name || 'enemy')
-        .join(', ');
-      const remaining = monsterCount - 2;
-      monsterDescription = `${firstTwo}, and ${remaining} other ${remaining === 1 ? 'enemy' : 'enemies'}`;
-    }
-
-    switch (combatResult.outcome) {
-      case CombatOutcome.HERO_VICTORY:
-        const victoryMessages = [
-          `Your clone defeated ${monsterDescription} after an intense firefight! ${combatResult.summary}`,
-          `${monsterDescription} ${monsterCount === 1 ? 'was' : 'were'} no match for your clone's tactical prowess after a ${combatResult.turns.length}-turn engagement!`,
-          `Victory! Your clone neutralized ${monsterDescription} with superior technology!`,
-          `After a fierce struggle, your clone emerged victorious over ${monsterDescription}!`
-        ];
-        return victoryMessages[
-          Math.floor(Math.random() * victoryMessages.length)
-        ];
-
-      case CombatOutcome.HERO_DEFEAT:
-        const defeatMessages = [
-          `Your clone was destroyed by ${monsterDescription} in a devastating firefight. Clone termination confirmed.`,
-          `Despite valiant resistance, ${monsterDescription} eliminated your clone with overwhelming force. Time for a new clone.`,
-          `${monsterDescription} proved too powerful - your clone didn't survive the encounter. Mission failure, clone lost.`,
-          `Fatal encounter: Your clone was killed by ${monsterDescription}. Emergency clone replacement protocols are advised.`
-        ];
-        return defeatMessages[
-          Math.floor(Math.random() * defeatMessages.length)
-        ];
-
-      case CombatOutcome.HERO_FLED:
-        const fleeMessages = [
-          `Your clone made a tactical retreat when facing ${monsterDescription}, judging the odds unfavorable.`,
-          `Recognizing the threat posed by ${monsterDescription}, your clone cowardly chose to disengage from combat.`,
-          `Your clone managed to escape from a potentially deadly encounter with ${monsterDescription}.`,
-          `Facing ${monsterDescription}, your clone foolishly decided to put its own safety above the mission.`
-        ];
-        return fleeMessages[Math.floor(Math.random() * fleeMessages.length)];
-
-      default:
-        return `Your clone encountered ${monsterDescription}, but the outcome is unclear.`;
-    }
   }
 
   /**

@@ -3,6 +3,7 @@ export * from './models/combat.model';
 export * from './models/status-effect.model';
 export * from './services/combat.service';
 export * from './services/combat-orchestrator.service';
+export * from './services/combat-encounter-narrator.service';
 export * from './services/turn-manager.service';
 export * from './services/combat-ai.service';
 export * from './services/combat-state-manager.service';

@@ -2,17 +2,18 @@ import { Injectable } from '@angular/core';
 import { Hero } from '../../hero/models/hero.model';
 import { Monster } from '../../quest/models/monster.model';
 import {
-  Combatant,
-  CombatResult,
+  Combat,
   CombatOutcome,
-  Combat
+  CombatResult,
+  Combatant
 } from '../models/combat.model';
-import { TurnManager } from './turn-manager.service';
 import { CombatAI } from './combat-ai.service';
+import { TurnManager } from './turn-manager.service';
 import { CombatStateManager } from './combat-state-manager.service';
 import { ActionExecutor } from './action-executor.service';
 import { EntityConverter } from './entity-converter.service';
 import { StatusEffectManager } from './status-effect-manager.service';
+import { CombatEncounterNarratorService } from './combat-encounter-narrator.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,8 @@ export class CombatOrchestrator {
     private stateManager: CombatStateManager,
     private actionExecutor: ActionExecutor,
     private entityConverter: EntityConverter,
-    private statusEffectManager: StatusEffectManager
+    private statusEffectManager: StatusEffectManager,
+    private narrator: CombatEncounterNarratorService
   ) {}
 
   /**
@@ -35,7 +37,39 @@ export class CombatOrchestrator {
       heroes,
       monsters
     );
-    return this.simulateCombat(heroTeam, enemyTeam);
+    
+    // Initialize combat state
+    const combat = this.stateManager.createCombatState(heroTeam, enemyTeam);
+
+    // Reset turn manager for new combat
+    this.turnManager.reset();
+
+    // Simulate turns until combat ends
+    while (combat.outcome === CombatOutcome.IN_PROGRESS) {
+      this.executeCombatTurn(combat);
+    }
+
+    // Calculate total experience reward from defeated enemies
+    const experienceGained = this.stateManager.calculateExperienceGained(
+      combat.enemyTeam
+    );
+
+    // Create a summary based on the outcome
+    const summary = this.stateManager.generateCombatSummary(combat);
+
+    // Generate enhanced narrative for quest logs
+    const enhancedNarrative = this.narrator.generateEncounterNarrative(combat);
+
+    // Create the result with enhanced narrative
+    const result: CombatResult = {
+      outcome: combat.outcome,
+      turns: combat.turns,
+      experienceGained,
+      summary,
+      enhancedNarrative
+    };
+
+    return result;
   }
 
   /**

@@ -87,6 +87,7 @@ export interface CombatResult {
   turns: CombatTurn[];
   experienceGained: number;
   summary: string;
+  enhancedNarrative?: string; // Enhanced dramatic narrative for quest logs
 }
 
 export interface Combat {
