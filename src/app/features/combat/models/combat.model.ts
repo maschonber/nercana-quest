@@ -61,6 +61,7 @@ export interface CombatantHealthState {
   maxHealth: number;
   isAlive: boolean;
   type: CombatantType;
+  statusEffects: AppliedStatusEffect[];
 }
 
 export interface CombatTurn {

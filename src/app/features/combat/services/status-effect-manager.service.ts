@@ -118,27 +118,7 @@ export class StatusEffectManager {
    */
   getActiveStatusEffects(combatant: Combatant): AppliedStatusEffect[] {
     return [...combatant.statusEffects];
-  }
-  /**
-   * Generate a description of active status effects for combat log
-   */  getStatusEffectDescription(combatant: Combatant): string {
-    if (combatant.statusEffects.length === 0) {
-      return '';
-    }
-
-    const currentTime = this.turnManager.getCurrentTime();
-    const effectNames = combatant.statusEffects.map(effect => {
-      const timeRemaining = Math.max(0, effect.expiresAt - currentTime);
-      const duration = timeRemaining > 20 ? 
-        ` (${timeRemaining} clicks)` : 
-        ' (ending soon)';
-      return effect.name + duration;
-    });
-
-    return `[${effectNames.join(', ')}]`;
-  }
-
-  /**
+  }  /**
    * Check if combatant can act (not stunned)
    */
   canAct(combatant: Combatant): boolean {

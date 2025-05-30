@@ -97,7 +97,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: healthAfterFirstEncounter,
                     maxHealth: 100,
                     isAlive: true,
-                    type: 'hero' as any
+                    type: 'hero' as any,
+                    statusEffects: []
                   },
                   {
                     id: 'monster-1',
@@ -105,7 +106,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: 0,
                     maxHealth: 30,
                     isAlive: false,
-                    type: 'monster' as any
+                    type: 'monster' as any,
+                    statusEffects: []
                   }
                 ]
               }
@@ -145,7 +147,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: healthAfterSecondEncounter,
                     maxHealth: 100,
                     isAlive: true,
-                    type: 'hero' as any
+                    type: 'hero' as any,
+                    statusEffects: []
                   },
                   {
                     id: 'monster-1',
@@ -153,7 +156,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: 0,
                     maxHealth: 30,
                     isAlive: false,
-                    type: 'monster' as any
+                    type: 'monster' as any,
+                    statusEffects: []
                   }
                 ]
               }
@@ -277,7 +281,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: 10,
                     maxHealth: 100,
                     isAlive: true,
-                    type: 'hero' as any
+                    type: 'hero' as any,
+                    statusEffects: []
                   },
                   {
                     id: 'monster-1',
@@ -285,7 +290,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: 0,
                     maxHealth: 30,
                     isAlive: false,
-                    type: 'monster' as any
+                    type: 'monster' as any,
+                    statusEffects: []
                   }
                 ]
               }
@@ -324,7 +330,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: 0,
                     maxHealth: 100,
                     isAlive: false,
-                    type: 'hero' as any
+                    type: 'hero' as any,
+                    statusEffects: []
                   },
                   {
                     id: 'monster-1',
@@ -332,7 +339,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: 35,
                     maxHealth: 40,
                     isAlive: true,
-                    type: 'monster' as any
+                    type: 'monster' as any,
+                    statusEffects: []
                   }
                 ]
               }
@@ -413,7 +421,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: 55,
                     maxHealth: 100,
                     isAlive: true,
-                    type: 'hero' as any
+                    type: 'hero' as any,
+                    statusEffects: []
                   },
                   {
                     id: 'monster-1',
@@ -421,7 +430,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
                     health: 0,
                     maxHealth: 30,
                     isAlive: false,
-                    type: 'monster' as any
+                    type: 'monster' as any,
+                    statusEffects: []
                   }
                 ]
               }

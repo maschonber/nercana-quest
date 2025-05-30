@@ -83,7 +83,7 @@
       <!-- Health status after the turn -->
       <div class="turn-health-status">
         <div class="health-info">
-          <!-- Hero health display with inline health bar -->
+          <!-- Hero health display with inline health bar and status effects -->
           <div
             class="combatant-health-row"
             *ngIf="getHeroHealthState(turn) as heroState"
@@ -98,6 +98,13 @@
                 }}
                 HP</span
               >
+              <span
+                class="status-effects"
+                *ngFor="let effect of getActiveStatusEffects(heroState)"
+                [title]="getStatusEffectTooltip(effect)"
+              >
+                {{ getStatusEffectIcon(effect) }}
+              </span>
               <span
                 class="health-status"
                 [ngClass]="{ defeated: !heroState.isAlive }"
@@ -116,7 +123,7 @@
             </div>
           </div>
 
-          <!-- Individual enemy health displays with inline health bars -->
+          <!-- Individual enemy health displays with inline health bars and status effects -->
           <div class="enemies-health">
             <div
               class="combatant-health-row"
@@ -133,6 +140,13 @@
                   }}
                   HP</span
                 >
+                <span
+                  class="status-effects"
+                  *ngFor="let effect of getActiveStatusEffects(enemyState)"
+                  [title]="getStatusEffectTooltip(effect)"
+                >
+                  {{ getStatusEffectIcon(effect) }}
+                </span>
                 <span
                   class="health-status"
                   [ngClass]="{ defeated: !enemyState.isAlive }"

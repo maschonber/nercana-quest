@@ -75,7 +75,8 @@ describe('CombatDetailsComponent', () => {
               health: 100,
               maxHealth: 120,
               isAlive: true,
-              type: CombatantType.HERO
+              type: CombatantType.HERO,
+              statusEffects: []
             },
             {
               id: 'monster-1',
@@ -83,7 +84,8 @@ describe('CombatDetailsComponent', () => {
               health: 105,
               maxHealth: 120,
               isAlive: true,
-              type: CombatantType.MONSTER
+              type: CombatantType.MONSTER,
+              statusEffects: []
             }
           ]
         },
@@ -112,7 +114,8 @@ describe('CombatDetailsComponent', () => {
               health: 80,
               maxHealth: 120,
               isAlive: true,
-              type: CombatantType.HERO
+              type: CombatantType.HERO,
+              statusEffects: []
             },
             {
               id: 'monster-1',
@@ -120,7 +123,8 @@ describe('CombatDetailsComponent', () => {
               health: 105,
               maxHealth: 120,
               isAlive: true,
-              type: CombatantType.MONSTER
+              type: CombatantType.MONSTER,
+              statusEffects: []
             }
           ]
         }
@@ -179,16 +183,18 @@ describe('CombatDetailsComponent', () => {
   });
 
   it('should get correct turn actor names', () => {
-    const heroTurn = { actor: CombatantType.HERO };
-    const monsterTurn = { actor: CombatantType.MONSTER };
+    // Use actual turn structures that match the real data
+    const heroTurn = mockLogEntry.combatResult!.turns[0]; // First turn is hero turn
+    const monsterTurn = mockLogEntry.combatResult!.turns[1]; // Second turn is monster turn
 
-    expect(component.getTurnActorName(heroTurn)).toBe('You');
-    expect(component.getTurnActorName(monsterTurn)).toBe('Ancient Void Entity');
+    expect(component.getTurnActorName(heroTurn)).toBe('Test Hero');
+    expect(component.getTurnActorName(monsterTurn)).toBe('Ancient Dragon');
   });
 
   it('should get correct CSS classes for turn actors', () => {
-    const heroTurn = { actor: CombatantType.HERO };
-    const monsterTurn = { actor: CombatantType.MONSTER };
+    // Use actual turn structures that match the real data
+    const heroTurn = mockLogEntry.combatResult!.turns[0]; // First turn is hero turn
+    const monsterTurn = mockLogEntry.combatResult!.turns[1]; // Second turn is monster turn
 
     expect(component.getTurnActorClass(heroTurn)).toBe('hero-turn');
     expect(component.getTurnActorClass(monsterTurn)).toBe('monster-turn');

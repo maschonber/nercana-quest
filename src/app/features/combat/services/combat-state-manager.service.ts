@@ -83,12 +83,6 @@ export class CombatStateManager {
       expiredEffects.forEach(effect => {
         statusMessages.push(`${combatant.name}'s ${effect.name} effect has worn off.`);
       });
-
-      // Show current status effects
-      const statusDescription = this.statusEffectManager.getStatusEffectDescription(combatant);
-      if (statusDescription) {
-        statusMessages.push(`${combatant.name} ${statusDescription}`);
-      }
     });
 
     return statusMessages;
@@ -126,7 +120,8 @@ export class CombatStateManager {
       health: combatant.health,
       maxHealth: combatant.maxHealth,
       isAlive: combatant.isAlive,
-      type: combatant.type
+      type: combatant.type,
+      statusEffects: combatant.statusEffects
     }));
   }
 

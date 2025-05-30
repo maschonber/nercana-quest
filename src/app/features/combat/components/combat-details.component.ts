@@ -7,6 +7,8 @@ import {
   CombatantHealthState
 } from '../models/combat.model';
 import { HeroFacadeService } from '../../hero/services/hero-facade.service';
+import { StatusEffectManager } from '../services/status-effect-manager.service';
+import { AppliedStatusEffect, StatusEffectType } from '../models/status-effect.model';
 
 @Component({
   selector: 'app-combat-details',
@@ -19,6 +21,7 @@ export class CombatDetailsComponent {
   @Input() entry!: LogEntry;
 
   private readonly heroFacade = inject(HeroFacadeService);
+  private readonly statusEffectManager = inject(StatusEffectManager);
 
   // Access hero data for health calculations
   hero = this.heroFacade.hero;
@@ -60,21 +63,34 @@ export class CombatDetailsComponent {
   }
   // Get actor name for a turn
   getTurnActorName(turn: any): string {
-    if (turn.actor === CombatantType.HERO) {
-      return 'You';
-    } else {
-      // For multi-monster encounters, try to get the specific monster name
-      // This would need enhanced turn tracking in the combat system
-      if (this.entry.monsters && this.entry.monsters.length > 1) {
-        return 'Enemy'; // Simplified for now
+    // Find the actual combatant using actorId from the health states
+    if (turn.allCombatantsHealth) {
+      const actor = turn.allCombatantsHealth.find(
+        (state: CombatantHealthState) => state.id === turn.actorId
+      );
+      if (actor) {
+        return actor.name;
       }
-      return this.entry.monster?.name || 'Monster';
     }
+
+    // Minimal fallback - should rarely be used with current combat system
+    return turn.action?.actorName || 'Unknown Actor';
   }
 
   // Get CSS class for turn based on actor type
   getTurnActorClass(turn: any): string {
-    return turn.actor === CombatantType.HERO ? 'hero-turn' : 'monster-turn';
+    // Find the actual combatant using actorId from the health states
+    if (turn.allCombatantsHealth) {
+      const actor = turn.allCombatantsHealth.find(
+        (state: CombatantHealthState) => state.id === turn.actorId
+      );
+      if (actor) {
+        return actor.type === CombatantType.HERO ? 'hero-turn' : 'monster-turn';
+      }
+    }
+
+    // Minimal fallback - assume monster turn if actor lookup fails
+    return 'monster-turn';
   }
   // Get count of active (alive) enemies for multi-monster encounters
   getActiveEnemiesCount(turn: any): number {
@@ -110,7 +126,8 @@ export class CombatDetailsComponent {
           health: turn.monsterHealthAfter,
           maxHealth: this.entry.monster.maxHealth,
           isAlive: turn.monsterHealthAfter > 0,
-          type: CombatantType.MONSTER
+          type: CombatantType.MONSTER,
+          statusEffects: []
         }
       ];
     }
@@ -134,7 +151,8 @@ export class CombatDetailsComponent {
       health: turn.heroHealthAfter,
       maxHealth: this.hero().maxHealth,
       isAlive: turn.heroHealthAfter > 0,
-      type: CombatantType.HERO
+      type: CombatantType.HERO,
+      statusEffects: []
     };
   }
 
@@ -153,5 +171,38 @@ export class CombatDetailsComponent {
     const estimatedCurrentHealth = totalMaxHealth * 0.5; // Placeholder logic
 
     return this.getHealthPercentage(estimatedCurrentHealth, totalMaxHealth);
+  }
+
+  // Get status effect icon for display
+  getStatusEffectIcon(statusEffect: AppliedStatusEffect): string {
+    switch (statusEffect.type) {
+      case StatusEffectType.DEFENDING:
+        return '🛡️';
+      case StatusEffectType.POISONED:
+        return '☠️';
+      case StatusEffectType.REGENERATING:
+        return '💚';
+      case StatusEffectType.STUNNED:
+        return '😵';
+      case StatusEffectType.EMPOWERED:
+        return '⚡';
+      default:
+        return '⭐';
+    }
+  }
+
+  // Get status effect display with remaining time
+  getStatusEffectTooltip(statusEffect: AppliedStatusEffect): string {
+    // For display purposes, show the full duration since we don't have current combat time context
+    const duration = statusEffect.expiresAt - statusEffect.appliedAt;
+    const durationText = duration > 20 ? 
+      ` (${duration} clicks duration)` : 
+      ' (short duration)';
+    return `${statusEffect.name}${durationText}: ${statusEffect.description}`;
+  }
+
+  // Get active status effects for a combatant state
+  getActiveStatusEffects(combatantState: CombatantHealthState): AppliedStatusEffect[] {
+    return combatantState.statusEffects || [];
   }
 }

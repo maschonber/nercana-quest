@@ -6,18 +6,19 @@ Development standards and best practices for the Nercana Angular project.
 
 Follow this systematic approach for any code changes:
 
-1. **Research**: Read README.md, SPECS.md, and related files to understand context and requirements
+1. **Research**: Read GUIDELINES.md, SETTING.md, and related files to understand context and requirements
 2. **Analyze**: Examine existing code, tests, and dependencies affected by the change
 3. **Plan**: Design solution following project architecture and identify all impacted files
+    - If you are unsure about the approach or need clarification, ask for help. It's better to clarify than to guess.
 4. **Implement**: Make focused, consistent changes following the guidelines below
+    - Do not care about legacy compatibility; focus on clean, modern code
 5. **Test**: Add/update tests for new functionality, ensure comprehensive coverage
-6. **Validate**: Run all tests (Jest + Playwright) and iterate until passing
-
-At any point, if you are unsure about the approach or need clarification, ask for help. It's better to clarify than to guess.
+6. **Prune**: Remove unused code, imports, legacy functions and dependencies
+7. **Validate**: Run all tests (Jest + Playwright) and iterate until passing
 
 ## Core Standards
 
-- **Architecture**: Models in `/models/`, business logic in `/services/`, UI in components
+- **Architecture**: Models in `/models/`, business logic in `/services/`, UI in `/components/`
 - **State**: Use NgRx Signal Store exclusively, keep state immutable
 - **TypeScript**: Explicit types everywhere, avoid `any`, use interfaces for contracts
 - **Testing**: Jest for units, Playwright for e2e, aim for 80%+ coverage on critical features

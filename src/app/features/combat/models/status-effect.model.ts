@@ -23,7 +23,9 @@ export interface AppliedStatusEffect extends StatusEffect {
   expiresAt: number; // Combat time when effect expires (in clicks)
 }
 
-export class StatusEffectFactory {  static createDefending(duration: number = 300): StatusEffect { // ~9 actions worth of time (3-4 combat "turns")
+export class StatusEffectFactory {
+  static createDefending(duration: number = 300): StatusEffect {
+    // ~9 actions worth of time (3-4 combat "turns")
     return {
       type: StatusEffectType.DEFENDING,
       name: 'Defending',
@@ -33,7 +35,11 @@ export class StatusEffectFactory {  static createDefending(duration: number = 30
       damageReduction: 0.4 // 40% damage reduction
     };
   }
-  static createPoisoned(duration: number = 400, damagePerTurn: number = 5): StatusEffect { // ~11-13 actions
+  static createPoisoned(
+    duration: number = 400,
+    damagePerTurn: number = 5
+  ): StatusEffect {
+    // ~11-13 actions
     return {
       type: StatusEffectType.POISONED,
       name: 'Poisoned',
@@ -43,7 +49,11 @@ export class StatusEffectFactory {  static createDefending(duration: number = 30
       damageOverTime: damagePerTurn
     };
   }
-  static createRegenerating(duration: number = 300, healingPerTurn: number = 8): StatusEffect { // ~9 actions
+  static createRegenerating(
+    duration: number = 300,
+    healingPerTurn: number = 8
+  ): StatusEffect {
+    // ~9 actions
     return {
       type: StatusEffectType.REGENERATING,
       name: 'Regenerating',
@@ -52,7 +62,9 @@ export class StatusEffectFactory {  static createDefending(duration: number = 30
       stackable: false,
       healingOverTime: healingPerTurn
     };
-  }  static createStunned(duration: number = 100): StatusEffect { // ~3 actions worth of time  
+  }
+  static createStunned(duration: number = 100): StatusEffect {
+    // ~3 actions worth of time
     return {
       type: StatusEffectType.STUNNED,
       name: 'Stunned',
@@ -61,7 +73,8 @@ export class StatusEffectFactory {  static createDefending(duration: number = 30
       stackable: false
     };
   }
-  static createEmpowered(duration: number = 200): StatusEffect { // ~6 actions
+  static createEmpowered(duration: number = 200): StatusEffect {
+    // ~6 actions
     return {
       type: StatusEffectType.EMPOWERED,
       name: 'Empowered',

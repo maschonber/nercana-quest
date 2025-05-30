@@ -77,38 +77,13 @@ export class CombatOrchestrator {
     combat.currentTurn++;
 
     // Process status effects at the start of each turn
-    const statusMessages = this.stateManager.processStatusEffectsForAllCombatants(combat);
-    
-    // Add status effect messages to combat log if any
-    if (statusMessages.length > 0) {
-      // Create a pseudo-turn for status effects
-      const statusTurn = {
-        turnNumber: combat.currentTurn,
-        combatTime: this.turnManager.getCurrentTime(),
-        actorId: 'system',
-        action: {
-          type: 'system' as any,
-          description: statusMessages.join(' '),
-          actorId: 'system',
-          actorName: 'System',
-          targetId: 'all',
-          targetName: 'All',
-          success: true
-        },
-        actorHealthAfter: 0,
-        targetHealthAfter: 0,
-        allCombatantsHealth: this.stateManager.captureAllCombatantsHealth(combat),
-        heroHealthAfter: 0,
-        monsterHealthAfter: 0
-      };
-      combat.turns.push(statusTurn);
-    }
+    this.stateManager.processStatusEffectsForAllCombatants(combat);
 
     // Get all alive combatants from both teams
     const allCombatants = this.stateManager.getAliveCombatants(combat);
 
     // Initialize turn queue on first turn
-    if (combat.turns.length === 0 || (combat.turns.length === 1 && statusMessages.length > 0)) {
+    if (combat.turns.length === 0) {
       this.turnManager.initializeTurnQueue(allCombatants);
     }
 

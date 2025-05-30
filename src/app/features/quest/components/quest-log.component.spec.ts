@@ -70,7 +70,8 @@ describe('QuestLogComponent', () => {
                 health: 100,
                 maxHealth: 120,
                 isAlive: true,
-                type: CombatantType.HERO
+                type: CombatantType.HERO,
+                statusEffects: []
               },
               {
                 id: 'monster-1',
@@ -78,7 +79,8 @@ describe('QuestLogComponent', () => {
                 health: 105,
                 maxHealth: 120,
                 isAlive: true,
-                type: CombatantType.MONSTER
+                type: CombatantType.MONSTER,
+                statusEffects: []
               }
             ]
           }
