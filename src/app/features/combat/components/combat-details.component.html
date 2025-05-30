@@ -101,7 +101,7 @@
               <span
                 class="status-effects"
                 *ngFor="let effect of getActiveStatusEffects(heroState)"
-                [title]="getStatusEffectTooltip(effect)"
+                [title]="getStatusEffectTooltip(effect, turn.combatTime)"
               >
                 {{ getStatusEffectIcon(effect) }}
               </span>
@@ -143,7 +143,7 @@
                 <span
                   class="status-effects"
                   *ngFor="let effect of getActiveStatusEffects(enemyState)"
-                  [title]="getStatusEffectTooltip(effect)"
+                  [title]="getStatusEffectTooltip(effect, turn.combatTime)"
                 >
                   {{ getStatusEffectIcon(effect) }}
                 </span>

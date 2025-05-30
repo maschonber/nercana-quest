@@ -110,17 +110,16 @@ describe('CombatDetailsComponent - Status Effects Display Integration', () => {
 
     // Test status effect icon generation
     expect(component.getStatusEffectIcon(defendingEffect)).toBe('🛡️');
-    expect(component.getStatusEffectIcon(poisonedEffect)).toBe('☠️');
-
-    // Test status effect tooltips
-    const defendingTooltip = component.getStatusEffectTooltip(defendingEffect);
+    expect(component.getStatusEffectIcon(poisonedEffect)).toBe('☠️');    // Test status effect tooltips (at combat time 50)
+    const combatTime = component.entry.combatResult!.turns[0].combatTime; // 50
+    const defendingTooltip = component.getStatusEffectTooltip(defendingEffect, combatTime);
     expect(defendingTooltip).toContain('Defending');
-    expect(defendingTooltip).toContain('200 clicks duration');
+    expect(defendingTooltip).toContain('150 clicks remaining'); // 200 - 50 = 150
     expect(defendingTooltip).toContain('Taking a defensive stance');
 
-    const poisonTooltip = component.getStatusEffectTooltip(poisonedEffect);
+    const poisonTooltip = component.getStatusEffectTooltip(poisonedEffect, combatTime);
     expect(poisonTooltip).toContain('Poisoned');
-    expect(poisonTooltip).toContain('300 clicks duration');
+    expect(poisonTooltip).toContain('250 clicks remaining'); // 300 - 50 = 250
     expect(poisonTooltip).toContain('Taking poison damage');
 
     // Test that status effects are retrieved correctly

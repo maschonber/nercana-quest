@@ -192,12 +192,12 @@ export class CombatDetailsComponent {
   }
 
   // Get status effect display with remaining time
-  getStatusEffectTooltip(statusEffect: AppliedStatusEffect): string {
-    // For display purposes, show the full duration since we don't have current combat time context
-    const duration = statusEffect.expiresAt - statusEffect.appliedAt;
-    const durationText = duration > 20 ? 
-      ` (${duration} clicks duration)` : 
-      ' (short duration)';
+  getStatusEffectTooltip(statusEffect: AppliedStatusEffect, currentCombatTime: number): string {
+    // Calculate remaining duration at the current combat time
+    const remainingDuration = statusEffect.expiresAt - currentCombatTime;
+    const durationText = remainingDuration > 0 ? 
+      ` (${remainingDuration} clicks remaining)` : 
+      ' (expired)';
     return `${statusEffect.name}${durationText}: ${statusEffect.description}`;
   }
 
