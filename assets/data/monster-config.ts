@@ -1,61 +1,76 @@
-import { MonsterType, MonsterTier } from '../../app/features/quest/models/monster.model';
-import { MonsterConfig, MonsterData, TierData } from '../../app/features/quest/models/monster-data.model';
+import {
+  MonsterType,
+  MonsterTier
+} from '../../app/features/quest/models/monster.model';
+import {
+  MonsterConfig,
+  MonsterData,
+  TierData
+} from '../../app/features/quest/models/monster-data.model';
 
 /**
  * Type-safe space enemy configuration
  * This file provides compile-time type checking while keeping data separate from logic
  */
 
-const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: {
+const monsters: Record<MonsterType, MonsterData> = {
+  [MonsterType.SPACE_SLUG]: {
     baseHealth: 18,
     baseAttack: 6,
     baseDefense: 4,
     baseSpeed: 5, // Slow, gelatinous creature
     baseExpReward: 12,
     name: 'Space Slug',
-    description: 'A gelatinous mollusk that feeds on asteroid minerals and station debris.',
+    description:
+      'A gelatinous mollusk that feeds on asteroid minerals and station debris.',
     tierNames: {
       [MonsterTier.EASY]: 'Juvenile Slug',
       [MonsterTier.MEDIUM]: 'Space Slug',
       [MonsterTier.HARD]: 'Acidic Slug',
       [MonsterTier.BOSS]: 'Slug Queen'
     }
-  },  [MonsterType.XRIIT]: {
+  },
+  [MonsterType.XRIIT]: {
     baseHealth: 28,
     baseAttack: 12,
     baseDefense: 8,
     baseSpeed: 9, // Intelligent, tactical creatures
     baseExpReward: 20,
     name: 'Xriit',
-    description: 'Cunning alien strategists with advanced technology and tactical prowess.',
+    description:
+      'Cunning alien strategists with advanced technology and tactical prowess.',
     tierNames: {
       [MonsterTier.EASY]: 'Xriit Scout',
       [MonsterTier.MEDIUM]: 'Xriit Warrior',
       [MonsterTier.HARD]: 'Xriit Tactician',
       [MonsterTier.BOSS]: 'Xriit Overlord'
     }
-  },  [MonsterType.MOGGO]: {
+  },
+  [MonsterType.MOGGO]: {
     baseHealth: 35,
     baseAttack: 14,
     baseDefense: 6,
     baseSpeed: 6, // Strong but somewhat slow brutes
     baseExpReward: 18,
     name: 'Moggo',
-    description: 'Aggressive, thick-furred brutes that rely on overwhelming strength and pack tactics.',
+    description:
+      'Aggressive, thick-furred brutes that rely on overwhelming strength and pack tactics.',
     tierNames: {
       [MonsterTier.EASY]: 'Moggo Youngling',
       [MonsterTier.MEDIUM]: 'Moggo Brute',
       [MonsterTier.HARD]: 'Moggo Alpha',
       [MonsterTier.BOSS]: 'Moggo Warchief'
     }
-  },  [MonsterType.CRITTER]: {
+  },
+  [MonsterType.CRITTER]: {
     baseHealth: 8,
     baseAttack: 4,
     baseDefense: 2,
     baseSpeed: 12, // Very fast but weak vermin
     baseExpReward: 6,
     name: 'Critter',
-    description: 'Small vermin infesting maintenance shafts and abandoned station sectors.',
+    description:
+      'Small vermin infesting maintenance shafts and abandoned station sectors.',
     tierNames: {
       [MonsterTier.EASY]: 'Station Vermin',
       [MonsterTier.MEDIUM]: 'Mutant Critter',
@@ -71,7 +86,8 @@ const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: 
     baseSpeed: 8, // Well-balanced humanoid combatants
     baseExpReward: 22,
     name: 'Space Merc',
-    description: 'Zealous humanoid raiders equipped with stolen tech, pursuing glory and salvage.',
+    description:
+      'Zealous humanoid raiders equipped with stolen tech, pursuing glory and salvage.',
     tierNames: {
       [MonsterTier.EASY]: 'Merc Recruit',
       [MonsterTier.MEDIUM]: 'Space Raider',
@@ -87,7 +103,8 @@ const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: 
     baseSpeed: 7, // Coordinated but still slow
     baseExpReward: 16,
     name: 'Slug Swarm',
-    description: 'A writhing mass of interconnected slugs that overwhelm targets with numbers.',
+    description:
+      'A writhing mass of interconnected slugs that overwhelm targets with numbers.',
     tierNames: {
       [MonsterTier.EASY]: 'Small Swarm',
       [MonsterTier.MEDIUM]: 'Slug Swarm',
@@ -103,21 +120,24 @@ const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: 
     baseSpeed: 11, // Fast reconnaissance units
     baseExpReward: 15,
     name: 'Xriit Scout',
-    description: 'Fast-moving Xriit reconnaissance units equipped with stealth technology.',
+    description:
+      'Fast-moving Xriit reconnaissance units equipped with stealth technology.',
     tierNames: {
       [MonsterTier.EASY]: 'Xriit Probe',
       [MonsterTier.MEDIUM]: 'Xriit Scout',
       [MonsterTier.HARD]: 'Stealth Scout',
       [MonsterTier.BOSS]: 'Elite Infiltrator'
     }
-  },  [MonsterType.XRIIT_COMMANDER]: {
+  },
+  [MonsterType.XRIIT_COMMANDER]: {
     baseHealth: 45,
     baseAttack: 16,
     baseDefense: 12,
     baseSpeed: 7, // High-ranking but strategic, not fast
     baseExpReward: 35,
     name: 'Xriit Commander',
-    description: 'High-ranking Xriit officers with powerful weaponry and tactical command abilities.',
+    description:
+      'High-ranking Xriit officers with powerful weaponry and tactical command abilities.',
     tierNames: {
       [MonsterTier.EASY]: 'Xriit Officer',
       [MonsterTier.MEDIUM]: 'Xriit Commander',
@@ -133,7 +153,8 @@ const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: 
     baseSpeed: 4, // Massive but very slow
     baseExpReward: 25,
     name: 'Moggo Brute',
-    description: 'Massive Moggo warriors with enhanced strength and intimidating presence.',
+    description:
+      'Massive Moggo warriors with enhanced strength and intimidating presence.',
     tierNames: {
       [MonsterTier.EASY]: 'Moggo Brawler',
       [MonsterTier.MEDIUM]: 'Moggo Brute',
@@ -165,21 +186,24 @@ const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: 
     baseSpeed: 10, // Spawning activity creates speed
     baseExpReward: 10,
     name: 'Critter Nest',
-    description: 'A breeding ground of critters that spawns new threats continuously.',
+    description:
+      'A breeding ground of critters that spawns new threats continuously.',
     tierNames: {
       [MonsterTier.EASY]: 'Small Nest',
       [MonsterTier.MEDIUM]: 'Critter Nest',
       [MonsterTier.HARD]: 'Infested Nest',
-      [MonsterTier.BOSS]: 'Queen\'s Chamber'
+      [MonsterTier.BOSS]: "Queen's Chamber"
     }
-  },  [MonsterType.MERC_RAIDER]: {
+  },
+  [MonsterType.MERC_RAIDER]: {
     baseHealth: 28,
     baseAttack: 13,
     baseDefense: 7,
     baseSpeed: 10, // Hit-and-run specialists
     baseExpReward: 18,
     name: 'Merc Raider',
-    description: 'Aggressive space mercenaries specialized in hit-and-run tactics.',
+    description:
+      'Aggressive space mercenaries specialized in hit-and-run tactics.',
     tierNames: {
       [MonsterTier.EASY]: 'Merc Thug',
       [MonsterTier.MEDIUM]: 'Merc Raider',
@@ -195,7 +219,8 @@ const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: 
     baseSpeed: 6, // Heavy armor reduces speed
     baseExpReward: 40,
     name: 'Merc Captain',
-    description: 'Veteran mercenary leaders with advanced armor and military experience.',
+    description:
+      'Veteran mercenary leaders with advanced armor and military experience.',
     tierNames: {
       [MonsterTier.EASY]: 'Merc Sergeant',
       [MonsterTier.MEDIUM]: 'Merc Captain',
@@ -211,7 +236,8 @@ const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: 
     baseSpeed: 3, // Heavy automated systems
     baseExpReward: 30,
     name: 'Station Defense',
-    description: 'Automated defense systems protecting abandoned stations and facilities.',
+    description:
+      'Automated defense systems protecting abandoned stations and facilities.',
     tierNames: {
       [MonsterTier.EASY]: 'Patrol Drone',
       [MonsterTier.MEDIUM]: 'Security Bot',
@@ -227,7 +253,8 @@ const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: 
     baseSpeed: 13, // Digital speed of thought
     baseExpReward: 45,
     name: 'Rogue AI',
-    description: 'Malfunctioning artificial intelligence controlling station systems and drones.',
+    description:
+      'Malfunctioning artificial intelligence controlling station systems and drones.',
     tierNames: {
       [MonsterTier.EASY]: 'Glitched AI',
       [MonsterTier.MEDIUM]: 'Rogue AI',
@@ -243,7 +270,8 @@ const monsters: Record<MonsterType, MonsterData> = {  [MonsterType.SPACE_SLUG]: 
     baseSpeed: 14, // Otherworldly, unpredictable speed
     baseExpReward: 55,
     name: 'Void Entity',
-    description: 'Mysterious beings from deep space that defy conventional understanding.',
+    description:
+      'Mysterious beings from deep space that defy conventional understanding.',
     tierNames: {
       [MonsterTier.EASY]: 'Void Wisp',
       [MonsterTier.MEDIUM]: 'Void Entity',
