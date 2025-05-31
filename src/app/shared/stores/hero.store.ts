@@ -58,8 +58,8 @@ export const HeroStore = signalStore(
 
           levelUpMessage =
             levelsGained === 1
-              ? ' You gained a level!'
-              : ` You gained ${levelsGained} levels!`;
+              ? ` 🎉 LEVEL UP! ${updatedHero.name} reached level ${newLevel}! 🎉`
+              : ` 🎉 LEVEL UP! ${updatedHero.name} gained ${levelsGained} levels and reached level ${newLevel}! 🎉`;
         }
 
         patchState(store, { hero: updatedHero });

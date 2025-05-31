@@ -117,13 +117,19 @@ export const QuestStore = signalStore(
           levelUpMessage = heroStore.addExperience(nextStep.experienceGained);
         }
 
-        // Add level up message if applicable
-        if (levelUpMessage) {
-          logEntry.message += levelUpMessage;
-        }
-
-        // Add log entry
+        // Add the main step log entry
         logStore.addEntry(logEntry);
+
+        // Add separate log entry for level up if applicable
+        if (levelUpMessage) {
+          const levelUpEntry: LogEntry = {
+            message: levelUpMessage.trim(), // Remove leading space
+            timestamp: new Date(),
+            success: true,
+            stepType: QuestStepType.EXPLORATION // Level up is a positive milestone like exploration
+          };
+          logStore.addEntry(levelUpEntry);
+        }
 
         // Update quest context in store
         patchState(store, { questContext: context });

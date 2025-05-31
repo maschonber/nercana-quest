@@ -59,7 +59,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
     const expectedEncounters = 2;
     const healthAfterFirstEncounter = 60; // Hero loses 20 health
     const healthAfterSecondEncounter = 35; // Hero loses 25 more health
-    const finalHealthAfterLevelUp = 40; // +5 health from leveling up after second encounter    // Mock combat service to simulate two encounters with health damage
+    const finalHealthAfterLevelUp = 55; // +20 health from leveling up after second encounter    // Mock combat service to simulate two encounters with health damage
     combatService.createTeamCombat.mockImplementation(
       (heroes: Hero[], monsters: Monster[]): CombatResult => {
         const hero = heroes[0]; // Get the first hero from the team

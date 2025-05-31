@@ -86,13 +86,14 @@ describe('HeroDomainService', () => {
 
       const leveledHero = service.levelUpHero(hero);
 
-      expect(leveledHero.health).toBe(105);
-      expect(leveledHero.attack).toBe(14);
+      expect(leveledHero.health).toBe(120);
+      expect(leveledHero.attack).toBe(15);
       expect(leveledHero.defense).toBe(10);
       expect(leveledHero.luck).toBe(6);
       expect(leveledHero.name).toBe('Test Hero');
       expect(leveledHero.experience).toBe(100);
     });
+
     it('should increase hero stats for multiple levels', () => {
       const hero: Hero = {
         name: 'Test Hero',
@@ -108,8 +109,8 @@ describe('HeroDomainService', () => {
 
       const leveledHero = service.levelUpHero(hero, 3);
 
-      expect(leveledHero.health).toBe(115);
-      expect(leveledHero.attack).toBe(18);
+      expect(leveledHero.health).toBe(160);
+      expect(leveledHero.attack).toBe(21);
       expect(leveledHero.defense).toBe(14);
       expect(leveledHero.luck).toBe(8);
     });

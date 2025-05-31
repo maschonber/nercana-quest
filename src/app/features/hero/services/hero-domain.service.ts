@@ -67,12 +67,12 @@ export class HeroDomainService {
 
     // Apply stat increases for each level gained
     for (let i = 0; i < levels; i++) {
-      const healthIncrease = 5;
+      const healthIncrease = 20;
       updatedHero = {
         ...updatedHero,
         health: updatedHero.health + healthIncrease,
         maxHealth: updatedHero.maxHealth + healthIncrease,
-        attack: updatedHero.attack + 2,
+        attack: updatedHero.attack + 3,
         defense: updatedHero.defense + 2,
         luck: updatedHero.luck + 1
       };
