@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Monster, MonsterTier, MonsterType } from '../models/monster.model';
 import { MonsterConfig } from '../models/monster-data.model';
 import { MONSTER_CONFIG } from '../../../../assets/data/monster-config';
+import { RandomService } from '../../../shared';
 
 // Species groupings for multi-monster encounters
 export interface SpeciesGroup {
@@ -18,6 +19,8 @@ export class MonsterService {
 
   // Cache for calculated monster difficulties to avoid repeated calculations
   private monsterDifficulties: Map<MonsterType, number> = new Map();
+
+  constructor(private randomService: RandomService) {}
 
   // Species affinity system for multi-monster encounters
   private readonly speciesGroups: SpeciesGroup[] = [
@@ -94,8 +97,7 @@ export class MonsterService {
     }
 
     // Select random monster from suitable options
-    const randomMonster =
-      suitableMonsters[Math.floor(Math.random() * suitableMonsters.length)];
+    const randomMonster = this.randomService.randomChoice(suitableMonsters);
 
     // Generate the monster with appropriate stats
     return this.createMonster(
@@ -117,7 +119,7 @@ export class MonsterService {
       return MonsterTier.HARD;
     } else {
       // 10% chance of boss encounter for higher level heroes
-      return Math.random() < 0.1 ? MonsterTier.BOSS : MonsterTier.HARD;
+      return this.randomService.rollDice(0.1) ? MonsterTier.BOSS : MonsterTier.HARD;
     }
   }
   /**
@@ -215,7 +217,7 @@ export class MonsterService {
     const baseDifficulty = 15 + heroLevel * 3; // Roughly scales with typical monster progression
     const variance = baseDifficulty * 0.2; // ±20% variance
 
-    return baseDifficulty + (Math.random() - 0.5) * variance;
+    return baseDifficulty + this.randomService.randomVariance(baseDifficulty, 0.2); // ±20% variance around base
   }
 
   /**
@@ -268,8 +270,7 @@ export class MonsterService {
   private generateFallbackMonster(heroLevel: number): Monster {
     const tier = this.getMonsterTierForLevel(heroLevel);
     const monsterTypes = Object.values(MonsterType);
-    const randomType =
-      monsterTypes[Math.floor(Math.random() * monsterTypes.length)];
+    const randomType = this.randomService.randomChoice(monsterTypes);
 
     return this.createMonster(randomType, tier, heroLevel);
   }
@@ -337,7 +338,7 @@ export class MonsterService {
     // 30% chance for multi-monster encounter, increasing slightly with hero level
     const multiMonsterChance = 0.2 + heroLevel * 0.01; // 20% at level 1, 30% at level 10+
 
-    if (Math.random() > multiMonsterChance) {
+    if (!this.randomService.rollDice(multiMonsterChance)) {
       // Single monster encounter
       return [this.generateRandomMonster(heroLevel)];
     }
@@ -352,7 +353,7 @@ export class MonsterService {
       this.getMultiMonsterDifficultyMultiplier(numMonsters);
 
     // Choose encounter type: species-based or mixed
-    const useSpeciesGroup = Math.random() < 0.7; // 70% chance for species-based encounters
+    const useSpeciesGroup = this.randomService.rollDice(0.7); // 70% chance for species-based encounters
 
     if (useSpeciesGroup) {
       return this.generateSpeciesEncounter(
@@ -375,14 +376,14 @@ export class MonsterService {
   private getEncounterSize(heroLevel: number, maxMonsters: number): number {
     if (heroLevel <= 3) {
       // Early levels: mostly 2 monsters
-      return Math.random() < 0.8 ? 2 : 3;
+      return this.randomService.rollDice(0.8) ? 2 : 3;
     } else if (heroLevel <= 6) {
       // Mid levels: 2-3 monsters
-      return Math.random() < 0.6 ? 2 : 3;
+      return this.randomService.rollDice(0.6) ? 2 : 3;
     } else {
       // High levels: 2-4 monsters, but capped by maxMonsters
       const weights = [0, 0, 0.4, 0.4, 0.2]; // 0% for 0-1, 40% for 2, 40% for 3, 20% for 4
-      const roll = Math.random();
+      const roll = this.randomService.random();
       let cumulative = 0;
       for (let i = 2; i <= Math.min(4, maxMonsters); i++) {
         cumulative += weights[i];
@@ -426,18 +427,14 @@ export class MonsterService {
     const availableGroups = this.speciesGroups.filter(
       (group) => group.types.length >= 1
     );
-    const selectedGroup =
-      availableGroups[Math.floor(Math.random() * availableGroups.length)];
+    const selectedGroup = this.randomService.randomChoice(availableGroups);
 
     const monsters: Monster[] = [];
     const targetDifficultyPerMonster = totalTargetDifficulty / numMonsters;
 
     for (let i = 0; i < numMonsters; i++) {
       // Allow some variety within the species group
-      const monsterType =
-        selectedGroup.types[
-          Math.floor(Math.random() * selectedGroup.types.length)
-        ];
+      const monsterType = this.randomService.randomChoice(selectedGroup.types);
       const monster = this.generateMonsterOfTargetDifficulty(
         monsterType,
         heroLevel,
@@ -470,7 +467,7 @@ export class MonsterService {
       let monsterType: MonsterType;
 
       do {
-        monsterType = allTypes[Math.floor(Math.random() * allTypes.length)];
+        monsterType = this.randomService.randomChoice(allTypes);
         attempts++;
       } while (selectedTypes.includes(monsterType) && attempts < 10);
 

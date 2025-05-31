@@ -4,14 +4,17 @@ import {
   CombatActionResult
 } from './combat-action.interface';
 import { Combatant, CombatActionType } from '../../models/combat.model';
+import { RandomService } from '../../../../shared';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FleeActionStrategy implements CombatActionStrategy {
+  constructor(private randomService: RandomService) {}
+
   execute(actor: Combatant, target: Combatant): CombatActionResult {
     const fleeChance = this.calculateFleeChance(actor, target);
-    const success = Math.random() < fleeChance;
+    const success = this.randomService.rollDice(fleeChance);
 
     return {
       success,

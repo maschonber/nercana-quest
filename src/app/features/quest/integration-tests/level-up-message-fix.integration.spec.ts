@@ -3,6 +3,7 @@ import { QuestStore } from '../../../shared/stores/quest.store';
 import { HeroStore } from '../../../shared/stores/hero.store';
 import { LogStore } from '../../../shared/stores/log.store';
 import { QuestStepType } from '../models/quest.model';
+import { ProductionRandomProvider } from '../../../shared/services/random.service';
 
 /**
  * Integration test demonstrating the level-up message fix
@@ -14,9 +15,10 @@ describe('Level-up Message Fix Integration', () => {
   let questStore: InstanceType<typeof QuestStore>;
   let heroStore: InstanceType<typeof HeroStore>;
   let logStore: InstanceType<typeof LogStore>;
-
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [ProductionRandomProvider]
+    });
     questStore = TestBed.inject(QuestStore);
     heroStore = TestBed.inject(HeroStore);
     logStore = TestBed.inject(LogStore);

@@ -6,6 +6,7 @@ import { QuestStepType } from '../../features/quest/models/quest.model';
 import { QuestDomainService } from '../../features/quest/services/quest-domain.service';
 import { HeroFacadeService } from '../../features/hero/services/hero-facade.service';
 import { StationFacadeService } from '../services/station-facade.service';
+import { ProductionRandomProvider } from '../services/random.service';
 
 /**
  * Integration test for Quest Store level-up log entry behavior
@@ -15,9 +16,10 @@ describe('QuestStore - Level-up Log Entries', () => {
   let heroStore: InstanceType<typeof HeroStore>;
   let logStore: InstanceType<typeof LogStore>;
   let questDomainService: QuestDomainService;
-
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [ProductionRandomProvider]
+    });
     questStore = TestBed.inject(QuestStore);
     heroStore = TestBed.inject(HeroStore);
     logStore = TestBed.inject(LogStore);

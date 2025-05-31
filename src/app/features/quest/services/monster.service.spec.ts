@@ -1,12 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { MonsterService } from './monster.service';
 import { MonsterTier, MonsterType } from '../models/monster.model';
+import { ProductionRandomProvider } from '../../../shared/services/random.service';
 
 describe('MonsterService', () => {
   let service: MonsterService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [ProductionRandomProvider]
+    });
     service = TestBed.inject(MonsterService);
   });
 

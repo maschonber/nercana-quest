@@ -7,6 +7,7 @@ import {
   Combatant
 } from '../models/combat.model';
 import { StatusEffectType } from '../models/status-effect.model';
+import { RandomService } from '../../../shared';
 
 /**
  * Service responsible for generating dramatic, setting-appropriate narrative descriptions
@@ -17,6 +18,8 @@ import { StatusEffectType } from '../models/status-effect.model';
   providedIn: 'root'
 })
 export class CombatEncounterNarratorService {
+  
+  constructor(private randomService: RandomService) {}
   /**
    * Generates a comprehensive encounter narrative based on the complete combat data.
    * The narrative starts with monster identification, describes fight progression,
@@ -54,10 +57,9 @@ export class CombatEncounterNarratorService {
       `Your clone detected hostile movement as a ${enemy.name} emerged from the shadows.`,
       `Scanner alerts blared as a dangerous ${enemy.name} materialized in the scanning perimeter.`,
       `The mission took a deadly turn when your clone encountered a prowling ${enemy.name}.`,
-      `Warning klaxons echoed through the clone's comm as a ${enemy.name} blocked the mission path.`,
-      `Your clone's sensors locked onto a threatening ${enemy.name} in the operational zone.`
+      `Warning klaxons echoed through the clone's comm as a ${enemy.name} blocked the mission path.`,      `Your clone's sensors locked onto a threatening ${enemy.name} in the operational zone.`
     ];
-    return introductions[Math.floor(Math.random() * introductions.length)];
+    return this.randomService.randomChoice(introductions);
   }
 
   /**
@@ -68,10 +70,9 @@ export class CombatEncounterNarratorService {
     const introductions = [
       `Your clone found itself cornered between a ${enemy1.name} and a ${enemy2.name}.`,
       `The situation escalated quickly as both a ${enemy1.name} and a ${enemy2.name} converged on your clone's position.`,
-      `Hostile contacts multiplied - a ${enemy1.name} flanked your clone while a ${enemy2.name} blocked the escape route.`,
-      `Your clone's proximity alarms screamed as a deadly ${enemy1.name} and ${enemy2.name} coordinated their attack.`
+      `Hostile contacts multiplied - a ${enemy1.name} flanked your clone while a ${enemy2.name} blocked the escape route.`,      `Your clone's proximity alarms screamed as a deadly ${enemy1.name} and ${enemy2.name} coordinated their attack.`
     ];
-    return introductions[Math.floor(Math.random() * introductions.length)];
+    return this.randomService.randomChoice(introductions);
   }
 
   /**
@@ -85,9 +86,8 @@ export class CombatEncounterNarratorService {
       const introductions = [
         `Your clone stumbled into a ${species[0]} nest - ${count} hostile creatures surrounded the position.`,
         `Mission parameters changed drastically as a pack of ${count} ${species[0]}s swarmed your clone.`,
-        `The scanning array detected multiple threats: ${count} ${species[0]}s moving in coordinated formation.`
-      ];
-      return introductions[Math.floor(Math.random() * introductions.length)];
+        `The scanning array detected multiple threats: ${count} ${species[0]}s moving in coordinated formation.`      ];
+      return this.randomService.randomChoice(introductions);
     } else {
       const speciesNames = species.slice(0, 2).join(' and ');
       const introductions = [
@@ -95,7 +95,7 @@ export class CombatEncounterNarratorService {
         `The tactical situation deteriorated as ${count} creatures including ${speciesNames} encircled your clone.`,
         `Multiple species convergence detected - ${speciesNames} leading a ${count}-strong hostile force.`
       ];
-      return introductions[Math.floor(Math.random() * introductions.length)];
+      return this.randomService.randomChoice(introductions);
     }
   }
 
@@ -179,12 +179,11 @@ export class CombatEncounterNarratorService {
       low: [
         'The encounter began with careful probing attacks.',
         'Initial skirmishing gave way to more direct confrontation.',
-        'The engagement started cautiously but soon intensified.'
-      ]
+        'The engagement started cautiously but soon intensified.'      ]
     };
 
     const options = descriptions[intensity as keyof typeof descriptions];
-    return options[Math.floor(Math.random() * options.length)];
+    return this.randomService.randomChoice(options);
   }
 
   /**
@@ -205,12 +204,11 @@ export class CombatEncounterNarratorService {
       low: [
         'The encounter unfolded as a cautious dance of attack and defense.',
         'Combat proceeded with careful exchanges as both sides sought advantages.',
-        'The engagement developed gradually with probing attacks and defensive maneuvers.'
-      ]
+        'The engagement developed gradually with probing attacks and defensive maneuvers.'      ]
     };
 
     const options = descriptions[intensity as keyof typeof descriptions];
-    return options[Math.floor(Math.random() * options.length)];
+    return this.randomService.randomChoice(options);
   }
 
   /**
@@ -231,12 +229,11 @@ export class CombatEncounterNarratorService {
       low: [
         'The drawn-out encounter proceeded with methodical exchanges and patient maneuvering.',
         'Combat evolved into a test of endurance with careful resource management.',
-        'The extended engagement became a careful game of positioning and opportunity.'
-      ]
+        'The extended engagement became a careful game of positioning and opportunity.'      ]
     };
 
     const options = descriptions[intensity as keyof typeof descriptions];
-    return options[Math.floor(Math.random() * options.length)];
+    return this.randomService.randomChoice(options);
   }
 
   /**
@@ -273,9 +270,8 @@ export class CombatEncounterNarratorService {
           'Your clone emerged triumphant, systems intact and mission parameters exceeded.',
           'Victory was achieved with tactical excellence - your clone sustained minimal damage.',
           'The engagement concluded with your clone standing victorious over the fallen hostiles.',
-          'Mission success confirmed: your clone neutralized all threats with superior execution.'
-        ];
-        return descriptions[Math.floor(Math.random() * descriptions.length)];
+          'Mission success confirmed: your clone neutralized all threats with superior execution.'        ];
+        return this.randomService.randomChoice(descriptions);
       } else if (healthLossPercentage <= 0.4) {
         // Moderate damage taken (21-40% health lost)
         const descriptions = [
@@ -284,7 +280,7 @@ export class CombatEncounterNarratorService {
           'The hostile forces were neutralized, but not without testing your clone\'s resilience.',
           'Mission success confirmed, though your clone\'s systems show considerable battle damage.'
         ];
-        return descriptions[Math.floor(Math.random() * descriptions.length)];
+        return this.randomService.randomChoice(descriptions);
       } else {
         // Heavy damage taken (>40% health lost)
         const descriptions = [
@@ -293,17 +289,16 @@ export class CombatEncounterNarratorService {
           'Victory was achieved through sheer determination as your clone fought through critical damage.',
           'The engagement ended in success, though your clone barely survived the brutal confrontation.'
         ];
-        return descriptions[Math.floor(Math.random() * descriptions.length)];
+        return this.randomService.randomChoice(descriptions);
       }
     } else {
       // Some clones died - this is always a costly victory regardless of remaining health
       const descriptions = [
         "Victory came at a price, but your clone's sacrifice secured the mission objective.",
         'Despite heavy losses, the engagement ended with tactical superiority confirmed.',
-        'Your clone achieved mission success through determination and tactical prowess.',
-        'The hostile forces were eliminated, though not without significant cost to your team.'
+        'Your clone achieved mission success through determination and tactical prowess.',        'The hostile forces were eliminated, though not without significant cost to your team.'
       ];
-      return descriptions[Math.floor(Math.random() * descriptions.length)];
+      return this.randomService.randomChoice(descriptions);
     }
   }
 
@@ -336,10 +331,9 @@ export class CombatEncounterNarratorService {
       'The engagement ended in catastrophic failure - clone termination confirmed.',
       'Hostile forces proved overwhelming; your clone was eliminated in the conflict.',
       'Mission failure: your clone was destroyed by superior enemy forces.',
-      'The tactical situation collapsed - your clone was eliminated in the failed engagement.',
-      'Enemy superiority was absolute - your clone was eliminated in the encounter.'
+      'The tactical situation collapsed - your clone was eliminated in the failed engagement.',      'Enemy superiority was absolute - your clone was eliminated in the encounter.'
     ];
-    return descriptions[Math.floor(Math.random() * descriptions.length)];
+    return this.randomService.randomChoice(descriptions);
   }  /**
    * Generates flee outcome descriptions
    */
@@ -348,10 +342,9 @@ export class CombatEncounterNarratorService {
       'Your clone executed emergency withdrawal protocols, preserving unit integrity.',
       'Tactical retreat was initiated when mission parameters became untenable.',
       'Your clone withdrew from combat, citing unfavorable odds assessment.',
-      'Emergency protocols were activated to prevent total unit loss.',
-      'Your clone withdrew from the engagement zone to fight another day.'
+      'Emergency protocols were activated to prevent total unit loss.',      'Your clone withdrew from the engagement zone to fight another day.'
     ];
-    return descriptions[Math.floor(Math.random() * descriptions.length)];
+    return this.randomService.randomChoice(descriptions);
   }
 
   /**

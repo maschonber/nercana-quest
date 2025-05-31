@@ -2,12 +2,14 @@ import { TestBed } from '@angular/core/testing';
 import { CombatEncounterNarratorService } from '../services/combat-encounter-narrator.service';
 import { Combat, CombatOutcome, CombatantType, TeamSide, CombatActionType } from '../models/combat.model';
 import { StatusEffectType } from '../models/status-effect.model';
+import { ProductionRandomProvider } from '../../../shared/services/random.service';
 
 describe('CombatEncounterNarratorService', () => {
   let service: CombatEncounterNarratorService;
-
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [ProductionRandomProvider]
+    });
     service = TestBed.inject(CombatEncounterNarratorService);
   });
 

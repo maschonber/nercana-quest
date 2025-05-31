@@ -5,12 +5,16 @@ import {
 } from './combat-action.interface';
 import { Combatant, CombatActionType } from '../../models/combat.model';
 import { StatusEffectManager } from '../status-effect-manager.service';
+import { RandomService } from '../../../../shared';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AttackActionStrategy implements CombatActionStrategy {
-  constructor(private statusEffectManager: StatusEffectManager) {}
+  constructor(
+    private statusEffectManager: StatusEffectManager,
+    private randomService: RandomService
+  ) {}
 
   execute(actor: Combatant, target: Combatant): CombatActionResult {
     const damage = this.calculateDamage(actor, target);
@@ -42,10 +46,10 @@ export class AttackActionStrategy implements CombatActionStrategy {
     baseDamage *= (1 + damageIncrease);
 
     // Add randomness (80-120% of base damage)
-    const variance = 0.8 + Math.random() * 0.4;
+    const variance = this.randomService.randomFloat(0.8, 1.2);
 
     // Critical hit chance (10% chance for 1.5x damage)
-    const criticalMultiplier = Math.random() < 0.1 ? 1.5 : 1.0;
+    const criticalMultiplier = this.randomService.rollDice(0.1) ? 1.5 : 1.0;
 
     // Calculate pre-reduction damage
     let finalDamage = Math.floor(baseDamage * variance * criticalMultiplier);

@@ -7,12 +7,17 @@ import {
 } from '../models/combat.model';
 import { StatusEffectManager } from './status-effect-manager.service';
 import { StatusEffectType } from '../models/status-effect.model';
+import { RandomService } from '../../../shared';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CombatAI {
-  constructor(private statusEffectManager: StatusEffectManager) {}
+  constructor(
+    private statusEffectManager: StatusEffectManager,
+    private randomService: RandomService
+  ) {}
+
   /**
    * Determines what action a combatant should take
    */
@@ -80,7 +85,7 @@ export class CombatAI {
       }
 
       // Randomization factor (±10%) to prevent predictable behavior
-      const randomFactor = 0.9 + Math.random() * 0.2;
+      const randomFactor = this.randomService.randomVariance(1.0, 0.1);
       score *= randomFactor;
 
       return { target, score };
@@ -99,24 +104,24 @@ export class CombatAI {
     const isDefending = this.statusEffectManager.hasStatusEffect(hero, StatusEffectType.DEFENDING);
     
     // Hero logic: 10% chance to flee if health is very low
-    if (healthPercent <= 20 && Math.random() < 0.1) {
+    if (healthPercent <= 20 && this.randomService.rollDice(0.1)) {
       return CombatActionType.FLEE;
     }
 
     // Strategic defending logic
     if (!isDefending) {
       // Higher chance to defend when health is low
-      if (healthPercent <= 30 && Math.random() < 0.4) {
+      if (healthPercent <= 30 && this.randomService.rollDice(0.4)) {
         return CombatActionType.DEFEND;
       }
       
       // Moderate chance when health is moderate
-      if (healthPercent <= 50 && Math.random() < 0.25) {
+      if (healthPercent <= 50 && this.randomService.rollDice(0.25)) {
         return CombatActionType.DEFEND;
       }
       
       // Small chance even when healthy (tactical defending)
-      if (Math.random() < 0.1) {
+      if (this.randomService.rollDice(0.1)) {
         return CombatActionType.DEFEND;
       }
     }
@@ -135,17 +140,17 @@ export class CombatAI {
     // Monster logic: Strategic defending when damaged and not already defending
     if (!isDefending) {
       // High chance to defend when severely wounded
-      if (healthPercent <= 25 && Math.random() < 0.3) {
+      if (healthPercent <= 25 && this.randomService.rollDice(0.3)) {
         return CombatActionType.DEFEND;
       }
       
       // Moderate chance when moderately wounded
-      if (healthPercent <= 50 && Math.random() < 0.15) {
+      if (healthPercent <= 50 && this.randomService.rollDice(0.15)) {
         return CombatActionType.DEFEND;
       }
       
       // Small chance even when healthy (unpredictable behavior)
-      if (Math.random() < 0.05) {
+      if (this.randomService.rollDice(0.05)) {
         return CombatActionType.DEFEND;
       }
     }

@@ -9,6 +9,7 @@ import { Monster } from '../models/monster.model';
 import { QuestStepType, QuestStep } from '../models/quest.model';
 import { QuestContext, QuestDomainService } from '../services/quest-domain.service';
 import { MonsterService } from '../services/monster.service';
+import { ProductionRandomProvider } from '../../../shared/services/random.service';
 
 describe('Multi-Encounter Health Persistence Integration', () => {
   let questStore: any;
@@ -32,6 +33,7 @@ describe('Multi-Encounter Health Persistence Integration', () => {
 
     await TestBed.configureTestingModule({
       providers: [
+        ProductionRandomProvider,
         QuestStore,
         HeroStore,
         LogStore,

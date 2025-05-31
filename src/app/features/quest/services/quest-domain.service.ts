@@ -3,6 +3,7 @@ import { Hero } from '../../hero/models/hero.model';
 import { QuestResult, QuestStep, QuestStepType } from '../models/quest.model';
 import { CombatOutcome, CombatResult, CombatService } from '../../combat';
 import { MonsterService } from './monster.service';
+import { RandomService } from '../../../shared';
 
 /**
  * Context for tracking quest progress during dynamic step generation
@@ -25,10 +26,11 @@ export interface QuestContext {
 export class QuestDomainService {
   private readonly monsterService = inject(MonsterService);
   private readonly combatService = inject(CombatService);
+  private readonly randomService = inject(RandomService);
   /**
    * Creates initial quest context for dynamic step generation
-   */ createQuestContext(hero: Hero): QuestContext {
-    const stepCount = Math.floor(Math.random() * 4) + 2; // 2-5 steps
+   */  createQuestContext(hero: Hero): QuestContext {
+    const stepCount = this.randomService.randomInt(2, 5); // 2-5 steps
 
     // Generate step types without pre-determining success
     const stepTypes = this.generateStepTypes(stepCount);
@@ -85,7 +87,7 @@ export class QuestDomainService {
     const stepTypes: QuestStepType[] = [];
 
     for (let i = 0; i < stepCount; i++) {
-      const roll = Math.random();
+      const roll = this.randomService.random();
       let stepType: QuestStepType;
 
       if (roll < 0.5) {
@@ -213,7 +215,7 @@ export class QuestDomainService {
       'A sudden system malfunction forces your clone to find an alternate route.',
       'Your clone discovers an interesting piece of station infrastructure.'
     ];
-    return messages[Math.floor(Math.random() * messages.length)];
+    return this.randomService.randomChoice(messages);
   }
   /**
    * Generates message for treasure step
@@ -229,7 +231,7 @@ export class QuestDomainService {
       'Your clone finds a few energy cells among the station debris.',
       'Some interesting components are discovered along the way.'
     ];
-    return messages[Math.floor(Math.random() * messages.length)];
+    return this.randomService.randomChoice(messages);
   }
 
   /**
@@ -240,9 +242,9 @@ export class QuestDomainService {
       // Fallback to old calculation if no monster provided
       const baseGoo = 1;
       const levelMultiplier = 1 + hero.level * 0.1;
-      const varianceFactor = 0.8 + Math.random() * 0.4;
+      const varianceFactor = this.randomService.randomVariance(1.0, 0.2); // ±20% variance around 1.0
       return Math.floor(
-        (baseGoo + Math.random() * 2) * levelMultiplier * varianceFactor
+        (baseGoo + this.randomService.randomFloat(0, 2)) * levelMultiplier * varianceFactor
       );
     }
 
@@ -265,7 +267,7 @@ export class QuestDomainService {
     const levelBonus = hero.level * 0.1;
 
     // Reduced variance to make rewards more predictable
-    const varianceFactor = 0.9 + Math.random() * 0.2; // 0.9 to 1.1 (reduced from 0.8-1.2)
+    const varianceFactor = this.randomService.randomVariance(1.0, 0.1); // ±10% variance around 1.0
 
     // Final calculation with minimum of 1 goo
     const finalGoo = Math.max(
@@ -297,10 +299,10 @@ export class QuestDomainService {
   private calculateMetalFromTreasure(hero: Hero): number {
     const baseMetal = 2;
     const levelMultiplier = 1 + hero.level * 0.1;
-    const varianceFactor = 0.8 + Math.random() * 0.4; // 0.8 to 1.2
+    const varianceFactor = this.randomService.randomVariance(1.0, 0.2); // ±20% variance around 1.0
 
     return Math.floor(
-      (baseMetal + Math.random() * 3) * levelMultiplier * varianceFactor
+      (baseMetal + this.randomService.randomFloat(0, 3)) * levelMultiplier * varianceFactor
     ); // 2-5 metal
   }
 

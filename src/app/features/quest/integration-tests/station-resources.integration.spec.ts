@@ -4,6 +4,7 @@ import { QuestStepType } from '../models/quest.model';
 import { Hero } from '../../hero/models/hero.model';
 import { QuestDomainService } from '../services/quest-domain.service';
 import { MonsterService } from '../services/monster.service';
+import { ProductionRandomProvider } from '../../../shared/services/random.service';
 
 /**
  * Integration tests for station resource generation in quest domain service
@@ -36,6 +37,7 @@ describe('QuestDomainService - Station Resources Integration', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        ProductionRandomProvider,
         QuestDomainService,
         { provide: MonsterService, useValue: monsterServiceSpy },
         { provide: CombatService, useValue: combatServiceSpy }

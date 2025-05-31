@@ -6,6 +6,7 @@ import { ActionFactory } from '../services/actions/action.factory';
 import { CombatStateManager } from '../services/combat-state-manager.service';
 import { CombatActionType, Combatant } from '../models/combat.model';
 import { StatusEffectType, StatusEffectFactory } from '../models/status-effect.model';
+import { ProductionRandomProvider } from '../../../shared/services/random.service';
 
 describe('Time-based Status Effects Integration', () => {
   let statusEffectManager: StatusEffectManager;
@@ -16,9 +17,10 @@ describe('Time-based Status Effects Integration', () => {
   let hero: Combatant;
   let fastEnemy: Combatant;
   let slowEnemy: Combatant;
-
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [ProductionRandomProvider]
+    });
     statusEffectManager = TestBed.inject(StatusEffectManager);
     turnManager = TestBed.inject(TurnManager);
     actionExecutor = TestBed.inject(ActionExecutor);
