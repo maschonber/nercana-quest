@@ -28,7 +28,10 @@ export class EntityConverter {
       type,
       isAlive: entity.health > 0,
       hasFled: false,
-      statusEffects: [] // Initialize with empty status effects
+      statusEffects: [], // Initialize with empty status effects
+      abilities: type === CombatantType.MONSTER 
+        ? (entity as Monster).abilities 
+        : undefined // Heroes don't have abilities in this system yet
     };
   }
 

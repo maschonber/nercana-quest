@@ -24,5 +24,6 @@ export default defineConfig({
     reuseExistingServer: !process.env['CI'],
     stdout: 'pipe',
     stderr: 'pipe'
-  }
+  },
+  globalSetup: './playwright-tests/setup.ts'
 });

@@ -5,7 +5,7 @@ import { LogStore } from '../../../shared/stores/log.store';
 import { HeroFacadeService } from '../../hero/services/hero-facade.service';
 import { CombatService, CombatOutcome, CombatResult } from '../../combat';
 import { Hero } from '../../hero/models/hero.model';
-import { Monster } from '../models/monster.model';
+import { Monster, CombatAbility } from '../models/monster.model';
 import { QuestStepType, QuestStep } from '../models/quest.model';
 import { QuestContext, QuestDomainService } from '../services/quest-domain.service';
 import { MonsterService } from '../services/monster.service';
@@ -206,7 +206,8 @@ describe('Multi-Encounter Health Persistence Integration', () => {
               defense: 5,
               speed: 12,
               experienceReward: 25,
-              description: 'A test monster'
+              description: 'A test monster',
+              abilities: [CombatAbility.ATTACK]
             };
             const combatResult = combatService.createTeamCombat(
               [hero],

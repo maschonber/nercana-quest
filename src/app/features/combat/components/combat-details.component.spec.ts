@@ -8,7 +8,7 @@ import {
   CombatantType,
   CombatActionType
 } from '../models/combat.model';
-import { MonsterType } from '../../quest/models/monster.model';
+import { MonsterType, CombatAbility } from '../../quest/models/monster.model';
 import { HeroFacadeService } from '../../hero/services/hero-facade.service';
 import { Hero } from '../../hero/models/hero.model';
 
@@ -45,7 +45,8 @@ describe('CombatDetailsComponent', () => {
       attack: 25,
       defense: 18,
       speed: 25,
-      experienceReward: 50
+      experienceReward: 50,
+      abilities: [CombatAbility.ATTACK]
     },
     combatResult: {
       outcome: CombatOutcome.HERO_VICTORY,

@@ -3,6 +3,7 @@ import { CombatAI } from './combat-ai.service';
 import { RandomService, TestRandomProvider } from '../../../shared';
 import { Combatant, CombatantType, CombatActionType, CombatTeam, TeamSide } from '../models/combat.model';
 import { StatusEffectManager } from './status-effect-manager.service';
+import { CombatAbility } from '../../quest/models/monster.model';
 
 describe('CombatAI with TestRandomProvider', () => {
   let service: CombatAI;
@@ -23,8 +24,7 @@ describe('CombatAI with TestRandomProvider', () => {
   });
 
   describe('deterministic action decisions', () => {
-    it('should make predictable monster defend decisions', () => {
-      const monster: Combatant = {
+    it('should make predictable monster defend decisions', () => {      const monster: Combatant = {
         id: 'test-monster',
         name: 'Test Monster',
         type: CombatantType.MONSTER,
@@ -35,7 +35,8 @@ describe('CombatAI with TestRandomProvider', () => {
         speed: 30,
         isAlive: true,
         hasFled: false,
-        statusEffects: []
+        statusEffects: [],
+        abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]
       };
 
       const opposingTeam: CombatTeam = {
@@ -64,8 +65,7 @@ describe('CombatAI with TestRandomProvider', () => {
       expect(action).toBe(CombatActionType.DEFEND);
     });
 
-    it('should make predictable monster attack decisions', () => {
-      const monster: Combatant = {
+    it('should make predictable monster attack decisions', () => {      const monster: Combatant = {
         id: 'test-monster',
         name: 'Test Monster',
         type: CombatantType.MONSTER,
@@ -76,7 +76,8 @@ describe('CombatAI with TestRandomProvider', () => {
         speed: 30,
         isAlive: true,
         hasFled: false,
-        statusEffects: []
+        statusEffects: [],
+        abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]
       };
 
       const opposingTeam: CombatTeam = {
@@ -148,8 +149,7 @@ describe('CombatAI with TestRandomProvider', () => {
       expect(target?.id).toBe('hero-2');
     });
 
-    it('should have consistent behavior across multiple calls', () => {
-      const monster: Combatant = {
+    it('should have consistent behavior across multiple calls', () => {      const monster: Combatant = {
         id: 'test-monster',
         name: 'Test Monster',
         type: CombatantType.MONSTER,
@@ -160,7 +160,8 @@ describe('CombatAI with TestRandomProvider', () => {
         speed: 30,
         isAlive: true,
         hasFled: false,
-        statusEffects: []
+        statusEffects: [],
+        abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]
       };
 
       const opposingTeam: CombatTeam = {

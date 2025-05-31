@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { EntityConverter } from './entity-converter.service';
 import { Hero } from '../../hero/models/hero.model';
-import { Monster, MonsterType } from '../../quest/models/monster.model';
+import { Monster, MonsterType, CombatAbility } from '../../quest/models/monster.model';
 import { CombatantType } from '../models/combat.model';
 
 describe('EntityConverter', () => {
@@ -114,7 +114,8 @@ describe('EntityConverter', () => {
         speed: 10,
         type: MonsterType.SPACE_SLUG,
         experienceReward: 50,
-        description: 'A slimy space creature'
+        description: 'A slimy space creature',
+        abilities: [CombatAbility.ATTACK]
       };
 
       const combatant = service.createMonsterCombatant(monster);
@@ -162,7 +163,8 @@ describe('EntityConverter', () => {
           speed: 8,
           type: MonsterType.XRIIT_SCOUT,
           experienceReward: 75,
-          description: 'A fast alien scout'
+          description: 'A fast alien scout',
+          abilities: [CombatAbility.ATTACK]
         }
       ];
 

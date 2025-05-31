@@ -1,6 +1,7 @@
 import {
   MonsterType,
-  MonsterTier
+  MonsterTier,
+  CombatAbility
 } from '../../app/features/quest/models/monster.model';
 import {
   MonsterConfig,
@@ -23,6 +24,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Space Slug',
     description:
       'A gelatinous mollusk that feeds on asteroid minerals and station debris.',
+    abilities: [CombatAbility.ATTACK], // Simple creature, only attacks
     tierNames: {
       [MonsterTier.EASY]: 'Juvenile Slug',
       [MonsterTier.MEDIUM]: 'Space Slug',
@@ -39,6 +41,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Xriit',
     description:
       'Cunning alien strategists with advanced technology and tactical prowess.',
+    abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND], // Tactical creatures can defend
     tierNames: {
       [MonsterTier.EASY]: 'Xriit Scout',
       [MonsterTier.MEDIUM]: 'Xriit Warrior',
@@ -55,6 +58,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Moggo',
     description:
       'Aggressive, thick-furred brutes that rely on overwhelming strength and pack tactics.',
+    abilities: [CombatAbility.ATTACK], // Brute force creatures, only attack
     tierNames: {
       [MonsterTier.EASY]: 'Moggo Youngling',
       [MonsterTier.MEDIUM]: 'Moggo Brute',
@@ -71,6 +75,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Critter',
     description:
       'Small vermin infesting maintenance shafts and abandoned station sectors.',
+    abilities: [CombatAbility.ATTACK], // Simple vermin, only attack
     tierNames: {
       [MonsterTier.EASY]: 'Station Vermin',
       [MonsterTier.MEDIUM]: 'Mutant Critter',
@@ -88,6 +93,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Space Merc',
     description:
       'Zealous humanoid raiders equipped with stolen tech, pursuing glory and salvage.',
+    abilities: [CombatAbility.ATTACK], // Basic mercenaries, no advanced tactics
     tierNames: {
       [MonsterTier.EASY]: 'Merc Recruit',
       [MonsterTier.MEDIUM]: 'Space Raider',
@@ -105,6 +111,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Slug Swarm',
     description:
       'A writhing mass of interconnected slugs that overwhelm targets with numbers.',
+    abilities: [CombatAbility.ATTACK], // Swarm tactics, but no defensive capability
     tierNames: {
       [MonsterTier.EASY]: 'Small Swarm',
       [MonsterTier.MEDIUM]: 'Slug Swarm',
@@ -122,6 +129,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Xriit Scout',
     description:
       'Fast-moving Xriit reconnaissance units equipped with stealth technology.',
+    abilities: [CombatAbility.ATTACK], // Scouts focus on speed, not defense
     tierNames: {
       [MonsterTier.EASY]: 'Xriit Probe',
       [MonsterTier.MEDIUM]: 'Xriit Scout',
@@ -138,6 +146,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Xriit Commander',
     description:
       'High-ranking Xriit officers with powerful weaponry and tactical command abilities.',
+    abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND], // Tactical commanders can defend
     tierNames: {
       [MonsterTier.EASY]: 'Xriit Officer',
       [MonsterTier.MEDIUM]: 'Xriit Commander',
@@ -155,44 +164,12 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Moggo Brute',
     description:
       'Massive Moggo warriors with enhanced strength and intimidating presence.',
+    abilities: [CombatAbility.ATTACK], // Pure brute force, no defensive tactics
     tierNames: {
       [MonsterTier.EASY]: 'Moggo Brawler',
       [MonsterTier.MEDIUM]: 'Moggo Brute',
       [MonsterTier.HARD]: 'Moggo Destroyer',
       [MonsterTier.BOSS]: 'Apex Predator'
-    }
-  },
-
-  [MonsterType.MOGGO_PACK]: {
-    baseHealth: 30,
-    baseAttack: 12,
-    baseDefense: 4,
-    baseSpeed: 8, // Pack coordination improves speed
-    baseExpReward: 20,
-    name: 'Moggo Pack',
-    description: 'Coordinated groups of Moggos that use pack hunting tactics.',
-    tierNames: {
-      [MonsterTier.EASY]: 'Moggo Duo',
-      [MonsterTier.MEDIUM]: 'Moggo Pack',
-      [MonsterTier.HARD]: 'War Pack',
-      [MonsterTier.BOSS]: 'Moggo Clan'
-    }
-  },
-
-  [MonsterType.CRITTER_NEST]: {
-    baseHealth: 15,
-    baseAttack: 6,
-    baseDefense: 1,
-    baseSpeed: 10, // Spawning activity creates speed
-    baseExpReward: 10,
-    name: 'Critter Nest',
-    description:
-      'A breeding ground of critters that spawns new threats continuously.',
-    tierNames: {
-      [MonsterTier.EASY]: 'Small Nest',
-      [MonsterTier.MEDIUM]: 'Critter Nest',
-      [MonsterTier.HARD]: 'Infested Nest',
-      [MonsterTier.BOSS]: "Queen's Chamber"
     }
   },
   [MonsterType.MERC_RAIDER]: {
@@ -204,6 +181,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Merc Raider',
     description:
       'Aggressive space mercenaries specialized in hit-and-run tactics.',
+    abilities: [CombatAbility.ATTACK], // Hit-and-run tactics, no defensive focus
     tierNames: {
       [MonsterTier.EASY]: 'Merc Thug',
       [MonsterTier.MEDIUM]: 'Merc Raider',
@@ -221,6 +199,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Merc Captain',
     description:
       'Veteran mercenary leaders with advanced armor and military experience.',
+    abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND], // Experienced leaders can defend
     tierNames: {
       [MonsterTier.EASY]: 'Merc Sergeant',
       [MonsterTier.MEDIUM]: 'Merc Captain',
@@ -238,6 +217,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Station Defense',
     description:
       'Automated defense systems protecting abandoned stations and facilities.',
+    abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND], // Defense systems designed to protect
     tierNames: {
       [MonsterTier.EASY]: 'Patrol Drone',
       [MonsterTier.MEDIUM]: 'Security Bot',
@@ -255,6 +235,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Rogue AI',
     description:
       'Malfunctioning artificial intelligence controlling station systems and drones.',
+    abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND], // Intelligent AI can use defensive tactics
     tierNames: {
       [MonsterTier.EASY]: 'Glitched AI',
       [MonsterTier.MEDIUM]: 'Rogue AI',
@@ -272,6 +253,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Void Entity',
     description:
       'Mysterious beings from deep space that defy conventional understanding.',
+    abilities: [CombatAbility.ATTACK], // Mysterious but aggressive entities
     tierNames: {
       [MonsterTier.EASY]: 'Void Wisp',
       [MonsterTier.MEDIUM]: 'Void Entity',

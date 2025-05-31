@@ -1,4 +1,12 @@
 // Model for space enemies in Nercana combat system
+
+// Combat abilities that monsters can possess
+export enum CombatAbility {
+  ATTACK = 'ATTACK',
+  DEFEND = 'DEFEND'
+  // Future abilities can be added here (e.g., SPECIAL_ATTACK, HEAL, etc.)
+}
+
 export enum MonsterType {
   SPACE_SLUG = 'SPACE_SLUG',
   XRIIT = 'XRIIT',
@@ -10,8 +18,6 @@ export enum MonsterType {
   XRIIT_SCOUT = 'XRIIT_SCOUT',
   XRIIT_COMMANDER = 'XRIIT_COMMANDER',
   MOGGO_BRUTE = 'MOGGO_BRUTE',
-  MOGGO_PACK = 'MOGGO_PACK',
-  CRITTER_NEST = 'CRITTER_NEST',
   MERC_RAIDER = 'MERC_RAIDER',
   MERC_CAPTAIN = 'MERC_CAPTAIN',
   STATION_DEFENSE = 'STATION_DEFENSE',
@@ -29,6 +35,7 @@ export interface Monster {
   speed: number;
   experienceReward: number;
   description: string;
+  abilities: CombatAbility[]; // List of abilities this monster can use
 }
 
 // Monster difficulty tiers for appropriate challenges

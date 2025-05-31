@@ -5,6 +5,7 @@ import { Hero } from '../../hero/models/hero.model';
 import { QuestDomainService } from '../services/quest-domain.service';
 import { MonsterService } from '../services/monster.service';
 import { ProductionRandomProvider } from '../../../shared/services/random.service';
+import { CombatAbility } from '../models/monster.model';
 
 /**
  * Integration tests for station resource generation in quest domain service
@@ -63,7 +64,8 @@ describe('QuestDomainService - Station Resources Integration', () => {
         attack: 10,
         defense: 5,
         speed: 5,
-        experienceReward: 25
+        experienceReward: 25,
+        abilities: [CombatAbility.ATTACK]
       };
 
       monsterService.generateRandomMonster.mockReturnValue(mockMonster);
@@ -117,7 +119,8 @@ describe('QuestDomainService - Station Resources Integration', () => {
         attack: 10,
         defense: 5,
         speed: 12,
-        experienceReward: 25
+        experienceReward: 25,
+        abilities: [CombatAbility.ATTACK]
       };
 
       monsterService.generateRandomMonster.mockReturnValue(mockMonster);
@@ -161,7 +164,8 @@ describe('QuestDomainService - Station Resources Integration', () => {
         attack: 10,
         defense: 5,
         speed: 12,
-        experienceReward: 25
+        experienceReward: 25,
+        abilities: [CombatAbility.ATTACK]
       };
 
       monsterService.generateRandomMonster.mockReturnValue(mockMonster);
@@ -222,7 +226,8 @@ describe('QuestDomainService - Station Resources Integration', () => {
         attack: 10,
         defense: 5,
         speed: 12,
-        experienceReward: 25
+        experienceReward: 25,
+        abilities: [CombatAbility.ATTACK]
       };
 
       monsterService.generateRandomMonster.mockReturnValue(mockMonster);
@@ -275,7 +280,8 @@ describe('QuestDomainService - Station Resources Integration', () => {
         attack: 10,
         defense: 5,
         speed: 12,
-        experienceReward: 25
+        experienceReward: 25,
+        abilities: [CombatAbility.ATTACK]
       };
 
       monsterService.generateRandomMonster.mockImplementation(

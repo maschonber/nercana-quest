@@ -8,6 +8,7 @@ import {
 import { StatusEffectManager } from './status-effect-manager.service';
 import { StatusEffectType } from '../models/status-effect.model';
 import { RandomService } from '../../../shared';
+import { CombatAbility } from '../../quest/models/monster.model';
 
 @Injectable({
   providedIn: 'root'
@@ -137,8 +138,11 @@ export class CombatAI {
     const healthPercent = (monster.health / monster.maxHealth) * 100;
     const isDefending = this.statusEffectManager.hasStatusEffect(monster, StatusEffectType.DEFENDING);
     
+    // Check if monster has the ability to defend
+    const canDefend = monster.abilities && monster.abilities.includes(CombatAbility.DEFEND);
+    
     // Monster logic: Strategic defending when damaged and not already defending
-    if (!isDefending) {
+    if (!isDefending && canDefend) {
       // High chance to defend when severely wounded
       if (healthPercent <= 25 && this.randomService.rollDice(0.3)) {
         return CombatActionType.DEFEND;

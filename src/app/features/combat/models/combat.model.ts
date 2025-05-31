@@ -1,6 +1,6 @@
 // Model for combat system in Nercana
 import { Hero } from '../../hero/models/hero.model';
-import { Monster } from '../../quest/models/monster.model';
+import { Monster, CombatAbility } from '../../quest/models/monster.model';
 import { AppliedStatusEffect, StatusEffect } from './status-effect.model';
 
 export enum CombatActionType {
@@ -52,6 +52,7 @@ export interface Combatant {
   isAlive: boolean; // Quick check for combat eligibility
   hasFled: boolean; // Track if combatant has fled
   statusEffects: AppliedStatusEffect[]; // Active status effects
+  abilities?: CombatAbility[]; // Combat abilities available to this combatant
 }
 
 export interface CombatantHealthState {

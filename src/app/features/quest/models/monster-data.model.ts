@@ -1,4 +1,4 @@
-import { MonsterType, MonsterTier } from './monster.model';
+import { MonsterType, MonsterTier, CombatAbility } from './monster.model';
 
 export interface MonsterData {
   readonly baseHealth: number;
@@ -9,6 +9,7 @@ export interface MonsterData {
   readonly name: string;
   readonly description: string;
   readonly tierNames?: Partial<Record<MonsterTier, string>>;
+  readonly abilities: CombatAbility[]; // Combat abilities this monster type possesses
 }
 
 export interface TierData {

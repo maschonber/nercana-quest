@@ -7,7 +7,7 @@ import { StatusEffectManager } from '../services/status-effect-manager.service';
 import { TurnManager } from '../services/turn-manager.service';
 import { CombatActionType, CombatantType, CombatOutcome } from '../models/combat.model';
 import { StatusEffectType, StatusEffectFactory } from '../models/status-effect.model';
-import { MonsterType } from '../../quest/models/monster.model';
+import { MonsterType, CombatAbility } from '../../quest/models/monster.model';
 
 describe('CombatDetailsComponent - Status Effects Display Integration', () => {
   let component: CombatDetailsComponent;
@@ -57,7 +57,8 @@ describe('CombatDetailsComponent - Status Effects Display Integration', () => {
         defense: 4,
         speed: 10,
         experienceReward: 15,
-        description: 'A fierce goblin warrior'
+        description: 'A fierce goblin warrior',
+        abilities: [CombatAbility.ATTACK]
       },
       combatResult: {
         outcome: CombatOutcome.HERO_VICTORY,
@@ -157,7 +158,8 @@ describe('CombatDetailsComponent - Status Effects Display Integration', () => {
         defense: 6,
         speed: 8,
         experienceReward: 25,
-        description: 'A powerful orc berserker'
+        description: 'A powerful orc berserker',
+        abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]
       },
       combatResult: {
         outcome: CombatOutcome.HERO_VICTORY,
@@ -220,7 +222,6 @@ describe('CombatDetailsComponent - Status Effects Display Integration', () => {
     expect(component.getStatusEffectIcon(heroStatusEffects[0])).toBe('🛡️');
     expect(component.getStatusEffectIcon(heroStatusEffects[1])).toBe('⚡');
   });
-
   it('should handle combatants with no status effects', () => {    component.entry = {
       message: 'Simple combat with no effects',
       timestamp: new Date(),
@@ -233,7 +234,8 @@ describe('CombatDetailsComponent - Status Effects Display Integration', () => {
         defense: 2,
         speed: 15,
         experienceReward: 5,
-        description: 'A large, aggressive rat'
+        description: 'A large, aggressive rat',
+        abilities: [CombatAbility.ATTACK]
       },
       combatResult: {
         outcome: CombatOutcome.HERO_VICTORY,

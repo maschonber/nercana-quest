@@ -8,7 +8,7 @@ import {
   CombatantType,
   CombatActionType
 } from '../models/combat.model';
-import { MonsterType } from '../../quest/models/monster.model';
+import { MonsterType, CombatAbility } from '../../quest/models/monster.model';
 import { HeroFacadeService } from '../../hero/services/hero-facade.service';
 import { Hero } from '../../hero/models/hero.model';
 
@@ -36,8 +36,7 @@ describe('CombatDetailsComponent - Combat Time Display', () => {
     timestamp: new Date('2024-01-15T10:30:00Z'),
     message: 'You encountered a fierce Void Entity!',
     success: true,
-    stepType: QuestStepType.ENCOUNTER,
-    monster: {
+    stepType: QuestStepType.ENCOUNTER,    monster: {
       name: 'Ancient Void Entity',
       type: MonsterType.VOID_ENTITY,
       description: 'A massive void entity that defies conventional understanding.',
@@ -46,7 +45,8 @@ describe('CombatDetailsComponent - Combat Time Display', () => {
       attack: 25,
       defense: 18,
       speed: 25,
-      experienceReward: 50
+      experienceReward: 50,
+      abilities: [CombatAbility.ATTACK]
     },
     combatResult: {
       outcome: CombatOutcome.HERO_VICTORY,

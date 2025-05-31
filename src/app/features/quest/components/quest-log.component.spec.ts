@@ -7,7 +7,7 @@ import {
   CombatantType,
   CombatActionType
 } from '../../combat/models/combat.model';
-import { MonsterType } from '../models/monster.model';
+import { MonsterType, CombatAbility } from '../models/monster.model';
 
 describe('QuestLogComponent', () => {
   let component: QuestLogComponent;
@@ -40,7 +40,8 @@ describe('QuestLogComponent', () => {
         attack: 25,
         defense: 18,
         speed: 22,
-        experienceReward: 50
+        experienceReward: 50,
+        abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]
       },
       combatResult: {
         outcome: CombatOutcome.HERO_VICTORY,

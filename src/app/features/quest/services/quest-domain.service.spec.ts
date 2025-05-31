@@ -4,7 +4,7 @@ import { MonsterService } from './monster.service';
 import { CombatService, CombatOutcome, CombatResult } from '../../combat';
 import { Hero } from '../../hero/models/hero.model';
 import { QuestStepType } from '../models/quest.model';
-import { Monster, MonsterType } from '../models/monster.model';
+import { Monster, MonsterType, CombatAbility } from '../models/monster.model';
 import { ProductionRandomProvider } from '../../../shared/services/random.service';
 
 describe('QuestDomainService', () => {
@@ -44,7 +44,8 @@ describe('QuestDomainService', () => {
       defense: 5,
       speed: 5,
       experienceReward: 20,
-      description: 'A test space slug'
+      description: 'A test space slug',
+      abilities: [CombatAbility.ATTACK]
     };
     monsterServiceSpy.generateRandomMonster.mockReturnValue(mockMonster);
 

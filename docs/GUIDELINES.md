@@ -13,6 +13,7 @@ Follow this systematic approach for any code changes:
 4. **Implement**: Make focused, consistent changes following the guidelines below
     - Do not care about legacy compatibility; focus on clean, modern code
 5. **Test**: Add/update tests for new functionality, ensure comprehensive coverage
+    - Use the deterministic random service for predictable test data
 6. **Prune**: Remove unused code, imports, legacy functions and dependencies
 7. **Validate**: Run all tests (Jest + Playwright) and iterate until passing
 

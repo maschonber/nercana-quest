@@ -42,14 +42,13 @@ export class MonsterService {
       name: 'Moggo Clans',
       types: [
         MonsterType.MOGGO,
-        MonsterType.MOGGO_BRUTE,
-        MonsterType.MOGGO_PACK
+        MonsterType.MOGGO_BRUTE
       ],
       cooperation: 0.8 // Pack hunters
     },
     {
       name: 'Vermin Infestation',
-      types: [MonsterType.CRITTER, MonsterType.CRITTER_NEST],
+      types: [MonsterType.CRITTER],
       cooperation: 0.95 // Hive mind behavior
     },
     {
@@ -165,7 +164,8 @@ export class MonsterService {
       defense,
       speed,
       experienceReward,
-      description: monsterData.description
+      description: monsterData.description,
+      abilities: monsterData.abilities
     };
   }
 
