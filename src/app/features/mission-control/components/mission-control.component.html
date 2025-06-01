@@ -1,0 +1,10 @@
+<app-standard-view>
+  <!-- Quest log on the left -->
+  <app-quest-log [log]="log()" slot="main-left"></app-quest-log>
+
+  <!-- Hero details on the right -->
+  <app-hero-details slot="main-right"></app-hero-details>
+
+  <!-- Floating actions -->
+  <app-hero-actions class="floating-actions" slot="floating-actions"></app-hero-actions>
+</app-standard-view>

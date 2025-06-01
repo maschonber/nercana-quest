@@ -1,10 +1,23 @@
-<app-standard-view>
-  <!-- Quest log goes in the left slot -->
-  <app-quest-log [log]="log()" slot="main-left"></app-quest-log>
+<main class="main">
+  <div class="nercana-container">
+    <!-- Header section with title and controls -->
+    <div class="header-section">
+      <div class="header-left">
+        <h1 class="app-title">{{ currentTitle() }}</h1>
+        <!-- Breadcrumb navigation positioned under title -->
+        @if (breadcrumbs().length > 0) {
+          <app-breadcrumb class="breadcrumb-nav"></app-breadcrumb>
+        }
+      </div>
+      <div class="header-controls">
+        <app-resource-display></app-resource-display>
+        <app-theme-toggle></app-theme-toggle>
+      </div>
+    </div>
 
-  <!-- Hero details go in the right slot -->
-  <app-hero-details slot="main-right"></app-hero-details>
-
-  <!-- Floating actions -->
-  <app-hero-actions class="floating-actions" slot="floating-actions"></app-hero-actions>
-</app-standard-view>
+    <!-- Main content section -->
+    <div class="content-section">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</main>

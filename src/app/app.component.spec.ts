@@ -1,10 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { ThemeStore } from './shared/services/theme.store';
-import { QuestFacadeService } from './features/quest/services/quest-facade.service';
-import { LogEntry } from './models/log-entry.model';
-import { HeroDetailsComponent } from './features/hero/components/hero-details.component';
-import { QuestLogComponent } from './features/quest/components/quest-log.component';
+import { NavigationService } from './shared/services/navigation.service';
 import { signal } from '@angular/core';
 
 // Mock window.matchMedia for testing
@@ -33,28 +30,15 @@ Object.defineProperty(window, 'localStorage', {
   }
 });
 
-// Create a mock QuestFacadeService
-const mockQuestFacade = {
-  questInProgress: signal<boolean>(false),
-  log: signal<LogEntry[]>([]),
-  recentLogEntries: signal<LogEntry[]>([]),
-  hasLogEntries: signal<boolean>(false),
-
-  embarkOnQuest: jest.fn(() => {
-    // Update the log signal when called
-    const currentLog = mockQuestFacade.log();
-    mockQuestFacade.log.set([
-      {
-        message: 'Quest succeeded! Your hero returns victorious.',
-        timestamp: new Date(),
-        success: true
-      },
-      ...currentLog
-    ]);
-  }),
-
-  addLogEntry: jest.fn(),
-  clearLog: jest.fn()
+// Create a mock NavigationService
+const mockNavigationService = {
+  currentTitle: signal<string>(''),
+  breadcrumbs: signal<{ label: string; route?: string }[]>([]),
+  
+  setCurrentTitle: jest.fn(),
+  clearCurrentTitle: jest.fn(),
+  setBreadcrumbs: jest.fn(),
+  clearBreadcrumbs: jest.fn()
 };
 
 // Create a mock ThemeStore
@@ -76,13 +60,10 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [
-        { provide: QuestFacadeService, useValue: mockQuestFacade },
+        { provide: NavigationService, useValue: mockNavigationService },
         { provide: ThemeStore, useValue: mockThemeStore }
       ]
     }).compileComponents();
-
-    // Reset the mock log before each test
-    mockQuestFacade.log.set([]);
 
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
@@ -92,8 +73,13 @@ describe('AppComponent', () => {
   it('should create the app', () => {
     expect(component).toBeTruthy();
   });
-  it('should expose log from quest facade', () => {
-    expect(component.log).toBe(mockQuestFacade.log);
+
+  it('should expose currentTitle from navigation service', () => {
+    expect(component.currentTitle).toBe(mockNavigationService.currentTitle);
+  });
+
+  it('should expose breadcrumbs from navigation service', () => {
+    expect(component.breadcrumbs).toBe(mockNavigationService.breadcrumbs);
   });
 
   it('should initialize theme on startup', () => {
