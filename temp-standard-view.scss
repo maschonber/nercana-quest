@@ -10,16 +10,15 @@
   align-items: stretch; /* Ensure both components have same height */
 }
 
-/* Give main-left 7/10 of the space and main-right 3/10 */
+/* Give main-left 2/3 of the space and main-right 1/3 */
 .content-layout :deep([slot="main-left"]) {
-  flex: 7;
+  flex: 2;
   min-width: 0; /* Allow shrinking */
 }
 
 .content-layout :deep([slot="main-right"]) {
-  flex: 3;
+  flex: 1;
   min-width: 0; /* Allow shrinking */
-  max-width: 320px; /* Limit maximum width */
 }
 
 @media (max-width: 900px) {
