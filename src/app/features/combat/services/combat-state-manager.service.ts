@@ -89,6 +89,56 @@ export class CombatStateManager {
   }
 
   /**
+   * Process time-based status effects for all combatants (damage/healing over time)
+   * Called at fixed global intervals (every 100 time units)
+   */
+  processTimeBasedStatusEffects(combat: Combat, currentTime: number): { shouldCreateTurn: boolean; statusMessages: string[] } {
+    const statusMessages: string[] = [];
+    let totalDamageOrHealing = 0;
+    
+    // Only process if the current time is a global interval (divisible by 100)
+    if (currentTime % 100 !== 0 || currentTime === 0) {
+      return { shouldCreateTurn: false, statusMessages: [] };
+    }
+    
+    const allCombatants = [
+      ...combat.heroTeam.combatants,
+      ...combat.enemyTeam.combatants
+    ];
+
+    allCombatants.forEach(combatant => {
+      if (!combatant.isAlive) return;
+
+      const { damage, healing, expiredEffects } = this.statusEffectManager.processTimeBasedStatusEffects(combatant);
+
+      // Apply damage over time
+      if (damage > 0) {
+        this.applyDamage(combatant, damage);
+        statusMessages.push(`${combatant.name} takes ${damage} poison damage!`);
+        totalDamageOrHealing += damage;
+      }
+
+      // Apply healing over time
+      if (healing > 0) {
+        this.applyHealing(combatant, healing);
+        statusMessages.push(`${combatant.name} recovers ${healing} health from regeneration!`);
+        totalDamageOrHealing += healing;
+      }
+
+      // Report expired effects
+      expiredEffects.forEach(effect => {
+        statusMessages.push(`${combatant.name}'s ${effect.name} effect has worn off.`);
+      });
+    });
+
+    // Return whether we should create a special turn for this status effect processing
+    return {
+      shouldCreateTurn: totalDamageOrHealing > 0 || statusMessages.length > 0,
+      statusMessages
+    };
+  }
+
+  /**
    * Checks if combat should end and updates the outcome
    */
   checkCombatEnd(combat: Combat): void {
@@ -122,7 +172,8 @@ export class CombatStateManager {
       maxHealth: combatant.maxHealth,
       isAlive: combatant.isAlive,
       type: combatant.type,
-      statusEffects: combatant.statusEffects
+      // Create deep copy of status effects to preserve state at this moment
+      statusEffects: combatant.statusEffects.map(effect => ({...effect}))
     }));
   }
 

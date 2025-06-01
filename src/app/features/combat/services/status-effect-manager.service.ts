@@ -13,25 +13,49 @@ import { TurnManager } from './turn-manager.service';
 export class StatusEffectManager {
 
   constructor(private turnManager: TurnManager) {}
-  
-  /**
+    /**
    * Apply a status effect to a combatant
-   */
-  applyStatusEffect(combatant: Combatant, statusEffect: StatusEffect): void {
+   */  applyStatusEffect(combatant: Combatant, statusEffect: StatusEffect): void {
     const currentTime = this.turnManager.getCurrentTime();
-    const appliedEffect: AppliedStatusEffect = {
-      ...statusEffect,
-      appliedAt: currentTime,
-      expiresAt: currentTime + statusEffect.duration
-    };
+    
+    // Check if effect already exists
+    const existingEffect = combatant.statusEffects.find(
+      effect => effect.type === statusEffect.type
+    );
 
-    // Check if effect is stackable
-    if (!statusEffect.stackable) {
-      // Remove existing effect of the same type
-      this.removeStatusEffect(combatant, statusEffect.type);
+    if (existingEffect && statusEffect.stackable) {
+      // Stack the effect: keep existing timer but increase magnitude and extend duration if needed
+      // DON'T reset appliedAt - this preserves the original timing for global intervals
+      const newExpirationTime = currentTime + statusEffect.duration;
+      existingEffect.expiresAt = Math.max(existingEffect.expiresAt, newExpirationTime);
+      
+      // Increase magnitude for stacking
+      if (statusEffect.damageOverTime && existingEffect.damageOverTime) {
+        existingEffect.damageOverTime += statusEffect.damageOverTime;
+      }
+      if (statusEffect.healingOverTime && existingEffect.healingOverTime) {
+        existingEffect.healingOverTime += statusEffect.healingOverTime;
+      }
+      if (statusEffect.damageReduction && existingEffect.damageReduction) {
+        existingEffect.damageReduction = Math.min(0.9, existingEffect.damageReduction + statusEffect.damageReduction);
+      }
+      if (statusEffect.damageIncrease && existingEffect.damageIncrease) {
+        existingEffect.damageIncrease += statusEffect.damageIncrease;
+      }
+    } else {
+      // Remove existing effect if not stackable, or add new effect
+      if (!statusEffect.stackable) {
+        this.removeStatusEffect(combatant, statusEffect.type);
+      }
+      
+      const appliedEffect: AppliedStatusEffect = {
+        ...statusEffect,
+        appliedAt: currentTime,
+        expiresAt: currentTime + statusEffect.duration
+      };
+      
+      combatant.statusEffects.push(appliedEffect);
     }
-
-    combatant.statusEffects.push(appliedEffect);
   }
 
   /**
@@ -42,28 +66,60 @@ export class StatusEffectManager {
       effect => effect.type !== effectType
     );
   }  /**
-   * Process status effects at the start of each action (damage/healing over time)
+   * Process status effects at the start of each action (expiration only, no damage/healing)
+   * Damage/healing over time should only be applied during dedicated status effect turns
    */
   processStatusEffects(combatant: Combatant): { damage: number; healing: number; expiredEffects: AppliedStatusEffect[] } {
+    let totalDamage = 0;  // Always 0 - damage only applied during status effect turns
+    let totalHealing = 0; // Always 0 - healing only applied during status effect turns
+    const expiredEffects: AppliedStatusEffect[] = [];
+    const currentTime = this.turnManager.getCurrentTime();
+
+    combatant.statusEffects.forEach(effect => {
+      // DO NOT apply damage/healing here - that's handled by processTimeBasedStatusEffects()
+      // This method only handles expiration checking during regular combat actions
+      
+      // Check if effect has expired
+      if (currentTime >= effect.expiresAt) {
+        expiredEffects.push(effect);
+      }
+    });
+
+    // Remove expired effects
+    expiredEffects.forEach(expiredEffect => {
+      this.removeStatusEffect(combatant, expiredEffect.type);
+    });
+
+    return { damage: totalDamage, healing: totalHealing, expiredEffects };
+  }/**
+   * Process time-based status effects for damage/healing over time
+   * Called at fixed global intervals (100, 200, 300, etc.)
+   */
+  processTimeBasedStatusEffects(combatant: Combatant): { 
+    damage: number; 
+    healing: number; 
+    expiredEffects: AppliedStatusEffect[];
+  } {
     let totalDamage = 0;
     let totalHealing = 0;
     const expiredEffects: AppliedStatusEffect[] = [];
     const currentTime = this.turnManager.getCurrentTime();
 
     combatant.statusEffects.forEach(effect => {
-      // Apply damage over time
-      if (effect.damageOverTime) {
-        totalDamage += effect.damageOverTime;
-      }
-
-      // Apply healing over time
-      if (effect.healingOverTime) {
-        totalHealing += effect.healingOverTime;
-      }
-
-      // Check if effect has expired
+      // Check if effect has expired BEFORE applying any damage/healing
       if (currentTime >= effect.expiresAt) {
         expiredEffects.push(effect);
+        return; // Skip processing for expired effects
+      }
+
+      // Only apply damage/healing if the effect was active when applied (before current time)
+      if (effect.appliedAt < currentTime) {
+        if (effect.damageOverTime) {
+          totalDamage += effect.damageOverTime;
+        }
+        if (effect.healingOverTime) {
+          totalHealing += effect.healingOverTime;
+        }
       }
     });
 
@@ -123,5 +179,19 @@ export class StatusEffectManager {
    */
   canAct(combatant: Combatant): boolean {
     return !this.hasStatusEffect(combatant, StatusEffectType.STUNNED);
+  }
+
+  /**
+   * Get the stack count for a stackable status effect (useful for display)
+   */
+  getStackCount(combatant: Combatant, effectType: StatusEffectType): number {
+    const effect = combatant.statusEffects.find(e => e.type === effectType);
+    if (!effect || effectType !== StatusEffectType.POISONED) {
+      return 0;
+    }
+    
+    // For poison, calculate stacks based on damage over time
+    // Base poison damage is 5, so stacks = current damage / 5
+    return Math.floor((effect.damageOverTime || 0) / 5);
   }
 }

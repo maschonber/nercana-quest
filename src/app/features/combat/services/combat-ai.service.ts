@@ -99,7 +99,7 @@ export class CombatAI {
 
   private determineHeroAction(
     hero: Combatant,
-    opposingTeam: CombatTeam
+    _opposingTeam: CombatTeam
   ): CombatActionType {
     const healthPercent = (hero.health / hero.maxHealth) * 100;
     const isDefending = this.statusEffectManager.hasStatusEffect(hero, StatusEffectType.DEFENDING);
@@ -138,8 +138,26 @@ export class CombatAI {
     const healthPercent = (monster.health / monster.maxHealth) * 100;
     const isDefending = this.statusEffectManager.hasStatusEffect(monster, StatusEffectType.DEFENDING);
     
-    // Check if monster has the ability to defend
+    // Check available abilities
     const canDefend = monster.abilities && monster.abilities.includes(CombatAbility.DEFEND);
+    const canPoison = monster.abilities && monster.abilities.includes(CombatAbility.POISON);
+    
+    // Poison logic: Use predominantly early in encounter or when target already poisoned
+    if (canPoison) {
+      const target = this.selectTarget(opposingTeam);
+      if (target) {
+        const targetHasPoisoned = this.statusEffectManager.hasStatusEffect(target, StatusEffectType.POISONED);
+        
+        // High chance early in combat (first 3 rounds) or if target already poisoned
+        if (opposingTeam.combatants.some(c => c.health === c.maxHealth) && this.randomService.rollDice(0.7)) {
+          return CombatActionType.SPECIAL; // Use poison
+        } else if (targetHasPoisoned && this.randomService.rollDice(0.6)) {
+          return CombatActionType.SPECIAL; // Stack poison
+        } else if (this.randomService.rollDice(0.15)) {
+          return CombatActionType.SPECIAL; // Occasional poison use
+        }
+      }
+    }
     
     // Monster logic: Strategic defending when damaged and not already defending
     if (!isDefending && canDefend) {

@@ -160,9 +160,7 @@ describe('CombatEncounterNarratorService', () => {
       targetHealthAfter: index % 2 === 0 ? 35 : 85,
       heroHealthAfter: 85,
       monsterHealthAfter: 35
-    }));
-
-    return {
+    }));    return {
       heroTeam: {
         side: TeamSide.HERO,
         combatants: heroes
@@ -170,8 +168,7 @@ describe('CombatEncounterNarratorService', () => {
       enemyTeam: {
         side: TeamSide.ENEMY,
         combatants: enemies
-      },
-      turns,
+      },      turns,
       currentTurn: config.turnCount,
       outcome: config.outcome
     };

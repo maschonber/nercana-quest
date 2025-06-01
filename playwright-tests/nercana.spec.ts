@@ -99,7 +99,7 @@ test.describe('Nercana Quest Application', () => {
   test('multiple quests can be completed and logged', async ({ page }) => {
     // Click the "Embark on quest" button and wait for steps to complete
     await page.click('button.quest-btn');
-    await page.waitForTimeout(2000); // Wait for all quest steps to complete
+    await page.waitForTimeout(4000); // Wait for all quest steps to complete
 
     // Heal the hero after first quest
     await page.evaluate(() => {
@@ -114,7 +114,7 @@ test.describe('Nercana Quest Application', () => {
 
     // Click again for second quest
     await page.click('button.quest-btn');
-    await page.waitForTimeout(2000); // Wait for all quest steps to complete
+    await page.waitForTimeout(4000); // Wait for all quest steps to complete
 
     // Heal the hero after second quest
     await page.evaluate(() => {
@@ -271,13 +271,5 @@ test.describe('Nercana Quest Application', () => {
     // Check that log entries are visible in dark mode
     const logEntries = page.locator('.log-view li');
     await expect(logEntries.first()).toBeVisible();
-  });
-
-  // Note: This test has been disabled until we can ensure the Angular app is running properly
-  // The test verifies monster abilities system via the direct testing of combat-ai.service.ts instead
-  test.skip('should verify monster abilities during combat (UI test)', async ({ page }) => {
-    // Original UI test code has been skipped - will be enabled when app server can be reliably started
-    // Test verifying that monsters with different abilities behave correctly
-    // will be done via direct component testing instead
   });
 });

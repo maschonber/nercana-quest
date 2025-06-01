@@ -6,6 +6,7 @@ import {
   CombatTurn,
   Combat
 } from '../models/combat.model';
+import { CombatAbility } from '../../quest/models/monster.model';
 import { ActionFactory } from './actions/action.factory';
 import { CombatStateManager } from './combat-state-manager.service';
 import { StatusEffectManager } from './status-effect-manager.service';
@@ -32,7 +33,25 @@ export class ActionExecutor {
     actionType: CombatActionType,
     combat: Combat
   ): CombatTurn {
-    const actionStrategy = this.actionFactory.createAction(actionType);
+    let actionStrategy;
+    
+    // Handle special actions based on actor's abilities
+    if (actionType === CombatActionType.SPECIAL) {
+      // For special actions, find the first available special ability
+      const specialAbility = actor.abilities?.find(ability => 
+        ability !== CombatAbility.ATTACK && ability !== CombatAbility.DEFEND
+      );
+      
+      if (specialAbility) {
+        actionStrategy = this.actionFactory.getAbilityAction(specialAbility);
+      } else {
+        // Fallback to attack if no special abilities
+        actionStrategy = this.actionFactory.createAction(CombatActionType.ATTACK);
+      }
+    } else {
+      actionStrategy = this.actionFactory.createAction(actionType);
+    }
+    
     const actionResult = actionStrategy.execute(actor, target);
 
     // Apply the results of the action
@@ -44,10 +63,12 @@ export class ActionExecutor {
       this.stateManager.applyHealing(actor, actionResult.healing);
     }
 
-    // Apply status effects
+    // Apply status effects to the correct target
     if (actionResult.statusEffects) {
       actionResult.statusEffects.forEach(statusEffect => {
-        this.statusEffectManager.applyStatusEffect(actor, statusEffect);
+        // Status effects from attacks typically apply to the target
+        const effectTarget = actionType === CombatActionType.DEFEND ? actor : target;
+        this.statusEffectManager.applyStatusEffect(effectTarget, statusEffect);
       });
     }
 

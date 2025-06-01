@@ -179,7 +179,9 @@ export class CombatDetailsComponent {
       case StatusEffectType.DEFENDING:
         return '🛡️';
       case StatusEffectType.POISONED:
-        return '☠️';
+        // Show stack count for poison effects if stacked
+        const stacks = Math.floor((statusEffect.damageOverTime || 0) / 5); // Base poison damage is 5
+        return stacks > 1 ? `☠️${stacks}` : '☠️';
       case StatusEffectType.REGENERATING:
         return '💚';
       case StatusEffectType.STUNNED:
@@ -198,7 +200,17 @@ export class CombatDetailsComponent {
     const durationText = remainingDuration > 0 ? 
       ` (${remainingDuration} clicks remaining)` : 
       ' (expired)';
-    return `${statusEffect.name}${durationText}: ${statusEffect.description}`;
+    
+    // Add damage/healing information for relevant effects
+    let effectInfo = statusEffect.description;
+    if (statusEffect.type === StatusEffectType.POISONED && statusEffect.damageOverTime) {
+      const stacks = Math.floor(statusEffect.damageOverTime / 5);
+      effectInfo = `Taking poison damage: ${statusEffect.damageOverTime} damage every 100 time units${stacks > 1 ? ` (${stacks} stacks)` : ''}`;
+    } else if (statusEffect.type === StatusEffectType.REGENERATING && statusEffect.healingOverTime) {
+      effectInfo = `Recovering ${statusEffect.healingOverTime} health every 100 time units`;
+    }
+    
+    return `${statusEffect.name}${durationText}: ${effectInfo}`;
   }
 
   // Get active status effects for a combatant state

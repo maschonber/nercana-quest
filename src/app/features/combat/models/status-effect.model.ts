@@ -14,8 +14,8 @@ export interface StatusEffect {
   stackable: boolean;
   damageReduction?: number; // Percentage (0-1)
   damageIncrease?: number; // Percentage (0-1)
-  damageOverTime?: number; // Damage per click
-  healingOverTime?: number; // Healing per click
+  damageOverTime?: number; // Damage per 100 time units
+  healingOverTime?: number; // Healing per 100 time units
 }
 
 export interface AppliedStatusEffect extends StatusEffect {
@@ -25,7 +25,6 @@ export interface AppliedStatusEffect extends StatusEffect {
 
 export class StatusEffectFactory {
   static createDefending(duration: number = 300): StatusEffect {
-    // ~9 actions worth of time (3-4 combat "turns")
     return {
       type: StatusEffectType.DEFENDING,
       name: 'Defending',
@@ -34,37 +33,33 @@ export class StatusEffectFactory {
       stackable: false,
       damageReduction: 0.4 // 40% damage reduction
     };
-  }
-  static createPoisoned(
-    duration: number = 400,
-    damagePerTurn: number = 5
+  }  static createPoisoned(
+    duration: number = 300,
+    damagePerInterval: number = 5
   ): StatusEffect {
-    // ~11-13 actions
+    // 300 clicks as specified in requirements
     return {
       type: StatusEffectType.POISONED,
       name: 'Poisoned',
-      description: 'Taking poison damage each combat action',
+      description: 'Taking poison damage every 100 time units',
       duration,
       stackable: true,
-      damageOverTime: damagePerTurn
+      damageOverTime: damagePerInterval
     };
-  }
-  static createRegenerating(
+  }  static createRegenerating(
     duration: number = 300,
-    healingPerTurn: number = 8
+    healingPerInterval: number = 8
   ): StatusEffect {
-    // ~9 actions
     return {
       type: StatusEffectType.REGENERATING,
       name: 'Regenerating',
-      description: 'Recovering health each combat action',
+      description: 'Recovering health every 100 time units',
       duration,
       stackable: false,
-      healingOverTime: healingPerTurn
+      healingOverTime: healingPerInterval
     };
   }
   static createStunned(duration: number = 100): StatusEffect {
-    // ~3 actions worth of time
     return {
       type: StatusEffectType.STUNNED,
       name: 'Stunned',
@@ -74,7 +69,6 @@ export class StatusEffectFactory {
     };
   }
   static createEmpowered(duration: number = 200): StatusEffect {
-    // ~6 actions
     return {
       type: StatusEffectType.EMPOWERED,
       name: 'Empowered',

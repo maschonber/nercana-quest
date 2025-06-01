@@ -24,7 +24,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Space Slug',
     description:
       'A gelatinous mollusk that feeds on asteroid minerals and station debris.',
-    abilities: [CombatAbility.ATTACK], // Simple creature, only attacks
+    abilities: [CombatAbility.ATTACK, CombatAbility.POISON], // Can attack and apply poison
     tierNames: {
       [MonsterTier.EASY]: 'Juvenile Slug',
       [MonsterTier.MEDIUM]: 'Space Slug',
@@ -111,7 +111,7 @@ const monsters: Record<MonsterType, MonsterData> = {
     name: 'Slug Swarm',
     description:
       'A writhing mass of interconnected slugs that overwhelm targets with numbers.',
-    abilities: [CombatAbility.ATTACK], // Swarm tactics, but no defensive capability
+    abilities: [CombatAbility.ATTACK, CombatAbility.POISON], // Swarm with poison capability
     tierNames: {
       [MonsterTier.EASY]: 'Small Swarm',
       [MonsterTier.MEDIUM]: 'Slug Swarm',

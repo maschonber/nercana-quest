@@ -110,7 +110,7 @@ export class CombatOrchestrator {
   private executeCombatTurn(combat: Combat): void {
     combat.currentTurn++;
 
-    // Process status effects at the start of each turn
+    // Process status effects at the start of each turn (for non-damage effects like expiration)
     this.stateManager.processStatusEffectsForAllCombatants(combat);
 
     // Get all alive combatants from both teams
@@ -121,8 +121,21 @@ export class CombatOrchestrator {
       this.turnManager.initializeTurnQueue(allCombatants);
     }
 
-    // Get the next acting combatant
-    const actingCombatant = this.turnManager.getNextActor();
+    // Get the next acting combatant or status effect turn
+    const nextAction = this.turnManager.getNextActor();
+
+    // Handle status effect turn
+    if (nextAction.isStatusEffectTurn) {
+      const currentTime = this.turnManager.getCurrentTime();
+      const statusResult = this.stateManager.processTimeBasedStatusEffects(combat, currentTime);
+      
+      if (statusResult.shouldCreateTurn) {
+        this.createStatusEffectTurn(combat, statusResult.statusMessages, currentTime);
+      }
+      return;
+    }
+
+    const actingCombatant = nextAction.combatant;
 
     if (!actingCombatant || !actingCombatant.isAlive) {
       // Skip turn if no valid actor
@@ -188,6 +201,41 @@ export class CombatOrchestrator {
     this.stateManager.updateCombatantStates(combat);
 
     // Check if combat has ended
+    this.stateManager.checkCombatEnd(combat);
+  }
+
+  /**
+   * Create a special turn for status effect damage/healing
+   */
+  private createStatusEffectTurn(combat: Combat, statusMessages: string[], combatTime: number): void {
+    if (statusMessages.length === 0) return;
+
+    const statusEffectTurn = {
+      turnNumber: combat.currentTurn + 1,
+      combatTime: combatTime,
+      actorId: 'status-effects',
+      action: {
+        type: 'special' as any,
+        description: statusMessages.join(' '),
+        actorId: 'status-effects',
+        actorName: 'Status Effects',
+        targetId: 'all',
+        targetName: 'All Combatants',
+        success: true
+      },
+      actorHealthAfter: 0, // Not applicable for status effects
+      targetHealthAfter: 0, // Not applicable for status effects
+      allCombatantsHealth: this.stateManager.captureAllCombatantsHealth(combat),
+      heroHealthAfter: 0, // Legacy field
+      monsterHealthAfter: 0 // Legacy field
+    };
+
+    combat.turns.push(statusEffectTurn);
+
+    // Update combatant states after status effect processing
+    this.stateManager.updateCombatantStates(combat);
+
+    // Check if combat has ended due to status effect damage
     this.stateManager.checkCombatEnd(combat);
   }
 }

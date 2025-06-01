@@ -3,7 +3,8 @@
 // Combat abilities that monsters can possess
 export enum CombatAbility {
   ATTACK = 'ATTACK',
-  DEFEND = 'DEFEND'
+  DEFEND = 'DEFEND',
+  POISON = 'POISON'
   // Future abilities can be added here (e.g., SPECIAL_ATTACK, HEAL, etc.)
 }
 
