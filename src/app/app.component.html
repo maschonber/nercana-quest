@@ -1,19 +1,10 @@
-<main class="main">
-  <div class="nercana-container">
-    <div class="header-section">
-      <h1 class="app-title">Nercana Quest</h1>
-      <div class="header-controls">
-        <app-resource-display></app-resource-display>
-        <app-theme-toggle></app-theme-toggle>
-      </div>
-    </div>
-    <div class="content-section">
-      <app-quest-log [log]="log()"> </app-quest-log>
+<app-standard-view>
+  <!-- Quest log goes in the left slot -->
+  <app-quest-log [log]="log()" slot="main-left"></app-quest-log>
 
-      <app-hero-details></app-hero-details>
-    </div>
-  </div>
+  <!-- Hero details go in the right slot -->
+  <app-hero-details slot="main-right"></app-hero-details>
 
-  <!-- Floating action bar -->
-  <app-hero-actions class="floating-actions"></app-hero-actions>
-</main>
+  <!-- Floating actions -->
+  <app-hero-actions class="floating-actions" slot="floating-actions"></app-hero-actions>
+</app-standard-view>

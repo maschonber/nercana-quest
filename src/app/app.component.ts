@@ -4,20 +4,17 @@ import { QuestFacadeService } from './features/quest/services/quest-facade.servi
 import { HeroDetailsComponent } from './features/hero/components/hero-details.component';
 import { HeroActionsComponent } from './features/hero/components/hero-actions.component';
 import { QuestLogComponent } from './features/quest/components/quest-log.component';
-import { ThemeToggleComponent } from './shared/components/theme-toggle.component';
-import { ResourceDisplayComponent } from './shared/components/resource-display.component';
+import { StandardViewComponent } from './shared/components/standard-view.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  standalone: true,
-  imports: [
+  standalone: true,  imports: [
     HeroDetailsComponent,
     HeroActionsComponent,
     QuestLogComponent,
-    ThemeToggleComponent,
-    ResourceDisplayComponent
+    StandardViewComponent
   ]
 })
 export class AppComponent implements OnInit {

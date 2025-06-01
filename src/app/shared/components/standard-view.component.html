@@ -1,0 +1,27 @@
+<main class="main">
+  <div class="nercana-container">
+    <!-- Header section with title and controls -->
+    <div class="header-section">
+      <ng-content select="[slot=title]">
+        <h1 class="app-title">Nercana Quest</h1>
+      </ng-content>
+      <div class="header-controls">
+        <app-resource-display></app-resource-display>
+        <app-theme-toggle></app-theme-toggle>
+        <ng-content select="[slot=header-actions]"></ng-content>
+      </div>
+    </div>
+
+    <!-- Main content section with left and right slots -->
+    <div class="content-section">
+      <ng-content select="[slot=main-left]"></ng-content>
+      <ng-content select="[slot=main-right]"></ng-content>
+    </div>
+
+    <!-- Additional content area for future use -->
+    <ng-content select="[slot=additional-content]"></ng-content>
+  </div>
+
+  <!-- Floating actions -->
+  <ng-content select="[slot=floating-actions]"></ng-content>
+</main>

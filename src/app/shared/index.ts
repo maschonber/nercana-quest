@@ -7,3 +7,6 @@ export * from './services/theme.store';
 
 // Shared services
 export * from './services/random.service';
+
+// Shared components
+export * from './components/standard-view.component';
