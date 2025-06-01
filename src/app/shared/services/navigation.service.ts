@@ -62,13 +62,12 @@ export class NavigationService {
       comingSoon: true
     },
     {
-      id: 'security',
-      title: 'Security',
-      description: 'Monitor threats, manage defenses, and review security protocols',
+      id: 'simulator',
+      title: 'Combat Simulator',
+      description: 'Train clones, test strategies, and prepare for missions',
       icon: '🛡️',
-      route: '/security',
-      isActive: false,
-      comingSoon: true
+      route: '/simulator',
+      isActive: true
     },
     {
       id: 'research-lab',

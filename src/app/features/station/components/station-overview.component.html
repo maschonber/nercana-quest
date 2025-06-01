@@ -1,8 +1,7 @@
 <app-standard-view>
   <!-- Station systems grid -->
   <div slot="main-left" class="systems-grid">
-    <h2 class="systems-heading">Station Systems</h2>
-    <div class="systems-cards">
+    <h2 class="systems-heading">Station Systems</h2>    <div class="systems-cards">
       @for (system of stationSystems; track system.id) {
         <div class="system-card" 
              [class.active]="system.isActive"
@@ -12,7 +11,9 @@
             [disabled]="!system.isActive"
             (click)="navigateToSystem(system)"
             type="button">
-            <div class="card-icon">{{ system.icon }}</div>
+            <div class="card-icon">
+              <img [src]="getSystemIconPath(system)" [alt]="system.title + ' icon'" class="system-icon">
+            </div>
             <div class="card-content">
               <h3 class="card-title">{{ system.title }}</h3>
               <p class="card-description">{{ system.description }}</p>

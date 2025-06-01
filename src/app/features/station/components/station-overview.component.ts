@@ -17,7 +17,7 @@ export class StationOverviewComponent implements OnInit {
 
   ngOnInit(): void {
     // Set the page title for the station overview
-    this.navigationService.setCurrentTitle('Nercana Station');
+    this.navigationService.setCurrentTitle('Space Station Overview');
     // Clear breadcrumbs for the station overview (it's the root)
     this.navigationService.clearBreadcrumbs();
   }
@@ -26,5 +26,25 @@ export class StationOverviewComponent implements OnInit {
     if (system.isActive) {
       this.router.navigate([system.route]);
     }
+  }
+
+  getSystemIconPath(system: StationSystem): string {
+    // Map the system ID to the corresponding image file
+    const iconMap: Record<string, string> = {
+      'mission-control': 'mission control.png',
+      'engineering': 'engineering.png',
+      'medical-bay': 'medical bay.png',
+      'cloning-facility': 'cloning facilities.png',
+      'simulator': 'simulator.png',
+      'research-lab': 'research.png'
+    };
+    
+    // Get the filename from the map or use a placeholder if not found
+    const filename = iconMap[system.id] || 'placeholder.png';
+    
+    // Return the full path to the icon
+    return system.id === 'research-lab' 
+      ? `assets/station-systems/research.png` 
+      : `assets/station-systems/${filename}`;
   }
 }

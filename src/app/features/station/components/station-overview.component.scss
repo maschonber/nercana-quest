@@ -61,8 +61,25 @@
 }
 
 .card-icon {
-  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+.system-icon {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  filter: var(--icon-filter);
+  transition: filter 0.3s ease;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.system-card.coming-soon .system-icon {
+  opacity: 0.6;
+  filter: var(--icon-filter-disabled);
 }
 
 .card-content {
