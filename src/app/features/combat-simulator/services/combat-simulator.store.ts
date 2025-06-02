@@ -8,6 +8,14 @@ import {
   MonsterSelection,
   TEMPLATE_HEROES 
 } from '../models/simulation.model';
+import { 
+  MultiSimulationConfig,
+  MultiSimulationResults,
+  MultiSimulationStatus,
+  MonsterComparisonResult,
+  SortConfig,
+  SortableColumn
+} from '../models/multi-simulation.model';
 import { Hero } from '../../hero/models/hero.model';
 import { Monster } from '../../quest/models/monster.model';
 
@@ -21,6 +29,12 @@ interface SimulationState {
   isRunning: boolean;
   progress: number; // 0-100
   errors: string[];
+  // Multi-simulation state
+  multiSimulationStatus: MultiSimulationStatus;
+  multiSimulationResults: MultiSimulationResults | null;
+  isMultiSimulationRunning: boolean;
+  multiSimulationProgress: number;
+  sortConfig: SortConfig;
 }
 
 const initialState: SimulationState = {
@@ -36,12 +50,16 @@ const initialState: SimulationState = {
   currentResults: null,
   isRunning: false,
   progress: 0,
-  errors: []
+  errors: [],  multiSimulationStatus: MultiSimulationStatus.IDLE,
+  multiSimulationResults: null,
+  isMultiSimulationRunning: false,
+  multiSimulationProgress: 0,
+  sortConfig: { column: 'name', direction: 'asc' }
 };
 
 export const CombatSimulatorStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),  withComputed(({ selectedHeroes, selectedMonsters, runCount, errors, heroConfigs }) => ({
+  withState(initialState),  withComputed(({ selectedHeroes, selectedMonsters, runCount, errors, heroConfigs, multiSimulationResults, sortConfig }) => ({
     canStartSimulation: computed(() => {
       const enabledHeroes = heroConfigs().filter(config => config.enabled);
       return enabledHeroes.length > 0 && 
@@ -52,13 +70,67 @@ export const CombatSimulatorStore = signalStore(
         runCount() <= 100 &&
         errors().length === 0;
     }),
+    canStartMultiSimulation: computed(() => {
+      const enabledHeroes = heroConfigs().filter(config => config.enabled);
+      return enabledHeroes.length > 0 && 
+        enabledHeroes.length <= 3 &&
+        runCount() > 0 && 
+        runCount() <= 100 &&
+        errors().length === 0;
+    }),
     heroTeamSize: computed(() => heroConfigs().filter(config => config.enabled).length),
     enemyTeamSize: computed(() => selectedMonsters().length),
     isTeamConfigurationValid: computed(() => {
       const enabledHeroes = heroConfigs().filter(config => config.enabled);
       return enabledHeroes.length > 0 && selectedMonsters().length > 0;
     }),
-    enabledHeroes: computed(() => heroConfigs().filter(config => config.enabled))
+    enabledHeroes: computed(() => heroConfigs().filter(config => config.enabled)),
+    sortedMonsterResults: computed(() => {
+      const results = multiSimulationResults()?.monsterResults || [];
+      const config = sortConfig();
+      
+      return [...results].sort((a, b) => {
+        let aValue: number | string;
+        let bValue: number | string;
+        
+        switch (config.column) {
+          case 'name':
+            aValue = a.monster.name;
+            bValue = b.monster.name;
+            break;
+          case 'winRate':
+            aValue = a.statistics.heroWinPercentage;
+            bValue = b.statistics.heroWinPercentage;
+            break;
+          case 'avgHealthLost':
+            aValue = a.averageHealthLost;
+            bValue = b.averageHealthLost;
+            break;
+          case 'difficulty':
+            aValue = a.difficulty;
+            bValue = b.difficulty;
+            break;
+          case 'avgTurns':
+            aValue = a.statistics.averageTurns;
+            bValue = b.statistics.averageTurns;
+            break;
+          case 'avgExperience':
+            aValue = a.statistics.averageExperience;
+            bValue = b.statistics.averageExperience;
+            break;
+          default:
+            return 0;
+        }
+        
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          const comparison = aValue.localeCompare(bValue);
+          return config.direction === 'asc' ? comparison : -comparison;
+        }
+        
+        const comparison = (aValue as number) - (bValue as number);
+        return config.direction === 'asc' ? comparison : -comparison;
+      });
+    })
   })),
   withMethods((store) => ({
     setStatus(status: SimulationStatus) {
@@ -185,7 +257,8 @@ export const CombatSimulatorStore = signalStore(
           enabled: false
         }))
       });
-    },resetConfiguration() {
+    },
+    resetConfiguration() {
       patchState(store, { 
         selectedHeroes: [],
         heroConfigs: TEMPLATE_HEROES.map(template => ({
@@ -196,6 +269,60 @@ export const CombatSimulatorStore = signalStore(
         selectedMonsters: [],
         runCount: 10,
         errors: []
+      });
+    },
+
+    // Multi-simulation methods
+    setMultiSimulationStatus(status: MultiSimulationStatus) {
+      patchState(store, { multiSimulationStatus: status });
+    },
+
+    setIsMultiSimulationRunning(isRunning: boolean) {
+      patchState(store, { isMultiSimulationRunning: isRunning });
+    },
+
+    setMultiSimulationProgress(progress: number) {
+      patchState(store, { multiSimulationProgress: Math.max(0, Math.min(100, progress)) });
+    },
+
+    setMultiSimulationResults(results: MultiSimulationResults) {
+      patchState(store, { 
+        multiSimulationResults: results,
+        multiSimulationStatus: MultiSimulationStatus.COMPLETED,
+        isMultiSimulationRunning: false,
+        multiSimulationProgress: 100
+      });
+    },
+
+    setMultiSimulationError(error: string) {
+      patchState(store, { 
+        errors: [error],
+        multiSimulationStatus: MultiSimulationStatus.ERROR,
+        isMultiSimulationRunning: false
+      });
+    },
+
+    setSortConfig(column: SortableColumn, direction: 'asc' | 'desc') {
+      patchState(store, { sortConfig: { column, direction } });
+    },
+
+    selectMonsterResult(result: MonsterComparisonResult | null) {
+      const currentResults = store.multiSimulationResults();
+      if (currentResults) {
+        patchState(store, { 
+          multiSimulationResults: {
+            ...currentResults,
+            selectedMonsterResult: result
+          }
+        });
+      }
+    },
+
+    clearMultiSimulationResults() {
+      patchState(store, { 
+        multiSimulationResults: null,
+        multiSimulationStatus: MultiSimulationStatus.IDLE,
+        multiSimulationProgress: 0
       });
     }
   }))

@@ -1,0 +1,163 @@
+<app-tab-view>
+  <app-tab id="setup" label="Setup">
+    <div class="simulator-content">
+      <div class="configuration-panel">
+        <app-team-selector></app-team-selector>
+        @if (store.errors().length > 0) {
+          <div class="error-panel">
+            <h4>Configuration Errors:</h4>
+            <ul>
+              @for (error of store.errors(); track error) {
+                <li>{{ error }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </div>
+    
+    <!-- Floating Action Bar -->
+    <div class="floating-action-bar">
+      <div class="run-count-control">
+        <label for="runCount">Runs:</label>
+        <select 
+          id="runCount" 
+          [value]="store.runCount()" 
+          (change)="onRunCountChange($event)"
+          [disabled]="store.isRunning() || store.isMultiSimulationRunning()"
+          class="run-count-select">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="simulation-actions">
+        <button 
+          class="btn btn--primary"
+          [disabled]="!store.canStartSimulation() || store.isRunning() || store.isMultiSimulationRunning()"
+          (click)="startSimulation()">
+          @if (store.isRunning()) {
+            <span class="loading-spinner"></span>
+            Running... {{ store.progress() }}%
+          } @else {
+            Start Simulation
+          }
+        </button>
+        <button 
+          class="btn btn--primary btn--multi"
+          [disabled]="!store.canStartMultiSimulation() || store.isRunning() || store.isMultiSimulationRunning()"
+          (click)="startMultiSimulation()">
+          @if (store.isMultiSimulationRunning()) {
+            <span class="loading-spinner"></span>
+            Multi-Sim... {{ store.multiSimulationProgress() }}%
+          } @else {
+            Multi-Simulation
+          }
+        </button>
+        <button 
+          class="btn btn--secondary"
+          [disabled]="store.isRunning() || store.isMultiSimulationRunning()"
+          (click)="resetConfiguration()">
+          Reset
+        </button>
+      </div>
+    </div>
+  </app-tab>
+
+  <app-tab id="results" label="Results">
+    <div class="results-panel">
+      @if (store.currentResults()) {
+        <app-simulation-results [results]="store.currentResults()!"></app-simulation-results>
+      } @else if (store.status() === SimulationStatus.IDLE) {
+        <div class="no-results">
+          <h3>No Results Yet</h3>
+          <p>Configure your teams and run a simulation to see results.</p>
+        </div>
+      } @else if (store.isRunning()) {
+        <div class="simulation-running">
+          <h3>Simulation Running...</h3>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              [style.width.%]="store.progress()">
+            </div>
+          </div>
+          <p>{{ store.progress() }}% complete</p>
+        </div>
+      }
+    </div>
+  </app-tab>
+
+  <app-tab id="monster-comparison" label="Monster Comparison">
+    <div class="multi-simulation-panel">
+      @if (store.multiSimulationResults()) {
+        <app-monster-comparison [results]="store.multiSimulationResults()!"></app-monster-comparison>
+      } @else if (store.multiSimulationStatus() === MultiSimulationStatus.IDLE) {
+        <div class="no-results">
+          <h3>No Multi-Simulation Results</h3>
+          <p>Configure your hero team and run a multi-simulation to compare against all available monsters.</p>
+          <div class="multi-sim-info">
+            <h4>What is Multi-Simulation?</h4>
+            <ul>
+              <li>Tests your hero team against every available monster</li>
+              <li>Runs multiple battles per monster (configurable)</li>
+              <li>Provides sortable comparison data</li>
+              <li>Shows win rates, average health lost, and difficulty ratings</li>
+            </ul>
+          </div>
+        </div>
+      } @else if (store.isMultiSimulationRunning()) {
+        <div class="simulation-running">
+          <h3>Multi-Simulation Running...</h3>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              [style.width.%]="store.multiSimulationProgress()">
+            </div>
+          </div>
+          <p>{{ store.multiSimulationProgress() }}% complete</p>
+          <p class="sub-text">Testing hero team against all available monsters...</p>
+        </div>
+      }
+    </div>
+  </app-tab>
+
+  <app-tab id="detailed-results" label="Detailed Results">
+    <div class="detailed-results-panel">
+      @if (store.multiSimulationResults()?.selectedMonsterResult) {
+        <div class="selected-monster-results">
+          <div class="monster-header">
+            <h3>{{ store.multiSimulationResults()!.selectedMonsterResult!.monster.name }}</h3>
+            <div class="monster-info">
+              <span class="monster-type">{{ store.multiSimulationResults()!.selectedMonsterResult!.monster.type }}</span>
+              <span class="monster-tier tier--{{ store.multiSimulationResults()!.selectedMonsterResult!.monster.tier.toLowerCase() }}">
+                {{ store.multiSimulationResults()!.selectedMonsterResult!.monster.tier }}
+              </span>
+            </div>
+          </div>
+          
+          <!-- Create a fake SimulationResults object for the existing component -->
+          <app-simulation-results 
+            [results]="{
+              config: {
+                heroTeam: store.multiSimulationResults()!.config.heroTeam,
+                enemyTeam: [store.multiSimulationResults()!.selectedMonsterResult!.monsterInstance],
+                runCount: store.multiSimulationResults()!.config.runCount
+              },
+              runs: store.multiSimulationResults()!.selectedMonsterResult!.runs,
+              statistics: store.multiSimulationResults()!.selectedMonsterResult!.statistics,
+              startTime: store.multiSimulationResults()!.startTime,
+              endTime: store.multiSimulationResults()!.endTime
+            }">
+          </app-simulation-results>
+        </div>
+      } @else {
+        <div class="no-selection">
+          <h3>No Monster Selected</h3>
+          <p>Click on a monster in the Monster Comparison tab to view detailed simulation results.</p>
+        </div>
+      }
+    </div>
+  </app-tab>
+</app-tab-view>

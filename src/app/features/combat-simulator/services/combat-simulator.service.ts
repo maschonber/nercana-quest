@@ -1,23 +1,23 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CombatService } from '../../combat/services/combat.service';
-import { HeroDomainService } from '../../hero/services/hero-domain.service';
-import { MonsterService } from '../../quest/services/monster.service';
 import { Hero } from '../../hero/models/hero.model';
-import {
-  Monster,
-  MonsterType,
-  MonsterTier
-} from '../../quest/models/monster.model';
+import { Monster, MonsterType, MonsterTier } from '../../quest/models/monster.model';
+import { MonsterService } from '../../quest/services/monster.service';
 import {
   SimulationConfig,
   SimulationResults,
   SimulationRun,
   SimulationStatistics,
   TemplateHero,
-  TEMPLATE_HEROES,
-  MonsterSelection
+  MonsterSelection,
+  TEMPLATE_HEROES
 } from '../models/simulation.model';
-import { CombatOutcome } from '../../combat/models/combat.model';
+import {
+  MultiSimulationConfig,
+  MultiSimulationResults,
+  MonsterComparisonResult
+} from '../models/multi-simulation.model';
+import { CombatOutcome, CombatantType } from '../../combat/models/combat.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,6 @@ import { CombatOutcome } from '../../combat/models/combat.model';
 export class CombatSimulatorService {
   constructor(
     private combatService: CombatService,
-    private heroDomainService: HeroDomainService,
     private monsterService: MonsterService
   ) {}
 
@@ -35,7 +34,6 @@ export class CombatSimulatorService {
   getTemplateHeroes(): TemplateHero[] {
     return TEMPLATE_HEROES;
   }
-
   /**
    * Create a hero at a specific level using template
    */
@@ -44,21 +42,20 @@ export class CombatSimulatorService {
       throw new Error('Hero level must be between 1 and 20');
     }
 
-    // Start with base stats at level 1
-    let hero: Hero = {
+    // Scale stats based on level (simple linear scaling for simulation)
+    const scalingFactor = 1 + (level - 1) * 0.1; // 10% increase per level
+    
+    const hero: Hero = {
       name: template.name,
-      level: 1,
-      experience: this.heroDomainService.getExperienceForLevel(1),
-      ...template.baseStats
+      level: level,
+      experience: level * 100, // Simple experience calculation
+      health: Math.floor(template.baseStats.health * scalingFactor),
+      maxHealth: Math.floor(template.baseStats.maxHealth * scalingFactor),
+      attack: Math.floor(template.baseStats.attack * scalingFactor),
+      defense: Math.floor(template.baseStats.defense * scalingFactor),
+      speed: Math.floor(template.baseStats.speed * scalingFactor),
+      luck: Math.floor(template.baseStats.luck * scalingFactor)
     };
-
-    // Level up to target level
-    if (level > 1) {
-      const levelsToGain = level - 1;
-      hero = this.heroDomainService.levelUpHero(hero, levelsToGain);
-      hero.level = level;
-      hero.experience = this.heroDomainService.getExperienceForLevel(level);
-    }
 
     return hero;
   }
@@ -232,5 +229,113 @@ export class CombatSimulatorService {
     }
 
     return errors;
+  }
+
+  /**
+   * Validate multi-simulation configuration
+   */
+  validateMultiSimulationConfiguration(config: MultiSimulationConfig): string[] {
+    const errors: string[] = [];
+
+    if (config.heroTeam.length === 0) {
+      errors.push('At least one hero must be selected');
+    }
+
+    if (config.heroTeam.length > 3) {
+      errors.push('Maximum 3 heroes allowed');
+    }
+
+    if (config.runCount < 1 || config.runCount > 100) {
+      errors.push('Run count must be between 1 and 100');
+    }
+
+    return errors;
+  }
+
+  /**
+   * Run multi-simulation against all available monsters
+   */
+  async runMultiSimulation(config: MultiSimulationConfig): Promise<MultiSimulationResults> {
+    const results: MultiSimulationResults = {
+      config,
+      monsterResults: [],
+      startTime: new Date()
+    };
+
+    // Get all available monsters
+    const allMonsters = this.getAvailableMonsters();
+    const totalMonsters = allMonsters.length;
+
+    // Run simulation against each monster
+    for (let i = 0; i < allMonsters.length; i++) {
+      const monsterSelection = allMonsters[i];
+      const monsterInstance = this.createMonsterFromSelection(monsterSelection);
+      
+      // Create simulation config for this monster
+      const singleSimConfig: SimulationConfig = {
+        heroTeam: config.heroTeam,
+        enemyTeam: [monsterInstance],
+        runCount: config.runCount
+      };
+
+      // Run simulation against this monster
+      const simResults = await this.runSimulation(singleSimConfig);
+      
+      // Calculate additional metrics
+      const averageHealthLost = this.calculateAverageHealthLost(simResults, config.heroTeam);
+      const difficulty = this.monsterService.calculateMonsterInstanceDifficulty(monsterInstance);
+      
+      // Create monster comparison result
+      const monsterResult: MonsterComparisonResult = {
+        monster: monsterSelection,
+        monsterInstance,
+        runs: simResults.runs,
+        statistics: simResults.statistics,
+        averageHealthLost,
+        difficulty
+      };
+
+      results.monsterResults.push(monsterResult);
+
+      // Allow UI to update progress
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+
+    results.endTime = new Date();
+    return results;
+  }
+
+  /**
+   * Calculate average health lost by heroes during combat
+   */  private calculateAverageHealthLost(simResults: SimulationResults, heroTeam: Hero[]): number {
+    let totalHealthLost = 0;
+    let validRuns = 0;
+
+    for (const run of simResults.runs) {
+      if (run.combatResult.outcome !== CombatOutcome.HERO_FLED && run.combatResult.turns.length > 0) {
+        // Sum initial health of all heroes
+        const initialHealth = heroTeam.reduce((sum, hero) => sum + hero.maxHealth, 0);
+        
+        // Get final health from the last turn
+        const lastTurn = run.combatResult.turns[run.combatResult.turns.length - 1];
+        let finalHealth = 0;
+        
+        if (lastTurn.allCombatantsHealth) {
+          // Use comprehensive health tracking if available
+          finalHealth = lastTurn.allCombatantsHealth
+            .filter(combatant => combatant.type === CombatantType.HERO)
+            .reduce((sum, hero) => sum + hero.health, 0);
+        } else {
+          // Fall back to legacy heroHealthAfter field for single hero
+          finalHealth = lastTurn.heroHealthAfter;
+        }
+        
+        const healthLost = Math.max(0, initialHealth - finalHealth);
+        totalHealthLost += healthLost;
+        validRuns++;
+      }
+    }
+
+    return validRuns > 0 ? totalHealthLost / validRuns : 0;
   }
 }

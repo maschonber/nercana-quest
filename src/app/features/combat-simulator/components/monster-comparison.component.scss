@@ -1,0 +1,225 @@
+.monster-comparison {
+  padding: 1rem;
+}
+
+.comparison-header {
+  margin-bottom: 1.5rem;
+  
+  h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    
+    &.duration {
+      font-style: italic;
+      color: var(--text-muted);
+    }
+  }
+}
+
+.comparison-table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    
+    &.numeric {
+      text-align: right;
+    }
+  }
+  
+  th {
+    background: var(--surface-elevated);
+    color: var(--text-primary);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    
+    &.sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background: var(--surface-hover);
+      }
+      
+      &.sorted {
+        background: var(--primary-color-faded);
+        color: var(--primary-color);
+      }
+    }
+  }
+  
+  .sort-indicator {
+    margin-left: 0.25rem;
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+  
+  tbody tr {
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background: var(--surface-hover);
+    }
+    
+    &.selected {
+      background: var(--primary-color-faded);
+      border-color: var(--primary-color);
+    }
+    
+    &.monster-row {
+      cursor: pointer;
+    }
+  }
+}
+
+.monster-name {
+  strong {
+    color: var(--text-primary);
+  }
+}
+
+.monster-type {
+  .type {
+    display: inline-block;
+    margin-right: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  
+  .tier {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    
+    &.tier--common {
+      background: var(--success-color-faded);
+      color: var(--success-color);
+    }
+    
+    &.tier--uncommon {
+      background: var(--warning-color-faded);
+      color: var(--warning-color);
+    }
+    
+    &.tier--rare {
+      background: var(--danger-color-faded);
+      color: var(--danger-color);
+    }
+    
+    &.tier--epic {
+      background: var(--purple-faded);
+      color: var(--purple-color);
+    }
+    
+    &.tier--legendary {
+      background: var(--orange-faded);
+      color: var(--orange-color);
+    }
+  }
+}
+
+.win-rate {
+  font-weight: 600;
+  
+  &.excellent {
+    color: var(--success-color);
+  }
+  
+  &.good {
+    color: var(--success-color-muted);
+  }
+  
+  &.average {
+    color: var(--warning-color);
+  }
+  
+  &.poor {
+    color: var(--danger-color-muted);
+  }
+  
+  &.terrible {
+    color: var(--danger-color);
+  }
+}
+
+.health-lost {
+  color: var(--text-primary);
+}
+
+.difficulty {
+  font-weight: 600;
+  
+  &.very-easy {
+    color: var(--success-color);
+  }
+  
+  &.easy {
+    color: var(--success-color-muted);
+  }
+  
+  &.medium {
+    color: var(--warning-color);
+  }
+  
+  &.hard {
+    color: var(--danger-color-muted);
+  }
+  
+  &.very-hard {
+    color: var(--danger-color);
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  
+  h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    margin-bottom: 0;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .comparison-table {
+    font-size: 0.875rem;
+    
+    th, td {
+      padding: 0.5rem;
+    }
+  }
+  
+  .monster-type {
+    .type, .tier {
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+  }
+}
