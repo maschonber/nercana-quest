@@ -5,7 +5,8 @@ import {
   SimulationResults, 
   SimulationStatus, 
   TemplateHero, 
-  MonsterSelection 
+  MonsterSelection,
+  TEMPLATE_HEROES 
 } from '../models/simulation.model';
 import { Hero } from '../../hero/models/hero.model';
 import { Monster } from '../../quest/models/monster.model';
@@ -13,6 +14,7 @@ import { Monster } from '../../quest/models/monster.model';
 interface SimulationState {
   status: SimulationStatus;
   selectedHeroes: Array<{ template: TemplateHero; level: number }>;
+  heroConfigs: Array<{ template: TemplateHero; level: number; enabled: boolean }>;
   selectedMonsters: MonsterSelection[];
   runCount: number;
   currentResults: SimulationResults | null;
@@ -24,6 +26,11 @@ interface SimulationState {
 const initialState: SimulationState = {
   status: SimulationStatus.IDLE,
   selectedHeroes: [],
+  heroConfigs: TEMPLATE_HEROES.map(template => ({
+    template,
+    level: 1,
+    enabled: false
+  })),
   selectedMonsters: [],
   runCount: 10,
   currentResults: null,
@@ -34,59 +41,71 @@ const initialState: SimulationState = {
 
 export const CombatSimulatorStore = signalStore(
   { providedIn: 'root' },
-  withState(initialState),
-  withComputed(({ selectedHeroes, selectedMonsters, runCount, errors }) => ({
-    canStartSimulation: computed(() => 
-      selectedHeroes().length > 0 && 
-      selectedHeroes().length <= 3 &&
-      selectedMonsters().length > 0 && 
-      selectedMonsters().length <= 3 &&
-      runCount() > 0 && 
-      runCount() <= 100 &&
-      errors().length === 0
-    ),
-    heroTeamSize: computed(() => selectedHeroes().length),
+  withState(initialState),  withComputed(({ selectedHeroes, selectedMonsters, runCount, errors, heroConfigs }) => ({
+    canStartSimulation: computed(() => {
+      const enabledHeroes = heroConfigs().filter(config => config.enabled);
+      return enabledHeroes.length > 0 && 
+        enabledHeroes.length <= 3 &&
+        selectedMonsters().length > 0 && 
+        selectedMonsters().length <= 3 &&
+        runCount() > 0 && 
+        runCount() <= 100 &&
+        errors().length === 0;
+    }),
+    heroTeamSize: computed(() => heroConfigs().filter(config => config.enabled).length),
     enemyTeamSize: computed(() => selectedMonsters().length),
-    isTeamConfigurationValid: computed(() => 
-      selectedHeroes().length > 0 && selectedMonsters().length > 0
-    )
+    isTeamConfigurationValid: computed(() => {
+      const enabledHeroes = heroConfigs().filter(config => config.enabled);
+      return enabledHeroes.length > 0 && selectedMonsters().length > 0;
+    }),
+    enabledHeroes: computed(() => heroConfigs().filter(config => config.enabled))
   })),
   withMethods((store) => ({
     setStatus(status: SimulationStatus) {
       patchState(store, { status });
-    },
-
-    addHero(template: TemplateHero, level: number = 1) {
-      const current = store.selectedHeroes();
-      if (current.length >= 3) {
-        patchState(store, { 
-          errors: ['Maximum 3 heroes allowed'] 
-        });
-        return;
-      }
-
-      patchState(store, { 
-        selectedHeroes: [...current, { template, level }],
-        errors: []
-      });
-    },
-
-    removeHero(index: number) {
-      const current = store.selectedHeroes();
-      const updated = current.filter((_, i) => i !== index);
-      patchState(store, { 
-        selectedHeroes: updated,
-        errors: []
-      });
-    },
-
-    updateHeroLevel(index: number, level: number) {
-      const current = store.selectedHeroes();
-      if (index >= 0 && index < current.length) {
+    },    toggleHero(heroIndex: number) {
+      const current = store.heroConfigs();
+      if (heroIndex >= 0 && heroIndex < current.length) {
         const updated = [...current];
-        updated[index] = { ...updated[index], level };
+        const enabledCount = current.filter(config => config.enabled).length;
+        
+        // If trying to enable and already at max, show error
+        if (!updated[heroIndex].enabled && enabledCount >= 3) {
+          patchState(store, { 
+            errors: ['Maximum 3 heroes allowed'] 
+          });
+          return;
+        }
+        
+        updated[heroIndex] = { ...updated[heroIndex], enabled: !updated[heroIndex].enabled };
+        
+        // Update selectedHeroes for compatibility with existing code
+        const selectedHeroes = updated
+          .filter(config => config.enabled)
+          .map(config => ({ template: config.template, level: config.level }));
+        
         patchState(store, { 
-          selectedHeroes: updated,
+          heroConfigs: updated,
+          selectedHeroes,
+          errors: []
+        });
+      }
+    },
+
+    updateHeroLevel(heroIndex: number, level: number) {
+      const current = store.heroConfigs();
+      if (heroIndex >= 0 && heroIndex < current.length) {
+        const updated = [...current];
+        updated[heroIndex] = { ...updated[heroIndex], level };
+        
+        // Update selectedHeroes for compatibility with existing code
+        const selectedHeroes = updated
+          .filter(config => config.enabled)
+          .map(config => ({ template: config.template, level: config.level }));
+        
+        patchState(store, { 
+          heroConfigs: updated,
+          selectedHeroes,
           errors: []
         });
       }
@@ -157,15 +176,23 @@ export const CombatSimulatorStore = signalStore(
 
     clearErrors() {
       patchState(store, { errors: [] });
-    },
-
-    reset() {
-      patchState(store, initialState);
-    },
-
-    resetConfiguration() {
+    },    reset() {
+      patchState(store, {
+        ...initialState,
+        heroConfigs: TEMPLATE_HEROES.map(template => ({
+          template,
+          level: 1,
+          enabled: false
+        }))
+      });
+    },resetConfiguration() {
       patchState(store, { 
         selectedHeroes: [],
+        heroConfigs: TEMPLATE_HEROES.map(template => ({
+          template,
+          level: 1,
+          enabled: false
+        })),
         selectedMonsters: [],
         runCount: 10,
         errors: []

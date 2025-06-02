@@ -16,61 +16,50 @@ import { TemplateHero, MonsterSelection } from '../models/simulation.model';
         <!-- Hero Team Section -->
         <div class="team-section hero-section">
           <h4>Hero Team ({{ store.heroTeamSize() }}/3)</h4>
-          
-          <!-- Selected Heroes -->
-          <div class="selected-members">
-            @for (hero of store.selectedHeroes(); track $index) {
-              <div class="member-card hero-card">
-                <div class="member-info">
-                  <span class="member-name">{{ hero.template.name }}</span>
-                  <span class="member-level">Level {{ hero.level }}</span>
-                </div>
-                <div class="member-controls">
-                  <select 
-                    [value]="hero.level" 
-                    (change)="updateHeroLevel($index, $event)"
-                    class="level-select">
-                    @for (level of availableLevels; track level) {
-                      <option [value]="level">{{ level }}</option>
-                    }
-                  </select>
-                  <button 
-                    class="btn btn--small btn--danger"
-                    (click)="removeHero($index)">
-                    Remove
-                  </button>
+            <!-- Hero Configuration Cards -->
+          <div class="hero-configs">
+            @for (heroConfig of store.heroConfigs(); track heroConfig.template.name) {
+              <div class="hero-config-card" [class.enabled]="heroConfig.enabled">
+                <div class="hero-config-layout">
+                  <div class="hero-info">
+                    <span class="hero-name">{{ heroConfig.template.name }}</span>
+                    <span class="hero-stats">{{ getHeroStatsDisplay(heroConfig) }}</span>
+                  </div>
+                  
+                  @if (heroConfig.enabled) {
+                    <div class="level-control">
+                      <label for="level-{{ $index }}">Level: {{ heroConfig.level }}</label>
+                      <input 
+                        type="range" 
+                        id="level-{{ $index }}"
+                        class="level-slider"
+                        min="1" 
+                        max="20" 
+                        [value]="heroConfig.level"
+                        (input)="updateHeroLevel($index, $event)"
+                        [disabled]="store.isRunning()">
+                      <div class="level-marks">
+                        <span>1</span>
+                        <span>10</span>
+                        <span>20</span>
+                      </div>
+                    </div>
+                  }
+                  
+                  <div class="hero-actions">
+                    <button 
+                      class="toggle-btn"
+                      [class.active]="heroConfig.enabled"
+                      [disabled]="!heroConfig.enabled && store.heroTeamSize() >= 3"
+                      (click)="toggleHero($index)"
+                      [title]="heroConfig.enabled ? 'Disable hero' : 'Enable hero'">
+                      {{ heroConfig.enabled ? 'Enabled' : 'Disabled' }}
+                    </button>
+                  </div>
                 </div>
               </div>
             }
           </div>
-
-          <!-- Add Hero -->
-          @if (store.heroTeamSize() < 3) {
-            <div class="add-member">
-              <select 
-                [(ngModel)]="selectedHeroTemplate" 
-                class="member-select"
-                #heroSelect>
-                <option value="">Choose a hero...</option>
-                @for (template of availableHeroes; track template.name) {
-                  <option [value]="template.name">{{ template.name }}</option>
-                }
-              </select>
-              <select 
-                [(ngModel)]="selectedHeroLevel" 
-                class="level-select">
-                @for (level of availableLevels; track level) {
-                  <option [value]="level">Level {{ level }}</option>
-                }
-              </select>
-              <button 
-                class="btn btn--small btn--primary"
-                [disabled]="!selectedHeroTemplate"
-                (click)="addHero()">
-                Add Hero
-              </button>
-            </div>
-          }
         </div>
 
         <!-- Enemy Team Section -->
@@ -125,12 +114,7 @@ export class TeamSelectorComponent implements OnInit {
   protected readonly store = inject(CombatSimulatorStore);
   private readonly simulatorService = inject(CombatSimulatorService);
 
-  availableHeroes: TemplateHero[] = [];
   availableMonsters: MonsterSelection[] = [];
-  availableLevels: number[] = Array.from({ length: 20 }, (_, i) => i + 1);
-
-  selectedHeroTemplate = '';
-  selectedHeroLevel = 1;
   selectedMonsterIndex = '';
 
   ngOnInit(): void {
@@ -138,27 +122,15 @@ export class TeamSelectorComponent implements OnInit {
   }
 
   private loadAvailableOptions(): void {
-    this.availableHeroes = this.simulatorService.getTemplateHeroes();
     this.availableMonsters = this.simulatorService.getAvailableMonsters();
   }
 
-  addHero(): void {
-    if (this.selectedHeroTemplate) {
-      const template = this.availableHeroes.find(h => h.name === this.selectedHeroTemplate);
-      if (template) {
-        this.store.addHero(template, this.selectedHeroLevel);
-        this.selectedHeroTemplate = '';
-        this.selectedHeroLevel = 1;
-      }
-    }
-  }
-
-  removeHero(index: number): void {
-    this.store.removeHero(index);
+  toggleHero(index: number): void {
+    this.store.toggleHero(index);
   }
 
   updateHeroLevel(index: number, event: Event): void {
-    const target = event.target as HTMLSelectElement;
+    const target = event.target as HTMLInputElement;
     const level = parseInt(target.value, 10);
     this.store.updateHeroLevel(index, level);
   }
@@ -176,5 +148,15 @@ export class TeamSelectorComponent implements OnInit {
 
   removeMonster(index: number): void {
     this.store.removeMonster(index);
+  }
+
+  getHeroStatsDisplay(heroConfig: { template: any; level: number; enabled: boolean }): string {
+    try {
+      const heroAtLevel = this.simulatorService.createHeroAtLevel(heroConfig.template, heroConfig.level);
+      return `ATK: ${heroAtLevel.attack} | DEF: ${heroAtLevel.defense} | HP: ${heroAtLevel.maxHealth}`;
+    } catch (error) {
+      // Fallback to base stats if calculation fails
+      return `ATK: ${heroConfig.template.baseStats.attack} | DEF: ${heroConfig.template.baseStats.defense}`;
+    }
   }
 }

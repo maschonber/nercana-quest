@@ -156,6 +156,194 @@
   }
 }
 
+// Hero configuration cards
+.hero-configs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.hero-config-card {
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid var(--border-secondary);
+  background: var(--surface-default);
+  transition: all 0.3s ease;
+
+  &.enabled {
+    border-color: var(--status-success);
+    background: var(--surface-subtle);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:hover {
+    border-color: var(--accent-primary);
+  }
+}
+
+.hero-config-layout {
+  display: grid;
+  grid-template-columns: 1fr auto 100px;
+  gap: 1rem;
+  align-items: center;
+}
+
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0; // Allow shrinking
+
+  .hero-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .hero-stats {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-family: monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.toggle-btn {
+  padding: 0.4rem 0.8rem;
+  border: 2px solid var(--border-secondary);
+  border-radius: 16px;
+  background: var(--surface-default);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+  }
+
+  &.active {
+    background: var(--status-success);
+    border-color: var(--status-success);
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: var(--status-success-hover);
+      border-color: var(--status-success-hover);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.level-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 120px;
+
+  label {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+}
+
+.level-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-secondary);
+  outline: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: var(--border-primary);
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: var(--accent-primary-hover);
+      transform: scale(1.1);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &::-webkit-slider-thumb {
+      cursor: not-allowed;
+    }
+
+    &::-moz-range-thumb {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.level-marks {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  margin-top: 0.25rem;
+  padding: 0 0.125rem;
+}
+
 @media (max-width: 768px) {
   .teams-container {
     grid-template-columns: 1fr;
@@ -175,5 +363,39 @@
   .member-controls {
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  .hero-config-layout {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  .hero-info {
+    .hero-stats {
+      white-space: normal;
+      text-overflow: initial;
+      overflow: visible;
+    }
+  }
+
+  .level-control {
+    min-width: auto;
+    
+    label {
+      text-align: left;
+    }
+  }
+
+  .hero-actions {
+    justify-content: stretch;
+  }
+
+  .toggle-btn {
+    width: 100%;
+  }
+
+  .hero-config-card {
+    padding: 1rem;
   }
 }
