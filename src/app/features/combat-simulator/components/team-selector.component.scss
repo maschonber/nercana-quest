@@ -1,0 +1,179 @@
+.team-selector {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  h3 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+}
+
+.teams-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.team-section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  
+  &.hero-section h4 {
+    color: var(--status-success);
+  }
+  
+  &.enemy-section h4 {
+    color: var(--status-error);
+  }
+}
+
+.selected-members {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  min-height: 0;
+}
+
+.member-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-secondary);
+
+  &.hero-card {
+    background: var(--surface-default);
+    border-left: 4px solid var(--status-success);
+  }
+
+  &.enemy-card {
+    background: var(--surface-default);
+    border-left: 4px solid var(--status-error);
+  }
+}
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  .member-name {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .member-level,
+  .member-tier {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+.member-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.add-member {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 1rem;
+  background: var(--surface-subtle);
+  border: 1px dashed var(--border-secondary);
+  border-radius: 6px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.member-select {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem;
+  padding-right: 2.5rem;
+}
+
+.level-select {
+  padding: 0.5rem;
+  min-width: 100px;
+  padding-right: 2.5rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &--small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  &--primary {
+    background: var(--accent-primary);
+    color: var(--accent-text);
+
+    &:hover:not(:disabled) {
+      background: var(--accent-primary-hover);
+    }
+  }
+
+  &--danger {
+    background: var(--status-error);
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: var(--status-error-hover);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .teams-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .add-member {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .member-select,
+  .level-select {
+    min-width: auto;
+  }
+
+  .member-controls {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

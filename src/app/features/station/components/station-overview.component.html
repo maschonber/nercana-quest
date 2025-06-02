@@ -1,81 +1,83 @@
-<app-standard-view>
-  <!-- Station systems grid -->
-  <div slot="main-left" class="systems-grid">
-    <h2 class="systems-heading">Station Systems</h2>    <div class="systems-cards">
-      @for (system of stationSystems; track system.id) {
-        <div class="system-card" 
-             [class.active]="system.isActive"
-             [class.coming-soon]="system.comingSoon">
-          <button 
-            class="card-button"
-            [disabled]="!system.isActive"
-            (click)="navigateToSystem(system)"
-            type="button">
-            <div class="card-icon">
-              <img [src]="getSystemIconPath(system)" [alt]="system.title + ' icon'" class="system-icon">
-            </div>
-            <div class="card-content">
-              <h3 class="card-title">{{ system.title }}</h3>
-              <p class="card-description">{{ system.description }}</p>
-              @if (system.comingSoon) {
-                <span class="coming-soon-badge">Coming Soon</span>
-              }
-            </div>
-            @if (system.isActive) {
-              <div class="card-arrow">→</div>
-            }
-          </button>
-        </div>
-      }
-    </div>
-  </div>
-  
-  <!-- Station status and information -->
-  <div slot="main-right" class="station-status">
-    <h2 class="status-heading">Station Status</h2>
-    <div class="status-cards">
-      <div class="status-card">
-        <div class="status-icon">🔋</div>
-        <div class="status-info">
-          <h4>Power Systems</h4>
-          <div class="status-bar">
-            <div class="status-fill" style="width: 85%"></div>
-          </div>
-          <span class="status-text">85% Operational</span>
-        </div>
-      </div>
-      
-      <div class="status-card">
-        <div class="status-icon">🛡️</div>
-        <div class="status-info">
-          <h4>Hull Integrity</h4>
-          <div class="status-bar">
-            <div class="status-fill" style="width: 72%"></div>
-          </div>
-          <span class="status-text">72% Intact</span>
-        </div>
-      </div>
 
-      <div class="status-card">
-        <div class="status-icon">📡</div>
-        <div class="status-info">
-          <h4>Communications</h4>
-          <div class="status-bar">
-            <div class="status-fill" style="width: 60%"></div>
-          </div>
-          <span class="status-text">60% Range</span>
+<app-standard-view>
+  <div slot="main-left" style="height:100%">
+    <app-tab-view>
+      <app-tab id="systems" label="Systems">
+        <div class="systems-cards compact">
+          @for (system of stationSystems; track system.id) {
+            <div class="system-card" 
+                 [class.active]="system.isActive"
+                 [class.coming-soon]="system.comingSoon">
+              <button 
+                class="card-button"
+                [disabled]="!system.isActive"
+                (click)="navigateToSystem(system)"
+                type="button">
+                <div class="card-icon">
+                  <img [src]="getSystemIconPath(system)" [alt]="system.title + ' icon'" class="system-icon">
+                </div>
+                <div class="card-content">
+                  <h3 class="card-title">{{ system.title }}</h3>
+                  <p class="card-description">{{ system.description }}</p>
+                  @if (system.comingSoon) {
+                    <span class="coming-soon-badge">Coming Soon</span>
+                  }
+                </div>
+                @if (system.isActive) {
+                  <div class="card-arrow">→</div>
+                }
+              </button>
+            </div>
+          }
         </div>
-      </div>
-    </div>
-      <div class="station-info">
-      <h3>AI System Status</h3>
-      <div class="ai-message-container">
-        <p class="ai-message">
-          Welcome back, Commander. Station systems are operating within acceptable parameters. 
-          Mission Control is fully operational and ready for clone deployment. 
-          Several station systems require attention when resources become available.
-        </p>
-      </div>
-    </div>
+      </app-tab>
+      <app-tab id="status" label="Status">
+        <div class="status-cards compact">
+          <div class="status-card">
+            <div class="status-icon">🔋</div>
+            <div class="status-info">
+              <h4>Power Systems</h4>
+              <div class="status-bar">
+                <div class="status-fill" style="width: 85%"></div>
+              </div>
+              <span class="status-text">85% Operational</span>
+            </div>
+          </div>
+          <div class="status-card">
+            <div class="status-icon">🛡️</div>
+            <div class="status-info">
+              <h4>Hull Integrity</h4>
+              <div class="status-bar">
+                <div class="status-fill" style="width: 72%"></div>
+              </div>
+              <span class="status-text">72% Intact</span>
+            </div>
+          </div>
+          <div class="status-card">
+            <div class="status-icon">📡</div>
+            <div class="status-info">
+              <h4>Communications</h4>
+              <div class="status-bar">
+                <div class="status-fill" style="width: 60%"></div>
+              </div>
+              <span class="status-text">60% Range</span>
+            </div>
+          </div>
+        </div>
+        <div class="station-info collapsible" [class.collapsed]="aiCollapsed">
+          <h3 (click)="aiCollapsed = !aiCollapsed" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:0.5rem;">
+            AI System Status
+            <span style="font-size:1rem;">{{ aiCollapsed ? '▼' : '▲' }}</span>
+          </h3>
+          <div class="ai-message-container" *ngIf="!aiCollapsed">
+            <p class="ai-message">
+              Welcome back, Commander. Station systems are operating within acceptable parameters. 
+              Mission Control is fully operational and ready for clone deployment. 
+              Several station systems require attention when resources become available.
+            </p>
+          </div>
+        </div>
+      </app-tab>
+    </app-tab-view>
   </div>
 </app-standard-view>

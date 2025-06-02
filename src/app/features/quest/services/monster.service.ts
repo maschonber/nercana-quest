@@ -170,6 +170,15 @@ export class MonsterService {
   }
 
   /**
+   * Creates a specific monster for combat simulation
+   * Uses a baseline hero level of 10 for consistent stat scaling
+   */
+  createMonsterForSimulation(type: MonsterType, tier: MonsterTier): Monster {
+    const baselineHeroLevel = 10; // Consistent scaling reference
+    return this.createMonster(type, tier, baselineHeroLevel);
+  }
+
+  /**
    * Calculates the base difficulty of a monster type based on its stats
    * Uses a weighted formula considering health, attack, and defense
    */

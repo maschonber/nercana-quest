@@ -8,17 +8,36 @@
   --background-secondary: #f5f7fa;
   --background-tertiary: #e7eaee;
 
+  /* Surface variables for components */
+  --surface-default: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-subtle: #f8f9fa;
+  --surface-hover: #f1f3f4;
+
   --text-primary: #333333;
   --text-secondary: #5f6368;
   --text-muted: #9aa0a6;
 
   --border-color: #e7eaee;
+  --border-primary: #e7eaee;
+  --border-secondary: #dadce0;
   --border-hover: #1a73e8;
 
   --accent-primary: #1a73e8;
   --accent-secondary: #34a853;
   --accent-danger: #ea4335;
   --accent-warning: #fbbc04;
+
+  /* Status colors */
+  --status-success: #34a853;
+  --status-success-bg: rgba(52, 168, 83, 0.1);
+  --status-success-hover: #2e7d32;
+  --status-error: #ea4335;
+  --status-error-bg: rgba(234, 67, 53, 0.1);
+  --status-error-hover: #d32f2f;
+  --status-warning: #fbbc04;
+  --status-warning-bg: rgba(251, 188, 4, 0.1);
+  --status-warning-hover: #f57c00;
 
   --shadow-light: rgba(0, 0, 0, 0.08);
   --shadow-medium: rgba(0, 0, 0, 0.1);
@@ -36,17 +55,36 @@
   --background-secondary: #2d3748;
   --background-tertiary: #4a5568;
 
+  /* Surface variables for components */
+  --surface-default: #2d3748;
+  --surface-elevated: #374151;
+  --surface-subtle: #1f2937;
+  --surface-hover: #4b5563;
+
   --text-primary: #f7fafc;
   --text-secondary: #e2e8f0;
   --text-muted: #a0aec0;
 
   --border-color: #4a5568;
+  --border-primary: #4a5568;
+  --border-secondary: #374151;
   --border-hover: #63b3ed;
 
   --accent-primary: #63b3ed;
   --accent-secondary: #68d391;
   --accent-danger: #fc8181;
   --accent-warning: #f6d55c;
+
+  /* Status colors */
+  --status-success: #68d391;
+  --status-success-bg: rgba(104, 211, 145, 0.1);
+  --status-success-hover: #48bb78;
+  --status-error: #fc8181;
+  --status-error-bg: rgba(252, 129, 129, 0.1);
+  --status-error-hover: #f56565;
+  --status-warning: #f6d55c;
+  --status-warning-bg: rgba(246, 213, 92, 0.1);
+  --status-warning-hover: #ecc94b;
 
   --shadow-light: rgba(0, 0, 0, 0.3);
   --shadow-medium: rgba(0, 0, 0, 0.4);
@@ -87,4 +125,105 @@ h6 {
 
 ul {
   list-style: none;
+}
+
+/* Global dropdown styling for proper dark mode support */
+select {
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-family: inherit;
+  font-size: inherit;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px var(--focus-ring);
+  }
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--background-tertiary);
+  }
+
+  /* Dropdown options styling */
+  option {
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    padding: 0.5rem;
+  }
+}
+
+/* Additional styling for better cross-browser dropdown support */
+select::-ms-expand {
+  display: none;
+}
+
+/* Custom dropdown arrow for consistent styling */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 1em;
+  padding-right: 2.5rem;
+}
+
+/* Dark theme specific overrides for dropdowns */
+.dark-theme select {
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+
+  option {
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+  }
+
+  /* Ensure the dropdown arrow is visible in dark mode */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f7fafc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+/* Input styling consistency */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea {
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-family: inherit;
+  font-size: inherit;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px var(--focus-ring);
+  }
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--background-tertiary);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
 }

@@ -15,12 +15,16 @@
   font-weight: 600;
 }
 
+
 .systems-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  height: calc(100% - 50px); /* Subtract height of heading */
+  gap: 0.5rem;
+  height: 100%;
   overflow-y: auto;
+}
+.systems-cards.compact {
+  gap: 0.5rem;
 }
 
 .system-card {
@@ -126,8 +130,12 @@
 .status-cards {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.status-cards.compact {
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .status-card {
@@ -180,7 +188,19 @@
   background: var(--background-primary);
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  transition: max-height 0.3s, padding 0.3s;
+}
+.station-info.collapsible h3 {
+  margin-bottom: 0;
+  cursor: pointer;
+  user-select: none;
+}
+.station-info.collapsible.collapsed {
+  max-height: 2.2em;
+  padding-bottom: 0.25rem;
+  overflow: hidden;
 }
 
 .station-info h3 {

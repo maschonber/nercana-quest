@@ -2,14 +2,19 @@
 
 Development standards and best practices for the Nercana Angular project.
 
+## General AI Rules
+- If port 4200 is already in use, do not start the development server again. Just use the existing one.
+- If you have to chain commands on the command line, use `;` instead of `&&`, because we use PowerShell.
+- If running Jest tests, run all Jest tests at once rather than individual test files. 
+- If you are unsure about an approach or need clarification, ask for help. It's better to ask than to guess.
+
 ## AI Agent Workflow
 
-Follow this systematic approach for any code changes:
+Follow this systematic approach for any code changes (and follow the general AI rules above):
 
 1. **Research**: Read GUIDELINES.md, SETTING.md, and related files to understand context and requirements
 2. **Analyze**: Examine existing code, tests, and dependencies affected by the change
 3. **Plan**: Design solution following project architecture and identify all impacted files
-    - If you are unsure about the approach or need clarification, ask for help. It's better to clarify than to guess.
 4. **Implement**: Make focused, consistent changes following the guidelines below
     - Do not care about legacy compatibility; focus on clean, modern code
 5. **Test**: Add/update tests for new functionality, ensure comprehensive coverage

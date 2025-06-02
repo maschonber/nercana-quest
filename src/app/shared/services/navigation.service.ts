@@ -20,7 +20,7 @@ export interface StationSystem {
 })
 export class NavigationService {
   private _breadcrumbs = signal<Breadcrumb[]>([]);
-  private _currentTitle = signal<string>('Nercana Quest');
+  private _currentTitle = signal<string>('Space Station Overview');
   
   breadcrumbs = this._breadcrumbs.asReadonly();
   currentTitle = this._currentTitle.asReadonly();
@@ -62,11 +62,11 @@ export class NavigationService {
       comingSoon: true
     },
     {
-      id: 'simulator',
+      id: 'combat-simulator',
       title: 'Combat Simulator',
       description: 'Train clones, test strategies, and prepare for missions',
       icon: '🛡️',
-      route: '/simulator',
+      route: '/combat-simulator',
       isActive: true
     },
     {
@@ -97,6 +97,6 @@ export class NavigationService {
   }
 
   clearCurrentTitle(): void {
-    this._currentTitle.set('Nercana Quest');
+    this._currentTitle.set('Space Station Overview');
   }
 }

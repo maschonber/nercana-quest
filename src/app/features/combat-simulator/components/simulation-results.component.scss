@@ -1,0 +1,219 @@
+.simulation-results {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  h3 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+}
+
+.statistics-panel {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--surface-subtle);
+  border-radius: 8px;
+  border: 1px solid var(--border-secondary);
+  flex-shrink: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  padding: 1rem;
+  background: var(--surface-default);
+  border-radius: 6px;
+  border: 1px solid var(--border-primary);
+  text-align: center;
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-count {
+    color: var(--text-tertiary);
+    font-size: 0.8rem;
+  }
+
+  &.hero-wins .stat-value {
+    color: var(--status-success);
+  }
+
+  &.enemy-wins .stat-value {
+    color: var(--status-error);
+  }
+
+  &.flees .stat-value {
+    color: var(--status-warning);
+  }
+
+  &.avg-turns,
+  &.avg-exp {
+    .stat-value {
+      color: var(--text-primary);
+    }
+  }
+}
+
+.combat-history {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  
+  .history-controls {
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+    
+    .btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-primary);
+      border-radius: 4px;
+      background: var(--surface-default);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 0.9rem;
+      
+      &:hover {
+        background: var(--surface-hover);
+      }
+
+      &.active {
+        background: var(--accent-primary);
+        color: var(--accent-text);
+        border-color: var(--accent-primary);
+      }
+    }
+  }
+}
+
+.runs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.run-card {
+  border: 1px solid var(--border-secondary);
+  border-radius: 6px;
+  background: var(--surface-default);
+  overflow: hidden;
+
+  &.expanded {
+    border-color: var(--accent-primary);
+  }
+}
+
+.run-summary {
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+}
+
+.run-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .run-number {
+    font-weight: 500;
+    color: var(--text-primary);
+    min-width: 80px;
+  }
+
+  .run-outcome {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    min-width: 70px;
+    text-align: center;
+
+    &.outcome-victory {
+      background: var(--status-success-bg);
+      color: var(--status-success);
+    }
+
+    &.outcome-defeat {
+      background: var(--status-error-bg);
+      color: var(--status-error);
+    }
+
+    &.outcome-fled {
+      background: var(--status-warning-bg);
+      color: var(--status-warning);
+    }
+  }
+
+  .run-turns,
+  .run-exp {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+.run-toggle {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  user-select: none;
+}
+
+.run-details {
+  border-top: 1px solid var(--border-secondary);
+  background: var(--surface-subtle);
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .run-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .run-summary {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .run-toggle {
+    align-self: center;
+    margin-top: 0.5rem;
+  }
+}
