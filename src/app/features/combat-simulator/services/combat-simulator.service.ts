@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { CombatService } from '../../combat/services/combat.service';
 import { Hero } from '../../hero/models/hero.model';
+import { HeroDomainService } from '../../hero/services/hero-domain.service';
 import { Monster, MonsterType, MonsterTier } from '../../quest/models/monster.model';
 import { MonsterService } from '../../quest/services/monster.service';
 import {
@@ -22,10 +23,10 @@ import { CombatOutcome, CombatantType } from '../../combat/models/combat.model';
 @Injectable({
   providedIn: 'root'
 })
-export class CombatSimulatorService {
-  constructor(
+export class CombatSimulatorService {  constructor(
     private combatService: CombatService,
-    private monsterService: MonsterService
+    private monsterService: MonsterService,
+    private heroDomainService: HeroDomainService
   ) {}
 
   /**
@@ -33,8 +34,7 @@ export class CombatSimulatorService {
    */
   getTemplateHeroes(): TemplateHero[] {
     return TEMPLATE_HEROES;
-  }
-  /**
+  }  /**
    * Create a hero at a specific level using template
    */
   createHeroAtLevel(template: TemplateHero, level: number): Hero {
@@ -42,19 +42,17 @@ export class CombatSimulatorService {
       throw new Error('Hero level must be between 1 and 20');
     }
 
-    // Scale stats based on level (simple linear scaling for simulation)
-    const scalingFactor = 1 + (level - 1) * 0.1; // 10% increase per level
+    // Use hero domain service to calculate proper stats for the level
+    const statsAtLevel = this.heroDomainService.calculateStatsForLevel(template.baseStats, level);
+    
+    // Calculate experience for the level using hero domain service
+    const experienceForLevel = this.heroDomainService.getExperienceForLevel(level);
     
     const hero: Hero = {
       name: template.name,
       level: level,
-      experience: level * 100, // Simple experience calculation
-      health: Math.floor(template.baseStats.health * scalingFactor),
-      maxHealth: Math.floor(template.baseStats.maxHealth * scalingFactor),
-      attack: Math.floor(template.baseStats.attack * scalingFactor),
-      defense: Math.floor(template.baseStats.defense * scalingFactor),
-      speed: Math.floor(template.baseStats.speed * scalingFactor),
-      luck: Math.floor(template.baseStats.luck * scalingFactor)
+      experience: experienceForLevel,
+      ...statsAtLevel
     };
 
     return hero;

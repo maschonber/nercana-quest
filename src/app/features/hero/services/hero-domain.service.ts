@@ -74,11 +74,46 @@ export class HeroDomainService {
         maxHealth: updatedHero.maxHealth + healthIncrease,
         attack: updatedHero.attack + 3,
         defense: updatedHero.defense + 2,
+        speed: updatedHero.speed + 1,
         luck: updatedHero.luck + 1
       };
     }
 
     return updatedHero;
+  }
+
+  /**
+   * Calculates what a hero's stats should be at a specific level
+   * Uses the same level-up progression logic to determine final stats
+   * @param baseStats Starting stats at level 1
+   * @param targetLevel Level to calculate stats for
+   * @returns Hero stats as they would be at the target level
+   */
+  calculateStatsForLevel(baseStats: Omit<Hero, 'name' | 'level' | 'experience'>, targetLevel: number): Omit<Hero, 'name' | 'level' | 'experience'> {
+    if (targetLevel < 1) {
+      throw new Error('Level must be 1 or greater');
+    }
+
+    // Start with base stats
+    let currentStats = { ...baseStats };
+
+    // Apply level-up increases for each level beyond 1
+    const levelsToGain = targetLevel - 1;
+    if (levelsToGain > 0) {
+      // Apply the same stat increases as levelUpHero method
+      const healthIncrease = 20 * levelsToGain;
+      currentStats = {
+        ...currentStats,
+        health: currentStats.health + healthIncrease,
+        maxHealth: currentStats.maxHealth + healthIncrease,
+        attack: currentStats.attack + (3 * levelsToGain),
+        defense: currentStats.defense + (2 * levelsToGain),
+        speed: currentStats.speed + (1 * levelsToGain),
+        luck: currentStats.luck + (1 * levelsToGain)
+      };
+    }
+
+    return currentStats;
   }
 
   /**

@@ -2,22 +2,27 @@ import { TestBed } from '@angular/core/testing';
 import { CombatAI } from './combat-ai.service';
 import { StatusEffectManager } from './status-effect-manager.service';
 import { RandomService } from '../../../shared/services/random.service';
-import { 
-  Combatant, 
-  CombatActionType, 
-  CombatantType, 
-  CombatTeam, 
-  TeamSide 
+import {
+  Combatant,
+  CombatActionType,
+  CombatantType,
+  CombatTeam,
+  TeamSide,
+  Combat,
+  CombatOutcome
 } from '../models/combat.model';
 import { CombatAbility } from '../../quest/models/monster.model';
 import { StatusEffectType } from '../models/status-effect.model';
 
 describe('CombatAI', () => {
-  let service: CombatAI;  let mockStatusEffectManager: any;
+  let service: CombatAI;
+  let mockStatusEffectManager: any;
   let mockRandomService: any;
   let mockSlug: Combatant;
   let mockHero: Combatant;
   let opposingTeam: CombatTeam;
+  let mockCombat: Combat;
+
   beforeEach(() => {
     const statusEffectSpy = {
       hasStatusEffect: jest.fn()
@@ -34,7 +39,8 @@ describe('CombatAI', () => {
       ]
     });
 
-    service = TestBed.inject(CombatAI);    mockStatusEffectManager = TestBed.inject(StatusEffectManager) as any;
+    service = TestBed.inject(CombatAI);
+    mockStatusEffectManager = TestBed.inject(StatusEffectManager) as any;
     mockRandomService = TestBed.inject(RandomService) as any;
 
     mockSlug = {
@@ -70,6 +76,18 @@ describe('CombatAI', () => {
       side: TeamSide.HERO,
       combatants: [mockHero]
     };
+
+    // Create mock combat object
+    mockCombat = {
+      heroTeam: opposingTeam,
+      enemyTeam: {
+        side: TeamSide.ENEMY,
+        combatants: [mockSlug]
+      },
+      turns: [], // Empty turns array represents early combat (combat time < 200)
+      currentTurn: 0,
+      outcome: CombatOutcome.IN_PROGRESS
+    };
   });
 
   it('should be created', () => {
@@ -79,22 +97,29 @@ describe('CombatAI', () => {
   describe('poison attack logic', () => {
     beforeEach(() => {
       mockStatusEffectManager.hasStatusEffect.mockReturnValue(false);
-    });    it('should use poison attack early in combat with high probability', () => {
+    });
+
+    it('should use poison attack early in combat with high probability', () => {
       mockRandomService.rollDice.mockReturnValue(true);
-      
-      const action = service.determineAction(mockSlug, opposingTeam);
-      
+
+      const action = service.determineAction(mockSlug, mockCombat);
+
       expect(action).toBe(CombatActionType.SPECIAL);
     });
 
-    it('should use poison attack when target is already poisoned', () => {      // Mock target having poison effect
-      mockStatusEffectManager.hasStatusEffect.mockImplementation((combatant: any, effectType: any) => {
-        return effectType === StatusEffectType.POISONED && combatant === mockHero;
-      });
+    it('should use poison attack when target is already poisoned', () => {
+      // Mock target having poison effect
+      mockStatusEffectManager.hasStatusEffect.mockImplementation(
+        (combatant: any, effectType: any) => {
+          return (
+            effectType === StatusEffectType.POISONED && combatant === mockHero
+          );
+        }
+      );
       mockRandomService.rollDice.mockReturnValue(true);
-      
-      const action = service.determineAction(mockSlug, opposingTeam);
-      
+
+      const action = service.determineAction(mockSlug, mockCombat);
+
       expect(action).toBe(CombatActionType.SPECIAL);
     });
 
@@ -102,29 +127,37 @@ describe('CombatAI', () => {
       const nonPoisonousMonster = {
         ...mockSlug,
         abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]
-      };      
+      };
       mockRandomService.rollDice.mockReturnValue(true);
-      
-      const action = service.determineAction(nonPoisonousMonster, opposingTeam);
-      
+
+      const action = service.determineAction(nonPoisonousMonster, mockCombat);
+
       expect(action).not.toBe(CombatActionType.SPECIAL);
-    });    it('should fall back to attack or defend when not using poison', () => {
+    });
+    it('should fall back to attack or defend when not using poison', () => {
       mockRandomService.rollDice.mockReturnValue(false);
-      
-      const action = service.determineAction(mockSlug, opposingTeam);      
-      expect([CombatActionType.ATTACK, CombatActionType.DEFEND]).toContain(action);
-    });    it('should prefer defend when health is low and not already defending', () => {
+
+      const action = service.determineAction(mockSlug, mockCombat);
+      expect([CombatActionType.ATTACK, CombatActionType.DEFEND]).toContain(
+        action
+      );
+    });
+    it('should prefer defend when health is low and not already defending', () => {
       mockSlug.health = 5; // 25% health
-      mockSlug.abilities = [CombatAbility.ATTACK, CombatAbility.POISON, CombatAbility.DEFEND]; // Add DEFEND ability
+      mockSlug.abilities = [
+        CombatAbility.ATTACK,
+        CombatAbility.POISON,
+        CombatAbility.DEFEND
+      ]; // Add DEFEND ability
       mockHero.health = 25; // Hero is not at full health to avoid early combat poison logic
       mockRandomService.rollDice.mockImplementation((probability: number) => {
         // Return true only for defend probability (0.3) but false for all poison probabilities
         if (probability === 0.3) return true; // defend probability at 25% health
         return false; // false for poison probabilities (0.7, 0.6, 0.15)
       });
-      
-      const action = service.determineAction(mockSlug, opposingTeam);
-      
+
+      const action = service.determineAction(mockSlug, mockCombat);
+
       expect(action).toBe(CombatActionType.DEFEND);
     });
   });
@@ -132,23 +165,23 @@ describe('CombatAI', () => {
   describe('target selection', () => {
     it('should select the only available target', () => {
       const target = service.selectTarget(opposingTeam);
-      
+
       expect(target).toBe(mockHero);
     });
 
     it('should not select dead or fled combatants', () => {
       mockHero.isAlive = false;
-      
+
       const target = service.selectTarget(opposingTeam);
-      
+
       expect(target).toBeNull();
     });
 
     it('should return null when no targets are available', () => {
       opposingTeam.combatants = [];
-      
+
       const target = service.selectTarget(opposingTeam);
-      
+
       expect(target).toBeNull();
     });
   });

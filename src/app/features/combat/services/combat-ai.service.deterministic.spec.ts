@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CombatAI } from './combat-ai.service';
 import { RandomService, TestRandomProvider } from '../../../shared';
-import { Combatant, CombatantType, CombatActionType, CombatTeam, TeamSide } from '../models/combat.model';
+import { Combatant, CombatantType, CombatActionType, CombatTeam, TeamSide, Combat, CombatOutcome } from '../models/combat.model';
 import { StatusEffectManager } from './status-effect-manager.service';
 import { CombatAbility } from '../../quest/models/monster.model';
 
@@ -36,8 +36,7 @@ describe('CombatAI with TestRandomProvider', () => {
         isAlive: true,
         hasFled: false,
         statusEffects: [],
-        abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]
-      };
+        abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]      };
 
       const opposingTeam: CombatTeam = {
         side: TeamSide.HERO,
@@ -58,10 +57,19 @@ describe('CombatAI with TestRandomProvider', () => {
         ]
       };
 
+      // Create a combat object
+      const combat: Combat = {
+        heroTeam: opposingTeam,
+        enemyTeam: { side: TeamSide.ENEMY, combatants: [monster] },
+        turns: [],
+        currentTurn: 0,
+        outcome: CombatOutcome.IN_PROGRESS
+      };
+
       // Set up sequence to make defend check pass for wounded monster
       testRandomProvider.setSequence([0.1]); // Will pass defend check (0.1 < 0.3 for 20% health)
       
-      const action = service.determineAction(monster, opposingTeam);
+      const action = service.determineAction(monster, combat);
       expect(action).toBe(CombatActionType.DEFEND);
     });
 
@@ -78,9 +86,7 @@ describe('CombatAI with TestRandomProvider', () => {
         hasFled: false,
         statusEffects: [],
         abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]
-      };
-
-      const opposingTeam: CombatTeam = {
+      };      const opposingTeam: CombatTeam = {
         side: TeamSide.HERO,
         combatants: [
           {
@@ -99,10 +105,19 @@ describe('CombatAI with TestRandomProvider', () => {
         ]
       };
 
+      // Create a combat object
+      const combat: Combat = {
+        heroTeam: opposingTeam,
+        enemyTeam: { side: TeamSide.ENEMY, combatants: [monster] },
+        turns: [],
+        currentTurn: 0,
+        outcome: CombatOutcome.IN_PROGRESS
+      };
+
       // Set up sequence to make defend check fail for healthy monster
       testRandomProvider.setSequence([0.9]); // Will fail defend check (0.9 > 0.05 for healthy monster)
       
-      const action = service.determineAction(monster, opposingTeam);
+      const action = service.determineAction(monster, combat);
       expect(action).toBe(CombatActionType.ATTACK);
     });
 
@@ -161,8 +176,7 @@ describe('CombatAI with TestRandomProvider', () => {
         isAlive: true,
         hasFled: false,
         statusEffects: [],
-        abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]
-      };
+        abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND]      };
 
       const opposingTeam: CombatTeam = {
         side: TeamSide.HERO,
@@ -183,11 +197,20 @@ describe('CombatAI with TestRandomProvider', () => {
         ]
       };
 
+      // Create a combat object
+      const combat: Combat = {
+        heroTeam: opposingTeam,
+        enemyTeam: { side: TeamSide.ENEMY, combatants: [monster] },
+        turns: [],
+        currentTurn: 0,
+        outcome: CombatOutcome.IN_PROGRESS
+      };
+
       // Set up a repeating sequence for consistent behavior
       testRandomProvider.setSequence([0.9, 0.9]); // Both calls should fail defend check
       
-      const firstAction = service.determineAction(monster, opposingTeam);
-      const secondAction = service.determineAction(monster, opposingTeam);
+      const firstAction = service.determineAction(monster, combat);
+      const secondAction = service.determineAction(monster, combat);
       
       expect(firstAction).toBe(CombatActionType.ATTACK);
       expect(secondAction).toBe(CombatActionType.ATTACK);

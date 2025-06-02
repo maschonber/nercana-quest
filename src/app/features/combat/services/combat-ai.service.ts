@@ -3,7 +3,8 @@ import {
   Combatant,
   CombatantType,
   CombatActionType,
-  CombatTeam
+  CombatTeam,
+  Combat
 } from '../models/combat.model';
 import { StatusEffectManager } from './status-effect-manager.service';
 import { StatusEffectType } from '../models/status-effect.model';
@@ -24,12 +25,14 @@ export class CombatAI {
    */
   determineAction(
     actor: Combatant,
-    opposingTeam: CombatTeam
+    combat: Combat
   ): CombatActionType {
+    const opposingTeam = actor.type === CombatantType.HERO ? combat.enemyTeam : combat.heroTeam;
+    
     if (actor.type === CombatantType.HERO) {
       return this.determineHeroAction(actor, opposingTeam);
     } else {
-      return this.determineMonsterAction(actor, opposingTeam);
+      return this.determineMonsterAction(actor, opposingTeam, combat);
     }
   }
 
@@ -133,7 +136,8 @@ export class CombatAI {
 
   private determineMonsterAction(
     monster: Combatant,
-    opposingTeam: CombatTeam
+    opposingTeam: CombatTeam,
+    combat: Combat
   ): CombatActionType {
     const healthPercent = (monster.health / monster.maxHealth) * 100;
     const isDefending = this.statusEffectManager.hasStatusEffect(monster, StatusEffectType.DEFENDING);
@@ -142,14 +146,14 @@ export class CombatAI {
     const canDefend = monster.abilities && monster.abilities.includes(CombatAbility.DEFEND);
     const canPoison = monster.abilities && monster.abilities.includes(CombatAbility.POISON);
     
-    // Poison logic: Use predominantly early in encounter or when target already poisoned
+    // Poison logic: Use predominantly early in encounter (before combat time 200)
     if (canPoison) {
       const target = this.selectTarget(opposingTeam);
       if (target) {
         const targetHasPoisoned = this.statusEffectManager.hasStatusEffect(target, StatusEffectType.POISONED);
+        const currentCombatTime = combat.turns.length > 0 ? combat.turns[combat.turns.length - 1].combatTime : 0;
         
-        // High chance early in combat (first 3 rounds) or if target already poisoned
-        if (opposingTeam.combatants.some(c => c.health === c.maxHealth) && this.randomService.rollDice(0.7)) {
+        if (currentCombatTime < 200 && this.randomService.rollDice(0.7)) {
           return CombatActionType.SPECIAL; // Use poison
         } else if (targetHasPoisoned && this.randomService.rollDice(0.6)) {
           return CombatActionType.SPECIAL; // Stack poison

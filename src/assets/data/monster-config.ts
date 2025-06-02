@@ -67,8 +67,8 @@ const monsters: Record<MonsterType, MonsterData> = {
     }
   },
   [MonsterType.CRITTER]: {
-    baseHealth: 10,
-    baseAttack: 4,
+    baseHealth: 8,
+    baseAttack: 8,
     baseDefense: 2,
     baseSpeed: 15, // Very fast but weak vermin
     baseExpReward: 10,

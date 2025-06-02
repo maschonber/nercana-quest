@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { CombatAI } from '../services/combat-ai.service';
 import { StatusEffectManager } from '../services/status-effect-manager.service';
 import { RandomService, TestRandomProvider } from '../../../shared';
-import { Combatant, CombatActionType, CombatantType, CombatTeam, TeamSide } from '../models/combat.model';
+import { Combatant, CombatActionType, CombatantType, CombatTeam, TeamSide, Combat, CombatOutcome } from '../models/combat.model';
 import { MonsterType, CombatAbility } from '../../quest/models/monster.model';
 
 describe('Combat Abilities System Integration Test', () => {
@@ -44,8 +44,7 @@ describe('Combat Abilities System Integration Test', () => {
         abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND],
         statusEffects: []
       };
-      
-      // Create a hero team
+        // Create a hero team
       const heroTeam: CombatTeam = {
         side: TeamSide.HERO,
         combatants: [{
@@ -62,13 +61,30 @@ describe('Combat Abilities System Integration Test', () => {
           abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND],
           statusEffects: []
         }]
-      };        // Mock the randomService to trigger defending behavior
+      };
+
+      // Create an enemy team with the monster
+      const enemyTeam: CombatTeam = {
+        side: TeamSide.ENEMY,
+        combatants: [monster]
+      };
+
+      // Create a combat object
+      const combat: Combat = {
+        heroTeam,
+        enemyTeam,
+        turns: [],
+        currentTurn: 0,
+        outcome: CombatOutcome.IN_PROGRESS
+      };
+
+      // Mock the randomService to trigger defending behavior
       // Set monster to low health and high probability to defend
       monster.health = 20; // 20% health
       testRandomProvider.setSequence([0.1, 0.05, 0.02]); // Low values to pass rollDice checks (≤25% health needs ≤0.3)
       
       // Get the action determined by the AI
-      const action = combatAI.determineAction(monster, heroTeam);
+      const action = combatAI.determineAction(monster, combat);
       
       // Expect monster to defend when at low health and having the DEFEND ability
       expect(action).toBe(CombatActionType.DEFEND);
@@ -90,8 +106,7 @@ describe('Combat Abilities System Integration Test', () => {
         abilities: [CombatAbility.ATTACK], // Only has ATTACK
         statusEffects: []
       };
-      
-      // Create a hero team
+        // Create a hero team
       const heroTeam: CombatTeam = {
         side: TeamSide.HERO,
         combatants: [{
@@ -108,13 +123,30 @@ describe('Combat Abilities System Integration Test', () => {
           abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND],
           statusEffects: []
         }]
-      };        // Mock the randomService to try to trigger defending behavior
+      };
+
+      // Create an enemy team with the monster
+      const enemyTeam: CombatTeam = {
+        side: TeamSide.ENEMY,
+        combatants: [monster]
+      };
+
+      // Create a combat object
+      const combat: Combat = {
+        heroTeam,
+        enemyTeam,
+        turns: [],
+        currentTurn: 0,
+        outcome: CombatOutcome.IN_PROGRESS
+      };
+
+      // Mock the randomService to try to trigger defending behavior
       // Set monster to low health and high probability to defend
       monster.health = 20; // 20% health
       testRandomProvider.setSequence([0.1, 0.05, 0.02]); // Low values that would pass rollDice if ability available (≤25% health needs ≤0.3)
       
       // Get the action determined by the AI
-      const action = combatAI.determineAction(monster, heroTeam);
+      const action = combatAI.determineAction(monster, combat);
       
       // Expect monster to NEVER defend even at low health when missing the DEFEND ability
       expect(action).toBe(CombatActionType.ATTACK);
@@ -152,8 +184,7 @@ describe('Combat Abilities System Integration Test', () => {
           statusEffects: []
         }
       ];
-      
-      // Create a hero team
+        // Create a hero team
       const heroTeam: CombatTeam = {
         side: TeamSide.HERO,
         combatants: [{
@@ -170,12 +201,29 @@ describe('Combat Abilities System Integration Test', () => {
           abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND],
           statusEffects: []
         }]
-      };        // Test with high health where monsters should choose to attack
+      };
+      
+      // Create an enemy team
+      const enemyTeam: CombatTeam = {
+        side: TeamSide.ENEMY,
+        combatants: monsters
+      };
+
+      // Create a combat object
+      const combat: Combat = {
+        heroTeam,
+        enemyTeam,
+        turns: [],
+        currentTurn: 0,
+        outcome: CombatOutcome.IN_PROGRESS
+      };
+
+      // Test with high health where monsters should choose to attack
       testRandomProvider.setSequence([0.9, 0.9, 0.9, 0.9, 0.9, 0.9]); // High values that will fail all rollDice checks, forcing attack
       
       // All monsters should be able to attack
       for (const monster of monsters) {
-        const action = combatAI.determineAction(monster, heroTeam);
+        const action = combatAI.determineAction(monster, combat);
         expect(action).toBe(CombatActionType.ATTACK);
         // Additional context for the test
         console.log(`Monster ${monster.name} with abilities ${monster.abilities} uses ${action}`);
@@ -216,8 +264,7 @@ describe('Combat Abilities System Integration Test', () => {
           statusEffects: []
         }
       ];
-      
-      // Create a hero team
+        // Create a hero team
       const heroTeam: CombatTeam = {
         side: TeamSide.HERO,
         combatants: [{
@@ -234,12 +281,29 @@ describe('Combat Abilities System Integration Test', () => {
           abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND],
           statusEffects: []
         }]
-      };        // Force defending behavior
+      };
+      
+      // Create an enemy team
+      const enemyTeam: CombatTeam = {
+        side: TeamSide.ENEMY,
+        combatants: monsters
+      };
+
+      // Create a combat object
+      const combat: Combat = {
+        heroTeam,
+        enemyTeam,
+        turns: [],
+        currentTurn: 0,
+        outcome: CombatOutcome.IN_PROGRESS
+      };
+
+      // Force defending behavior
       testRandomProvider.setSequence([0.1, 0.05, 0.02, 0.1, 0.05, 0.02]); // Low values to pass rollDice checks for both monsters
       
       // Test each monster
       for (const monster of monsters) {
-        const action = combatAI.determineAction(monster, heroTeam);
+        const action = combatAI.determineAction(monster, combat);
         
         if (monster.abilities.includes(CombatAbility.DEFEND)) {
           // Monster with DEFEND ability should choose to defend when appropriate

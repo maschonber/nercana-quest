@@ -184,7 +184,7 @@ export class CombatOrchestrator {
     // Determine action using AI
     const actionType = this.combatAI.determineAction(
       actingCombatant,
-      opposingTeam
+      combat
     );
 
     // Execute the turn
