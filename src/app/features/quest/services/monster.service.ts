@@ -81,6 +81,16 @@ export class MonsterService {
   generateRandomMonster(heroLevel: number): Monster {
     // Calculate the target difficulty range for this hero level
     const targetDifficulty = this.getTargetDifficultyForLevel(heroLevel);
+    return this.generateMonsterOfTargetDifficulty(targetDifficulty);
+  }
+
+  /**
+   * Generates a monster within target difficulty range
+   * Reuses the same difficulty-based selection logic as generateRandomMonster
+   */
+  private generateMonsterOfTargetDifficulty(
+    targetDifficulty: number
+  ): Monster {
     const difficultyRange = this.getDifficultyRange(targetDifficulty);
 
     // Get suitable monster options within the difficulty range
@@ -88,11 +98,13 @@ export class MonsterService {
       this.getSuitableMonstersForDifficulty(difficultyRange);
 
     if (suitableMonsters.length === 0) {
-      // Fallback to simple tier-based system if no suitable monsters found
+      // Fallback: use any monster with medium tier if no suitable monsters found
       console.warn(
-        `No suitable monsters found for hero level ${heroLevel}, falling back to tier-based selection`
+        `No suitable monsters found for target difficulty ${targetDifficulty}, falling back to medium tier`
       );
-      return this.generateFallbackMonster(heroLevel);
+      const monsterTypes = Object.values(MonsterType);
+      const randomType = this.randomService.randomChoice(monsterTypes);
+      return this.createMonster(randomType, MonsterTier.MEDIUM);
     }
 
     // Select random monster from suitable options
@@ -101,8 +113,7 @@ export class MonsterService {
     // Generate the monster with appropriate stats
     return this.createMonster(
       randomMonster.type,
-      randomMonster.tier,
-      heroLevel
+      randomMonster.tier
     );
   }
 
@@ -126,8 +137,7 @@ export class MonsterService {
    */
   private createMonster(
     type: MonsterType,
-    tier: MonsterTier,
-    heroLevel: number
+    tier: MonsterTier
   ): Monster {
     // Get monster data from configuration
     const monsterData = this.monsterConfig.monsters[type];
@@ -139,8 +149,9 @@ export class MonsterService {
     const tierData = this.monsterConfig.tiers[tier];
     if (!tierData) {
       throw new Error(`Monster tier ${tier} not found in configuration`);
-    } // Apply tier multiplier and hero level scaling
-    const levelScaling = 1 + heroLevel * 0.1;
+    } 
+
+    const levelScaling = 2;
     const finalMultiplier = tierData.multiplier * levelScaling; // Calculate final stats
     const health = Math.floor(monsterData.baseHealth * finalMultiplier);
     const attack = Math.floor(monsterData.baseAttack * finalMultiplier);
@@ -174,8 +185,7 @@ export class MonsterService {
    * Uses a baseline hero level of 10 for consistent stat scaling
    */
   createMonsterForSimulation(type: MonsterType, tier: MonsterTier): Monster {
-    const baselineHeroLevel = 10; // Consistent scaling reference
-    return this.createMonster(type, tier, baselineHeroLevel);
+    return this.createMonster(type, tier);
   }
 
   /**
@@ -196,8 +206,9 @@ export class MonsterService {
     // Health contributes 40%, Attack 35%, Defense 25%
     const difficulty =
       monsterData.baseHealth * 0.4 +
-      monsterData.baseAttack * 0.35 +
-      monsterData.baseDefense * 0.25;
+      monsterData.baseAttack * 0.4 +
+      monsterData.baseDefense * 0.3 +
+      monsterData.baseSpeed * 0.2;
 
     this.monsterDifficulties.set(type, difficulty);
     return difficulty;
@@ -208,25 +219,19 @@ export class MonsterService {
    */
   private getEffectiveDifficulty(
     type: MonsterType,
-    tier: MonsterTier,
-    heroLevel: number
+    tier: MonsterTier
   ): number {
     const baseDifficulty = this.getMonsterBaseDifficulty(type);
     const tierData = this.monsterConfig.tiers[tier];
-    const levelScaling = 1 + heroLevel * 0.1;
 
-    return baseDifficulty * tierData.multiplier * levelScaling;
+    return Math.round(baseDifficulty * tierData.multiplier * 10) / 10;
   }
 
   /**
    * Determines target difficulty for a hero level
    */
   private getTargetDifficultyForLevel(heroLevel: number): number {
-    // Base difficulty grows with hero level, with some variance for challenge
-    const baseDifficulty = 15 + heroLevel * 3; // Roughly scales with typical monster progression
-    const variance = baseDifficulty * 0.2; // ±20% variance
-
-    return baseDifficulty + this.randomService.randomVariance(baseDifficulty, 0.2); // ±20% variance around base
+    return 8 + heroLevel * 4; // Base difficulty grows with hero level
   }
 
   /**
@@ -236,10 +241,10 @@ export class MonsterService {
     min: number;
     max: number;
   } {
-    const tolerance = targetDifficulty * 0.5; // ±50% tolerance
+    const tolerance = targetDifficulty * 0.3; // ±30% tolerance
     return {
-      min: targetDifficulty - tolerance,
-      max: targetDifficulty + tolerance
+      min: Math.round((targetDifficulty - tolerance) * 100) / 100,
+      max: Math.round((targetDifficulty + tolerance) * 100) / 100
     };
   }
 
@@ -258,61 +263,20 @@ export class MonsterService {
     // Check all combinations of monster types and tiers
     for (const type of monsterTypes) {
       for (const tier of tierTypes) {
-        // Use average hero level for difficulty calculation (level 5 as baseline)
-        const effectiveDifficulty = this.getEffectiveDifficulty(type, tier, 5);
+        const effectiveDifficulty = this.getEffectiveDifficulty(type, tier);
 
         if (
           effectiveDifficulty >= difficultyRange.min &&
           effectiveDifficulty <= difficultyRange.max
         ) {
+          console.log(`Found suitable monster: ${type} (Tier: ${tier}) - Difficulty: ${effectiveDifficulty} (${difficultyRange.min} to ${difficultyRange.max})`);
+
           suitableMonsters.push({ type, tier });
         }
       }
     }
 
     return suitableMonsters;
-  }
-
-  /**
-   * Fallback to simple tier-based generation when difficulty system fails
-   */
-  private generateFallbackMonster(heroLevel: number): Monster {
-    const tier = this.getMonsterTierForLevel(heroLevel);
-    const monsterTypes = Object.values(MonsterType);
-    const randomType = this.randomService.randomChoice(monsterTypes);
-
-    return this.createMonster(randomType, tier, heroLevel);
-  }
-  /**
-   * Debug method to analyze monster distribution for a given hero level
-   * Useful for balancing and testing the difficulty system
-   */
-  analyzeMonsterDistribution(
-    heroLevel: number,
-    sampleSize: number = 100
-  ): { [key: string]: number } {
-    const distribution: { [key: string]: number } = {};
-
-    for (let i = 0; i < sampleSize; i++) {
-      const monster = this.generateRandomMonster(heroLevel);
-      const key = monster.name; // Use the actual tier-specific name
-      distribution[key] = (distribution[key] || 0) + 1;
-    }
-
-    // Convert to percentages and sort by frequency
-    const sorted = Object.entries(distribution)
-      .map(([name, count]) => ({
-        name,
-        percentage: ((count / sampleSize) * 100).toFixed(1)
-      }))
-      .sort((a, b) => parseFloat(b.percentage) - parseFloat(a.percentage));
-
-    const result: { [key: string]: number } = {};
-    sorted.forEach((item) => {
-      result[item.name] = parseFloat(item.percentage);
-    });
-
-    return result;
   }
 
   /**
@@ -329,13 +293,14 @@ export class MonsterService {
     // Use the same weighted formula as getMonsterBaseDifficulty
     // Health contributes 40%, Attack 35%, Defense 25%
     const difficulty =
-      monster.maxHealth * 0.4 + monster.attack * 0.35 + monster.defense * 0.25;
+      monster.maxHealth * 0.3 + monster.attack * 0.3 + monster.defense * 0.2 + monster.speed * 0.2;
 
     return difficulty;
   }
 
   /**
-   * Generates multiple monsters for an encounter based on hero level and species affinity
+   * Generates multiple monsters for an encounter based on hero level
+   * Uses difficulty-based selection to ensure balanced encounters regardless of monster types
    * @param heroLevel Current level of the hero
    * @param maxMonsters Maximum number of monsters to generate (default 1-3)
    * @returns Array of monsters with appropriate difficulty balancing
@@ -361,22 +326,10 @@ export class MonsterService {
       singleMonsterDifficulty *
       this.getMultiMonsterDifficultyMultiplier(numMonsters);
 
-    // Choose encounter type: species-based or mixed
-    const useSpeciesGroup = this.randomService.rollDice(0.7); // 70% chance for species-based encounters
-
-    if (useSpeciesGroup) {
-      return this.generateSpeciesEncounter(
-        heroLevel,
-        numMonsters,
-        totalTargetDifficulty
-      );
-    } else {
-      return this.generateMixedEncounter(
-        heroLevel,
-        numMonsters,
-        totalTargetDifficulty
-      );
-    }
+    return this.generateMixedEncounter(
+      numMonsters,
+      totalTargetDifficulty
+    );
   }
 
   /**
@@ -412,122 +365,34 @@ export class MonsterService {
     // Slightly reduce individual monster difficulty as group size increases
     switch (numMonsters) {
       case 1:
-        return 1.0;
+        return 1.1;
       case 2:
-        return 0.9; // 90% difficulty per monster (180% total)
+        return 0.6; // 60% difficulty per monster (120% total)
       case 3:
-        return 0.75; // 75% difficulty per monster (225% total)
+        return 0.45; // 45% difficulty per monster (135% total)
       case 4:
-        return 0.65; // 65% difficulty per monster (260% total)
+        return 0.35; // 35% difficulty per monster (140% total)
       default:
         return 0.6;
     }
   }
 
   /**
-   * Generates an encounter with monsters from the same species group
-   */
-  private generateSpeciesEncounter(
-    heroLevel: number,
-    numMonsters: number,
-    totalTargetDifficulty: number
-  ): Monster[] {
-    // Choose a species group with sufficient monster types
-    const availableGroups = this.speciesGroups.filter(
-      (group) => group.types.length >= 1
-    );
-    const selectedGroup = this.randomService.randomChoice(availableGroups);
-
-    const monsters: Monster[] = [];
-    const targetDifficultyPerMonster = totalTargetDifficulty / numMonsters;
-
-    for (let i = 0; i < numMonsters; i++) {
-      // Allow some variety within the species group
-      const monsterType = this.randomService.randomChoice(selectedGroup.types);
-      const monster = this.generateMonsterOfTargetDifficulty(
-        monsterType,
-        heroLevel,
-        targetDifficultyPerMonster
-      );
-      monsters.push(monster);
-    }
-
-    return monsters;
-  }
-
-  /**
-   * Generates an encounter with monsters from different species groups
+   * Generates an encounter with monsters within target difficulty range
+   * Reuses the same difficulty-based selection as single monster generation
    */
   private generateMixedEncounter(
-    heroLevel: number,
     numMonsters: number,
     totalTargetDifficulty: number
   ): Monster[] {
     const monsters: Monster[] = [];
     const targetDifficultyPerMonster = totalTargetDifficulty / numMonsters;
 
-    // Select different monster types for variety
-    const allTypes = Object.values(MonsterType);
-    const selectedTypes: MonsterType[] = [];
-
     for (let i = 0; i < numMonsters; i++) {
-      // Try to avoid duplicates, but allow them if we run out of types
-      let attempts = 0;
-      let monsterType: MonsterType;
-
-      do {
-        monsterType = this.randomService.randomChoice(allTypes);
-        attempts++;
-      } while (selectedTypes.includes(monsterType) && attempts < 10);
-
-      selectedTypes.push(monsterType);
-      const monster = this.generateMonsterOfTargetDifficulty(
-        monsterType,
-        heroLevel,
-        targetDifficultyPerMonster
-      );
+      const monster = this.generateMonsterOfTargetDifficulty(targetDifficultyPerMonster);
       monsters.push(monster);
     }
 
     return monsters;
-  }
-
-  /**
-   * Generates a monster of a specific type with target difficulty
-   */
-  private generateMonsterOfTargetDifficulty(
-    monsterType: MonsterType,
-    heroLevel: number,
-    targetDifficulty: number
-  ): Monster {
-    // Find the best tier for this monster type to match target difficulty
-    const tierTypes = Object.values(MonsterTier);
-    let bestTier = MonsterTier.MEDIUM;
-    let bestDifferenceDiff = Infinity;
-
-    for (const tier of tierTypes) {
-      const effectiveDifficulty = this.getEffectiveDifficulty(
-        monsterType,
-        tier,
-        heroLevel
-      );
-      const difference = Math.abs(effectiveDifficulty - targetDifficulty);
-
-      if (difference < bestDifferenceDiff) {
-        bestDifferenceDiff = difference;
-        bestTier = tier;
-      }
-    }
-
-    return this.createMonster(monsterType, bestTier, heroLevel);
-  }
-
-  /**
-   * Calculates total difficulty for a group of monsters
-   */
-  public calculateGroupDifficulty(monsters: Monster[]): number {
-    return monsters.reduce((total, monster) => {
-      return total + this.calculateMonsterInstanceDifficulty(monster);
-    }, 0);
   }
 }

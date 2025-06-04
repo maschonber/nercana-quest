@@ -43,7 +43,7 @@ const monsters: Record<MonsterType, MonsterData> = {
       'Cunning alien strategists with advanced technology and tactical prowess.',
     abilities: [CombatAbility.ATTACK, CombatAbility.DEFEND], // Tactical creatures can defend
     tierNames: {
-      [MonsterTier.EASY]: 'Xriit Scout',
+      [MonsterTier.EASY]: 'Xriit Infantry',
       [MonsterTier.MEDIUM]: 'Xriit Warrior',
       [MonsterTier.HARD]: 'Xriit Tactician',
       [MonsterTier.BOSS]: 'Xriit Overlord'
@@ -133,8 +133,8 @@ const monsters: Record<MonsterType, MonsterData> = {
     tierNames: {
       [MonsterTier.EASY]: 'Xriit Probe',
       [MonsterTier.MEDIUM]: 'Xriit Scout',
-      [MonsterTier.HARD]: 'Stealth Scout',
-      [MonsterTier.BOSS]: 'Elite Infiltrator'
+      [MonsterTier.HARD]: 'Xriit Infiltrator',
+      [MonsterTier.BOSS]: 'Xriit Assassin'
     }
   },
   [MonsterType.XRIIT_COMMANDER]: {
@@ -150,8 +150,8 @@ const monsters: Record<MonsterType, MonsterData> = {
     tierNames: {
       [MonsterTier.EASY]: 'Xriit Officer',
       [MonsterTier.MEDIUM]: 'Xriit Commander',
-      [MonsterTier.HARD]: 'War Commander',
-      [MonsterTier.BOSS]: 'Supreme Leader'
+      [MonsterTier.HARD]: 'Xriit General',
+      [MonsterTier.BOSS]: 'Xriit Warlord'
     }
   },
 
@@ -169,7 +169,7 @@ const monsters: Record<MonsterType, MonsterData> = {
       [MonsterTier.EASY]: 'Moggo Brawler',
       [MonsterTier.MEDIUM]: 'Moggo Brute',
       [MonsterTier.HARD]: 'Moggo Destroyer',
-      [MonsterTier.BOSS]: 'Apex Predator'
+      [MonsterTier.BOSS]: 'Moggo Predator'
     }
   },
   [MonsterType.MERC_RAIDER]: {
@@ -185,8 +185,8 @@ const monsters: Record<MonsterType, MonsterData> = {
     tierNames: {
       [MonsterTier.EASY]: 'Merc Thug',
       [MonsterTier.MEDIUM]: 'Merc Raider',
-      [MonsterTier.HARD]: 'Elite Raider',
-      [MonsterTier.BOSS]: 'Raid Leader'
+      [MonsterTier.HARD]: 'Merc Elite',
+      [MonsterTier.BOSS]: 'Merc Vanguard'
     }
   },
 
@@ -203,15 +203,15 @@ const monsters: Record<MonsterType, MonsterData> = {
     tierNames: {
       [MonsterTier.EASY]: 'Merc Sergeant',
       [MonsterTier.MEDIUM]: 'Merc Captain',
-      [MonsterTier.HARD]: 'War Captain',
-      [MonsterTier.BOSS]: 'Fleet Admiral'
+      [MonsterTier.HARD]: 'Merc Commander',
+      [MonsterTier.BOSS]: 'Merc Admiral'
     }
   },
 
   [MonsterType.STATION_DEFENSE]: {
     baseHealth: 40,
-    baseAttack: 15,
-    baseDefense: 14,
+    baseAttack: 10,
+    baseDefense: 15,
     baseSpeed: 3, // Heavy automated systems
     baseExpReward: 30,
     name: 'Station Defense',
@@ -266,14 +266,14 @@ const monsters: Record<MonsterType, MonsterData> = {
 // Tier multipliers for scaling monster stats by difficulty
 const tiers: Record<MonsterTier, TierData> = {
   [MonsterTier.EASY]: {
-    multiplier: 0.8,
+    multiplier: 0.7,
     prefix: 'Weak '
   },
   [MonsterTier.MEDIUM]: {
     multiplier: 1.0,
     prefix: ''
   },
-  [MonsterTier.HARD]: {
+  [MonsterTier.HARD]: { 
     multiplier: 1.3,
     prefix: 'Elite '
   },

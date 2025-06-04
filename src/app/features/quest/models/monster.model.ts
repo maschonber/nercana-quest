@@ -46,16 +46,3 @@ export enum MonsterTier {
   HARD = 'hard', // For high-level clones
   BOSS = 'boss' // Special encounters
 }
-
-// Function to determine appropriate monster tier based on clone level
-export function getAppropriateMonsterTier(cloneLevel: number): MonsterTier {
-  if (cloneLevel <= 3) {
-    return MonsterTier.EASY;
-  } else if (cloneLevel <= 6) {
-    return MonsterTier.MEDIUM;
-  } else if (cloneLevel <= 9) {
-    return MonsterTier.HARD;
-  } else {
-    return MonsterTier.BOSS;
-  }
-}

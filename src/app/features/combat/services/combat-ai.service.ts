@@ -107,8 +107,8 @@ export class CombatAI {
     const healthPercent = (hero.health / hero.maxHealth) * 100;
     const isDefending = this.statusEffectManager.hasStatusEffect(hero, StatusEffectType.DEFENDING);
     
-    // Hero logic: 10% chance to flee if health is very low
-    if (healthPercent <= 20 && this.randomService.rollDice(0.1)) {
+    // Hero logic: 30% chance to flee if health is low
+    if (healthPercent <= 30 && this.randomService.rollDice(0.3)) {
       return CombatActionType.FLEE;
     }
 
