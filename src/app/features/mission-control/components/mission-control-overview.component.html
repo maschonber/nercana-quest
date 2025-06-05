@@ -1,0 +1,47 @@
+<div class="mission-overview">
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text">{{ error() }}</span>
+      <button class="retry-button" (click)="onRetryAfterError()">Retry</button>
+    </div>
+  }
+
+  <!-- Content Area -->
+  @if (missions().length === 0 && !isScanning()) {
+    <!-- Empty State -->
+    <div class="empty-state">
+      <div class="empty-icon">🚀</div>
+      <h3>No Missions Available</h3>
+      <p>Start by scanning deep space for new mission opportunities.</p>
+    </div>
+  } @else {
+    <!-- Mission Cards Grid -->
+    <div class="missions-grid">
+      @for (mission of missions(); track mission.id) {
+        <app-mission-card
+          [mission]="mission"
+          class="mission-card-outer"
+          (scrapMission)="onScrapMission($event)"
+        >
+        </app-mission-card>
+      }
+
+      <!-- Scanning Placeholder -->
+      @if (isScanning()) {
+        <div class="scanning-placeholder mission-card-outer">
+          <div class="scanning-content">
+            <div class="scanning-animation">📡</div>
+            <p>Scanning deep space...</p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Mission Counter -->
+    <div class="mission-counter">
+      {{ missions().length }} / 6 missions available
+    </div>
+  }
+</div>

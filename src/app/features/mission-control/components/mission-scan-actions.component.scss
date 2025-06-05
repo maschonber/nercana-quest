@@ -1,0 +1,54 @@
+.scan-btn {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  min-width: 160px;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    background: var(--accent-primary-hover);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    background: var(--background-secondary);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.scan-icon {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+
+  &.scanning {
+    animation: rotate 2s linear infinite;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.scan-text {
+  white-space: nowrap;
+}

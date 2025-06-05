@@ -1,0 +1,52 @@
+<div class="mission-card" 
+     (click)="onCardClick()"
+     (keydown.enter)="onCardClick()"
+     (keydown.space)="onCardClick()"
+     tabindex="0"
+     role="button"
+     [attr.aria-label]="'View details for ' + mission.title">
+  
+  <!-- Top section: Image and Content side by side -->
+  <div class="mission-top">
+    <!-- Left side: Mission Image (50% width) -->
+    <div class="mission-image">
+      <img [src]="mission.imageUrl" [alt]="mission.title" />
+      <div class="mission-type-icon">{{ getMissionTypeIcon(mission.missionType) }}</div>
+    </div>
+
+    <!-- Right side: Mission Content (50% width) -->
+    <div class="mission-content">
+      <!-- Top right quarter: Header with title, status and scrap button -->
+      <div class="mission-header">
+        <div class="header-content">
+          <h3 class="mission-title">{{ mission.title }}</h3>
+          <div class="mission-status" [class]="'status-' + mission.status">
+            {{ mission.status | titlecase }}
+          </div>
+        </div>
+        <button class="scrap-button"
+                (click)="onScrapMission($event)"
+                [attr.aria-label]="'Remove ' + mission.title + ' mission'"
+                title="Remove Mission">
+          ✕
+        </button>
+      </div>
+
+      <!-- Mission Info -->
+      <div class="mission-info">
+        <div class="travel-time">
+          <span class="label">Travel:</span>
+          <span class="value">{{ formatTravelTime(mission.travelTime) }}</span>
+        </div>
+        
+        <div class="difficulty" [class]="getDifficultyClass(mission.challengeRating)">
+          <span class="label">Difficulty:</span>
+          <span class="value">{{ getDifficultyText(mission.challengeRating) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom section: Mission Description (full width) -->
+  <p class="mission-description">{{ mission.briefDescription }}</p>
+</div>

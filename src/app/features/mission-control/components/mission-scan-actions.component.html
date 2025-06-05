@@ -1,0 +1,19 @@
+<app-action-bar [visible]="true">
+  <button
+    class="scan-btn"
+    [disabled]="!canScanNewMission() || isScanning()"
+    (click)="onScanForMissions()"
+    [attr.aria-label]="isScanning() ? 'Scanning in progress' : 'Scan for new missions'"
+  >
+    <span class="scan-icon" [class.scanning]="isScanning()">🔍</span>
+    <span class="scan-text">
+      @if (isScanning()) {
+        Scanning...
+      } @else if (!canScanNewMission()) {
+        Mission Limit Reached
+      } @else {
+        Deep Space Scan
+      }
+    </span>
+  </button>
+</app-action-bar>

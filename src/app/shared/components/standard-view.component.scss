@@ -1,13 +1,27 @@
 // Standard view component styles - simplified layout without header
 .content-layout {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 1.5rem;
   height: 100%;
-  overflow: hidden;
+  overflow-y: auto;
   min-height: 0; /* Allows flex children to shrink */
   width: 100%; /* Ensure full width */
-  align-items: stretch; /* Ensure both components have same height */
+  align-items: stretch;
+}
+
+/* Single column layout when no right content */
+.content-layout.single-column {
+  gap: 0;
+}
+
+.content-layout.single-column :deep([slot="main-left"]) {
+  flex: 1;
+  max-width: none;
+}
+
+.content-layout.single-column :deep([slot="main-right"]) {
+  display: none;
 }
 
 /* Give main-left 7/10 of the space and main-right 3/10 */

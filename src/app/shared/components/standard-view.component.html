@@ -1,4 +1,4 @@
-<div class="content-layout">
+<div class="content-layout" [class.single-column]="!hasRightContent">
   <ng-content select="[slot=main-left]"></ng-content>
   <ng-content select="[slot=main-right]"></ng-content>
 </div>

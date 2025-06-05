@@ -1,0 +1,111 @@
+<app-standard-view>
+  <div class="mission-details" slot="main-left">
+    @if (mission) {
+      <!-- Mission Header -->
+      <div class="mission-header">
+        <div class="mission-image-large">
+          <img [src]="mission.imageUrl" [alt]="mission.title" />
+          <div class="mission-type-overlay">
+            <span class="type-icon">{{ getMissionTypeIcon(mission.missionType) }}</span>
+            <span class="type-name">{{ getMissionTypeName(mission.missionType) }}</span>
+          </div>
+        </div>
+
+        <div class="mission-overview">
+          <h1 class="mission-title">{{ mission.title }}</h1>
+          
+          <div class="mission-meta">
+            <div class="meta-item">
+              <span class="meta-label">Travel Time:</span>
+              <span class="meta-value">{{ formatTravelTime(mission.travelTime) }}</span>
+            </div>
+            
+            <div class="meta-item">
+              <span class="meta-label">Difficulty:</span>
+              <span class="meta-value" [class]="getDifficultyClass(mission.challengeRating)">
+                {{ getDifficultyText(mission.challengeRating) }}
+              </span>
+            </div>
+            
+            <div class="meta-item">
+              <span class="meta-label">Status:</span>
+              <span class="meta-value status" [class]="'status-' + mission.status">
+                {{ mission.status | titlecase }}
+              </span>
+            </div>
+            
+            <div class="meta-item">
+              <span class="meta-label">Discovered:</span>
+              <span class="meta-value">{{ mission.discoveredAt | date:'medium' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mission Brief -->
+      <div class="mission-section">
+        <h2>Mission Brief</h2>
+        <p class="brief-description">{{ mission.briefDescription }}</p>
+      </div>
+
+      <!-- Mission Details -->
+      <div class="mission-section">
+        <h2>Detailed Description</h2>
+        <p class="detailed-description">{{ mission.detailedDescription }}</p>
+      </div>
+
+      <!-- Mission Parameters -->
+      <div class="mission-section">
+        <h2>Mission Parameters</h2>
+        <div class="parameters-grid">
+          <div class="parameter-card">
+            <h3>Challenge Rating</h3>
+            <div class="parameter-value" [class]="getDifficultyClass(mission.challengeRating)">
+              {{ mission.challengeRating }}/5
+            </div>
+            <p class="parameter-desc">Expected mission difficulty level</p>
+          </div>
+          
+          <div class="parameter-card">
+            <h3>Mission Type</h3>
+            <div class="parameter-value">
+              {{ getMissionTypeIcon(mission.missionType) }} {{ getMissionTypeName(mission.missionType) }}
+            </div>
+            <p class="parameter-desc">Primary mission category and focus</p>
+          </div>
+          
+          <div class="parameter-card">
+            <h3>Travel Requirements</h3>
+            <div class="parameter-value">
+              {{ formatTravelTime(mission.travelTime) }}
+            </div>
+            <p class="parameter-desc">Time required to reach mission location</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Section -->
+      <div class="mission-actions">
+        <button class="back-button" (click)="onBackToOverview()">
+          ← Back to Mission Control
+        </button>
+        
+        <button class="deploy-button" 
+                [disabled]="mission.status !== 'available'"
+                (click)="onDeployClones()"
+                [title]="mission.status !== 'available' ? 'Mission not available for deployment' : 'Deploy clones on this mission'">
+          <span class="deploy-icon">🚀</span>
+          Deploy Clones
+        </button>
+      </div>
+    } @else {
+      <!-- Mission Not Found -->
+      <div class="mission-not-found">
+        <div class="not-found-icon">❓</div>
+        <h2>Mission Not Found</h2>
+        <p>The requested mission could not be located. It may have been removed or the ID is invalid.</p>
+        <button class="back-button" (click)="onBackToOverview()">
+          Return to Mission Control
+        </button>
+      </div>    }  </div>
+</app-standard-view>

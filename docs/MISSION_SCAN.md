@@ -37,17 +37,17 @@ The Mission Scan feature represents a major evolution of the Mission Control sys
 - **Layout**: StandardView with mission details as main content
 - **Mission Brief**: Expanded description and objectives (simplified dummy content)
 - **Mission Parameters**: Travel time, difficulty rating, basic information
-- **Deployment Action**: "Deploy Clone" button (functionality for future development)
+- **Deployment Action**: "Deploy Clones" button (functionality for future development)
 - **Navigation**: Back to Mission Control Overview via breadcrumbs
 
 ### 3. Mission Scan Functionality
 
 **Scan button creates new mission outlines:**
 - **Button Location**: Prominent position in mission control overview interface
-- **Button Text**: "Deep Space Scan" or "Scan for Missions"
+- **Button Text**: "Deep Space Scan"
 - **Action**: Generates and adds a new mission outline to the grid
 - **Feedback**: Loading state during scan process (500-1000ms)
-- **Limit**: Maximum number of active missions (5-10 missions)
+- **Limit**: Maximum number of active missions (8 missions)
 
 ### 4. Mission Card Content
 
@@ -62,7 +62,8 @@ The Mission Scan feature represents a major evolution of the Mission Control sys
 #### Mission Summary
 - **Title**: Simple procedurally generated mission name
   - Examples: "Deep Space Patrol", "Asteroid Survey", "Station Check"
-- **Travel Time**: Simple time display (e.g., "2 hours", "1 day")
+- **Travel Time**: Simple time display (in minutes and seconds)
+  - Example: "Travel Time: 5m 30s"
 - **Brief Description**: 1 sentence mission summary (static dummy content)
 - **Difficulty Indicator**: Simple visual difficulty rating (Easy/Medium/Hard)
 - **Resource Indicator**: Simple icon showing mission involves resources
@@ -75,12 +76,12 @@ interface MissionOutline {
   briefDescription: string;
   detailedDescription: string;
   imageUrl: string;
-  travelTime: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  missionType: 'exploration' | 'mining' | 'patrol';
-  status: 'available' | 'in-progress' | 'completed';
+  travelTime: number; // in seconds
+  challengeRating: number; // will be calculated based on encounters
+  missionType: 'exploration' | 'mining' | 'rescue' | 'combat'; // Example mission types, create enum
+  status: 'available' | 'in-progress' | 'completed'; // use enum
   discoveredAt: Date;
-  hasResources: boolean; // Simple flag for resource missions
+
 }
 ```
 
@@ -169,69 +170,41 @@ interface MissionOutline {
 ### Critical Questions for Stakeholders
 
 1. **Mission Persistence**: Should mission outlines remain available permanently, or expire after a certain time?
+    - Answer: Mission outlines should remain available until manually cleared.
 
 2. **Mission Outline Complexity**: How detailed should mission challenges be in the preview vs. left to execution?
+    - Answer: Mission outlines should provide a brief overview of challenges, but detailed execution mechanics will be handled in the future deployment system.
 
 3. **Resource Preview Granularity**: Should missions show specific resource types only, or also hint at quantity ranges?
+    - Answer: Missions should show specific resource types and hint at quantity ranges (little to high amount)
 
 4. **Concurrent Mission Limits**: How many missions should players be able to scan and keep available?
+    - Answer: Players should be able to scan and keep a maximum of 8 concurrent missions.
 
 5. **Mission Refresh**: Should players be able to clear/refresh available missions, or only add new ones?
+    - Answer: Players should be able to scrap existing missions to make room for new ones, if they have not started them yet.
 
 6. **Selection Persistence**: Should selected mission state persist across browser sessions?
+    - Answer: No, persistency will be added at a later stage.
 
 ### Technical Concerns
 
 1. **Mission Outline Storage**: How to structure mission outline data for optimal performance and extensibility?
+    - Answer: Keep it simple with a basic interface for now, allowing for future expansion. Use NgRx signals for state management.
 
 2. **State Management**: Keeping mission control state separate from quest system while maintaining clean architecture?
+    - Answer: Do not care about quest system state, mission control is self-contained. Quest system will be deprecated in the future.
 
 3. **Component Architecture**: Best practices for StandardView sidebar integration with mission details?
+    - Answer: The sidebar will later be used for deployment details. Keep minimal for now.
 
 4. **Testing Strategy**: How to test mission generation and selection flows without quest system integration?
-
-5. **Performance**: Impact of storing multiple mission outlines and rendering card grids?
-
-## Success Metrics
-
-### User Engagement
-- **Mission Scan Frequency**: How often players scan for new missions
-- **Mission Selection Patterns**: Which mission types are most popular
-- **Completion Rates**: Success rates compared to current quest system
-
-### System Performance
-- **Load Times**: Mission grid rendering performance
-- **Memory Usage**: Impact of storing multiple mission objects
-- **Code Quality**: Maintainability of new mission system
-
-## Implementation Risks
-
-### High Risk
-- **Scope Creep**: Feature complexity growing beyond mission outline scanning and selection
-- **StandardView Integration Issues**: Problems with sidebar layout or component communication
-- **Performance Regression**: Mission grid or state management causing UI lag
-
-### Medium Risk
-- **Design Inconsistency**: New mission cards not matching game aesthetic
-- **User Experience Confusion**: Players not understanding mission outline vs. execution phases
-- **State Management Complexity**: Mission selection and persistence edge cases
-
-### Low Risk
-- **Visual Polish**: Minor aesthetic issues with card design or grid layout
-- **Mission Generation**: Edge cases in procedural mission outline creation
-- **Accessibility**: Minor keyboard navigation or screen reader issues
+    - Answer: Keep simple for now, focus on UI interactions. Mission generation will be part of separate feature.
 
 ## Conclusion
 
-The Mission Scan feature creates a strategic planning layer for mission control without disrupting existing quest functionality. By keeping mission outlines separate from quest execution, players gain mission selection and preview capabilities while maintaining the proven quest mechanics.
+The Mission Scan feature creates a strategic planning layer for mission control. Players gain mission selection and preview capabilities (independent of old quest system).
 
 The mission-control feature becomes a self-contained mission planning interface with clear separation of concerns. The StandardView integration provides intuitive navigation between mission scanning overview and detailed mission information.
 
 The phased implementation focuses first on core infrastructure (models, store, service) then builds UI components, ensuring solid foundations before user-facing features. The mission outline approach provides flexibility for future deployment and execution systems.
-
-**Next Steps:**
-1. Review and approve this updated specification
-2. Answer stakeholder questions about mission persistence and limits
-3. Create UI mockups for mission cards and details sidebar
-4. Define mission generation templates and variety
-5. Begin Phase 1 implementation with mission-control infrastructure
