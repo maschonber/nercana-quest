@@ -1,5 +1,6 @@
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActionBarComponent } from '../../../shared/components/action-bar.component';
 import { HeroFacadeService } from '../services/hero-facade.service';
 import { QuestFacadeService } from '../../quest/services/quest-facade.service';
 
@@ -8,7 +9,7 @@ import { QuestFacadeService } from '../../quest/services/quest-facade.service';
   templateUrl: './hero-actions.component.html',
   styleUrl: './hero-actions.component.scss',
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, ActionBarComponent]
 })
 export class HeroActionsComponent {
   private readonly heroFacade = inject(HeroFacadeService);

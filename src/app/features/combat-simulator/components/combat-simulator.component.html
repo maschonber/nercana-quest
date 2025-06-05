@@ -13,11 +13,10 @@
             </ul>
           </div>
         }
-      </div>
-    </div>
+      </div>    </div>
     
-    <!-- Floating Action Bar -->
-    <div class="floating-action-bar">
+    <!-- New Action Bar -->
+    <app-action-bar [visible]="true">
       <div class="run-count-control">
         <label for="runCount">Runs:</label>
         <select 
@@ -32,37 +31,35 @@
           <option value="100">100</option>
         </select>
       </div>
-      <div class="simulation-actions">
-        <button 
-          class="btn btn--primary"
-          [disabled]="!store.canStartSimulation() || store.isRunning() || store.isMultiSimulationRunning()"
-          (click)="startSimulation()">
-          @if (store.isRunning()) {
-            <span class="loading-spinner"></span>
-            Running... {{ store.progress() }}%
-          } @else {
-            Start Simulation
-          }
-        </button>
-        <button 
-          class="btn btn--primary btn--multi"
-          [disabled]="!store.canStartMultiSimulation() || store.isRunning() || store.isMultiSimulationRunning()"
-          (click)="startMultiSimulation()">
-          @if (store.isMultiSimulationRunning()) {
-            <span class="loading-spinner"></span>
-            Multi-Sim... {{ store.multiSimulationProgress() }}%
-          } @else {
-            Multi-Simulation
-          }
-        </button>
-        <button 
-          class="btn btn--secondary"
-          [disabled]="store.isRunning() || store.isMultiSimulationRunning()"
-          (click)="resetConfiguration()">
-          Reset
-        </button>
-      </div>
-    </div>
+      <button 
+        class="btn btn--primary"
+        [disabled]="!store.canStartSimulation() || store.isRunning() || store.isMultiSimulationRunning()"
+        (click)="startSimulation()">
+        @if (store.isRunning()) {
+          <span class="loading-spinner"></span>
+          Running... {{ store.progress() }}%
+        } @else {
+          Start Simulation
+        }
+      </button>
+      <button 
+        class="btn btn--primary btn--multi"
+        [disabled]="!store.canStartMultiSimulation() || store.isRunning() || store.isMultiSimulationRunning()"
+        (click)="startMultiSimulation()">
+        @if (store.isMultiSimulationRunning()) {
+          <span class="loading-spinner"></span>
+          Multi-Sim... {{ store.multiSimulationProgress() }}%
+        } @else {
+          Multi-Simulation
+        }
+      </button>
+      <button 
+        class="btn btn--secondary"
+        [disabled]="store.isRunning() || store.isMultiSimulationRunning()"
+        (click)="resetConfiguration()">
+        Reset
+      </button>
+    </app-action-bar>
   </app-tab>
 
   <app-tab id="results" label="Results">

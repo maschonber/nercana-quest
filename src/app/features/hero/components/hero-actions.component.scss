@@ -1,54 +1,16 @@
-:host(.floating-actions) .hero-actions {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0.75rem 1rem;
-  margin: 0;
-  box-shadow: none;
-  width: 100%;
-  max-width: none;
-}
-
-.hero-actions {
-  background: var(--background-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1rem 1.5rem; /* Reduced vertical padding */
-  margin-top: 1rem; /* Reduced margin */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  flex-shrink: 0; /* Prevent shrinking */
-}
-
-:host(.floating-actions) .hero-actions h2 {
-  display: none; /* Hide title in floating mode */
-}
-
-.hero-actions h2 {
-  color: var(--text-primary);
-  margin: 0 0 0.75rem 0; /* Reduced bottom margin */
-  font-size: 1.1rem; /* Slightly smaller font */
-}
-
-.action-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
+// Button styles for action bar content
 .quest-btn {
   background: var(--accent-primary);
-  color: var(
-    --background-primary
-  ); /* Use contrasting background color for text */
+  color: var(--background-primary);
   border: none;
-  padding: 0.75rem 1.5rem; /* Reduced padding */
+  padding: 0.75rem 1.5rem;
   border-radius: 6px;
-  font-size: 0.95rem; /* Slightly smaller font */
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  min-width: 180px; /* Reduced min-width */
+  min-width: 180px;
 }
 
 .quest-btn:hover:not(:disabled) {
@@ -129,41 +91,11 @@
 
 /* Mobile responsiveness */
 @media (max-width: 900px) {
-  .hero-actions {
-    padding: 0.75rem 1rem;
-    margin-top: 0.75rem;
-  }
-
-  .hero-actions h2 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    text-align: center;
-  }
-
-  :host(.floating-actions) .hero-actions {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .action-buttons {
-    gap: 0.5rem; /* Keep buttons side by side */
-    justify-content: center;
-    flex-wrap: wrap; /* Allow wrapping if needed */
-  }
-
   .quest-btn,
   .heal-btn {
     padding: 0.75rem 1rem;
     font-size: 0.85rem;
-    min-width: 120px; /* Smaller minimum width */
-    flex: 1; /* Share available space */
-    max-width: 180px; /* Prevent buttons from getting too wide */
-  }
-
-  /* Specific styles for floating mode on mobile */
-  :host(.floating-actions) .quest-btn,
-  :host(.floating-actions) .heal-btn {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.8rem;
-    min-width: 100px;
+    min-width: 120px;
+    max-width: 180px;
   }
 }

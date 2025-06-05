@@ -12,3 +12,4 @@ export * from './services/navigation.service';
 // Shared components
 export * from './components/standard-view.component';
 export * from './components/breadcrumb.component';
+export * from './components/action-bar.component';

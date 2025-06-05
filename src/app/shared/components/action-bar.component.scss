@@ -1,0 +1,40 @@
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  backdrop-filter: blur(10px);
+  background: rgba(var(--surface-rgb), 0.8);
+  border-top: 1px solid rgba(var(--outline-rgb), 0.2);
+  z-index: 1000;
+  
+  &:not(.visible) {
+    display: none;
+  }
+}
+
+.action-bar-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+    padding: 0.75rem;
+    flex-wrap: wrap;
+  }
+  
+  // Ensure buttons and form elements have consistent styling
+  button, select, input {
+    flex-shrink: 0;
+  }
+  
+  // Handle long content gracefully
+  > * {
+    min-width: 0; // Allow flex items to shrink below content size
+  }
+}

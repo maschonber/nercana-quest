@@ -45,23 +45,6 @@
   border-top: 1px solid var(--border-secondary);
 }
 
-.floating-action-bar {
-  position: fixed;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--surface-elevated);
-  border: 1px solid var(--border-primary);
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  backdrop-filter: blur(10px);
-}
-
 .run-count-control {
   display: flex;
   align-items: center;
@@ -83,11 +66,6 @@
       cursor: not-allowed;
     }
   }
-}
-
-.simulation-actions {
-  display: flex;
-  gap: 0.75rem;
 }
 
 .btn {
@@ -202,40 +180,10 @@ app-team-selector {
   }
 }
 
-// Responsive design for floating action bar
+// Mobile-specific adjustments for action bar content
 @media (max-width: 768px) {
-  .floating-action-bar {
-    flex-direction: column;
-    gap: 1rem;
-    left: 1rem;
-    right: 1rem;
-    transform: none;
-    width: auto;
-  }
-  
   .run-count-control {
     justify-content: center;
-  }
-  
-  .simulation-actions {
-    justify-content: center;
-    width: 100%;
-    
-    .btn {
-      flex: 1;
-      justify-content: center;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .floating-action-bar {
-    padding: 0.75rem;
-  }
-  
-  .simulation-actions {
-    flex-direction: column;
-    gap: 0.5rem;
   }
 }
 

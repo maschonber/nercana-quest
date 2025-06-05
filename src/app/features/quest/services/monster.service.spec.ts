@@ -43,21 +43,19 @@ describe('MonsterService', () => {
     });
 
     it('should scale monster difficulty with hero level', () => {
-      // Test the same monster type with different hero levels for consistent comparison
-      const lowLevelMonster = service['createMonster'](
+      // Test the same monster type with different tiers for consistent comparison
+      const easyMonster = service['createMonster'](
         MonsterType.SPACE_SLUG,
-        MonsterTier.EASY,
-        1
+        MonsterTier.EASY
       );
-      const highLevelMonster = service['createMonster'](
+      const hardMonster = service['createMonster'](
         MonsterType.SPACE_SLUG,
-        MonsterTier.HARD,
-        10
+        MonsterTier.HARD
       );
 
-      // Higher level monsters should be stronger due to tier and level scaling
-      expect(highLevelMonster.health).toBeGreaterThan(lowLevelMonster.health);
-      expect(highLevelMonster.attack).toBeGreaterThan(lowLevelMonster.attack);
+      // Higher tier monsters should be stronger due to tier scaling
+      expect(hardMonster.health).toBeGreaterThan(easyMonster.health);
+      expect(hardMonster.attack).toBeGreaterThan(easyMonster.attack);
     });
 
     it('should have valid monster configuration with all required monster types', () => {
@@ -78,13 +76,11 @@ describe('MonsterService', () => {
       // Create multiple monsters of the same type and tier
       const monster1 = service['createMonster'](
         MonsterType.SPACE_SLUG,
-        MonsterTier.MEDIUM,
-        5
+        MonsterTier.MEDIUM
       );
       const monster2 = service['createMonster'](
         MonsterType.SPACE_SLUG,
-        MonsterTier.MEDIUM,
-        5
+        MonsterTier.MEDIUM
       );
 
       // Should have some variability (at least one stat should differ slightly due to randomization)
@@ -193,23 +189,19 @@ describe('MonsterService', () => {
       // Test monsters with tier-specific names
       const easyVoidEntity = service['createMonster'](
         MonsterType.VOID_ENTITY,
-        MonsterTier.EASY,
-        5
+        MonsterTier.EASY
       );
       const mediumVoidEntity = service['createMonster'](
         MonsterType.VOID_ENTITY,
-        MonsterTier.MEDIUM,
-        5
+        MonsterTier.MEDIUM
       );
       const hardVoidEntity = service['createMonster'](
         MonsterType.VOID_ENTITY,
-        MonsterTier.HARD,
-        5
+        MonsterTier.HARD
       );
       const bossVoidEntity = service['createMonster'](
         MonsterType.VOID_ENTITY,
-        MonsterTier.BOSS,
-        5
+        MonsterTier.BOSS
       );
 
       // Names should be different for different tiers
@@ -225,13 +217,11 @@ describe('MonsterService', () => {
       // Test different monsters at the same tier have appropriate names
       const easySlug = service['createMonster'](
         MonsterType.SPACE_SLUG,
-        MonsterTier.EASY,
-        5
+        MonsterTier.EASY
       );
       const easyXriit = service['createMonster'](
         MonsterType.XRIIT,
-        MonsterTier.EASY,
-        5
+        MonsterTier.EASY
       );
 
       // Different monster types should have different names even at same tier
@@ -243,13 +233,11 @@ describe('MonsterService', () => {
       // Test boss tier names are appropriately dramatic
       const bossSlug = service['createMonster'](
         MonsterType.SPACE_SLUG,
-        MonsterTier.BOSS,
-        5
+        MonsterTier.BOSS
       );
       const bossMoggo = service['createMonster'](
         MonsterType.MOGGO,
-        MonsterTier.BOSS,
-        5
+        MonsterTier.BOSS
       );
 
       // Boss names should indicate their status
@@ -277,8 +265,7 @@ describe('MonsterService', () => {
 
       const easySlug = service['createMonster'](
         MonsterType.SPACE_SLUG,
-        MonsterTier.EASY,
-        5
+        MonsterTier.EASY
       );
 
       // Should use the custom base health

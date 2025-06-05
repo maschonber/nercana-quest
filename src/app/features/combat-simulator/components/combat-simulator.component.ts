@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TabViewComponent, TabComponent } from '../../../shared/components/tab-view.component';
+import { ActionBarComponent } from '../../../shared/components/action-bar.component';
 import { NavigationService } from '../../../shared/services/navigation.service';
 import { CombatSimulatorStore } from '../services/combat-simulator.store';
 import { CombatSimulatorService } from '../services/combat-simulator.service';
@@ -20,7 +21,8 @@ import { MultiSimulationConfig, MultiSimulationStatus } from '../models/multi-si
     TabComponent,
     TeamSelectorComponent,
     SimulationResultsComponent,
-    MonsterComparisonComponent
+    MonsterComparisonComponent,
+    ActionBarComponent
   ],
   templateUrl: './combat-simulator.component.html',
   styleUrl: './combat-simulator.component.scss'
