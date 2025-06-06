@@ -23,14 +23,14 @@ export class MissionDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     const missionId = this.route.snapshot.paramMap.get('missionId');
-    
+
     if (!missionId) {
       this.router.navigate(['/mission-control']);
       return;
     }
 
     this.mission = this.missionStore.getMissionById(missionId) || null;
-    
+
     if (!this.mission) {
       this.router.navigate(['/mission-control']);
       return;
@@ -52,7 +52,9 @@ export class MissionDetailsComponent implements OnInit {
 
   onDeployClones(): void {
     // Future implementation - deployment system
-    console.log('Deploy clones functionality will be implemented in future update');
+    console.log(
+      'Deploy clones functionality will be implemented in future update'
+    );
   }
 
   onBackToOverview(): void {
@@ -62,7 +64,7 @@ export class MissionDetailsComponent implements OnInit {
   formatTravelTime(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    
+
     if (minutes === 0) {
       return `${remainingSeconds} seconds`;
     } else if (remainingSeconds === 0) {
@@ -114,5 +116,22 @@ export class MissionDetailsComponent implements OnInit {
       default:
         return 'Unknown';
     }
+  }
+
+  missionJson(): string {
+    return JSON.stringify(
+      this.mission,
+      function replacer(key, value) {
+        if (value instanceof Map) {
+          return {
+            dataType: 'Map',
+            value: Array.from(value.entries()) // or with spread: value: [...value]
+          };
+        } else {
+          return value;
+        }
+      },
+      2
+    );
   }
 }

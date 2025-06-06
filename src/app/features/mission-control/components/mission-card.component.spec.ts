@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { MissionCardComponent } from './mission-card.component';
 import { MissionOutline, MissionType, MissionStatus } from '../models/mission-outline.model';
+import { MissionTheme, PathComplexity } from '../models/mission-path.model';
 
 describe('MissionCardComponent', () => {
   let component: MissionCardComponent;
@@ -18,7 +19,9 @@ describe('MissionCardComponent', () => {
     challengeRating: 3,
     missionType: MissionType.EXPLORATION,
     status: MissionStatus.AVAILABLE,
-    discoveredAt: new Date('2024-01-01')
+    discoveredAt: new Date('2024-01-01'),
+    theme: MissionTheme.PLANET,
+    pathComplexity: PathComplexity.LINEAR
   };
 
   beforeEach(async () => {

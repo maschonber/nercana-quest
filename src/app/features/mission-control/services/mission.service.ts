@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { MissionOutline, MissionType, MissionStatus } from '../models/mission-outline.model';
+import { MissionPath, MissionTheme, PathComplexity } from '../models/mission-path.model';
+import { MissionPathFactory } from './mission-path-factory.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MissionService {
   private readonly MAX_MISSIONS = 8;
+
+  constructor(private missionPathFactory: MissionPathFactory) {}
 
   private readonly missionTitles = [
     'Deep Space Patrol',
@@ -54,7 +58,7 @@ export class MissionService {
     // Generate challenge rating between 1 and 5
     const challengeRating = Math.floor(Math.random() * 5) + 1;
 
-    return {
+    const outline: MissionOutline = {
       id: this.generateId(),
       title: this.missionTitles[titleIndex],
       briefDescription: this.briefDescriptions[descIndex],
@@ -64,12 +68,49 @@ export class MissionService {
       challengeRating,
       missionType: randomType,
       status: MissionStatus.AVAILABLE,
-      discoveredAt: new Date()
+      discoveredAt: new Date(),
+      theme: this.generateRandomTheme(),
+      pathComplexity: this.generateRandomComplexity(challengeRating)
     };
+
+    // Generate mission path
+    outline.missionPath = this.generateMissionPath(outline);
+
+    if (!this.validateMissionPath(outline.missionPath)) {
+      console.error('Generated mission path is invalid:', outline.missionPath);
+    }
+
+    return outline;
+  }
+
+  generateMissionPath(outline: MissionOutline): MissionPath {
+    return this.missionPathFactory.createPath(outline);
+  }
+
+  validateMissionPath(path: MissionPath): boolean {
+    return this.missionPathFactory.validateMissionPath(path);
   }
 
   canScanNewMission(currentMissionCount: number): boolean {
     return currentMissionCount < this.MAX_MISSIONS;
+  }
+
+  private generateRandomTheme(): MissionTheme {
+    const themes = Object.values(MissionTheme);
+    return themes[Math.floor(Math.random() * themes.length)];
+  }
+
+  private generateRandomComplexity(challengeRating: number): PathComplexity {
+    if (challengeRating <= 2) {
+      return PathComplexity.LINEAR;
+    } else if (challengeRating <= 4) {
+      return Math.random() < 0.7 ? PathComplexity.LINEAR : PathComplexity.BRANCHING;
+    } else {
+      const roll = Math.random();
+      if (roll < 0.3) return PathComplexity.LINEAR;
+      if (roll < 0.8) return PathComplexity.BRANCHING;
+      return PathComplexity.COMPLEX;
+    }
   }
 
   private generateId(): string {

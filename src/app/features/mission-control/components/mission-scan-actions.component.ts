@@ -28,9 +28,10 @@ export class MissionScanActionsComponent {
 
     try {
       // Simulate scanning delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // await new Promise(resolve => setTimeout(resolve, 5000));
       
       const newMission = this.missionService.generateMissionOutline();
+
       this.missionStore.addMission(newMission);
     } catch (error) {
       this.missionStore.setScanningError('Failed to scan for missions. Please try again.');

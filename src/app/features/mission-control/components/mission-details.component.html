@@ -9,30 +9,47 @@
 
         <div class="mission-overview">
           <h1 class="mission-title">{{ mission.title }}</h1>
-          
+
           <div class="mission-meta">
             <div class="meta-grid">
               <div class="meta-item">
                 <span class="meta-label">Type:</span>
-                <span class="meta-value">{{ getMissionTypeIcon(mission.missionType) }} {{ getMissionTypeName(mission.missionType) }}</span>
+                <span class="meta-value"
+                  >{{ getMissionTypeIcon(mission.missionType) }}
+                  {{ getMissionTypeName(mission.missionType) }}</span
+                >
               </div>
               <div class="meta-item">
                 <span class="meta-label">Difficulty:</span>
-                <span class="meta-value" [class]="getDifficultyClass(mission.challengeRating)">{{ getDifficultyText(mission.challengeRating) }} ({{ mission.challengeRating }}/5)</span>
+                <span
+                  class="meta-value"
+                  [class]="getDifficultyClass(mission.challengeRating)"
+                  >{{ getDifficultyText(mission.challengeRating) }} ({{
+                    mission.challengeRating
+                  }}/5)</span
+                >
               </div>
               <div class="meta-item">
                 <span class="meta-label">Travel:</span>
-                <span class="meta-value">{{ formatTravelTime(mission.travelTime) }}</span>
+                <span class="meta-value">{{
+                  formatTravelTime(mission.travelTime)
+                }}</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">Status:</span>
-                <span class="meta-value status" [class]="'status-' + mission.status">{{ mission.status | titlecase }}</span>
+                <span
+                  class="meta-value status"
+                  [class]="'status-' + mission.status"
+                  >{{ mission.status | titlecase }}</span
+                >
               </div>
             </div>
-            
+
             <div class="meta-item discovered">
               <span class="meta-label">Discovered:</span>
-              <span class="meta-value">{{ mission.discoveredAt | date:'short' }}</span>
+              <span class="meta-value">{{
+                mission.discoveredAt | date: 'short'
+              }}</span>
             </div>
           </div>
         </div>
@@ -47,17 +64,23 @@
 
         <div class="mission-section details">
           <h3>Details</h3>
-          <p>{{ mission.detailedDescription }}</p>
+          <p>{{ missionJson() }}</p>
         </div>
       </div>
 
       <!-- Compact Action Section -->
       <div class="mission-actions">
         <button class="back-button" (click)="onBackToOverview()">← Back</button>
-        <button class="deploy-button" 
-                [disabled]="mission.status !== 'available'"
-                (click)="onDeployClones()"
-                [title]="mission.status !== 'available' ? 'Mission not available for deployment' : 'Deploy clones on this mission'">
+        <button
+          class="deploy-button"
+          [disabled]="mission.status !== 'available'"
+          (click)="onDeployClones()"
+          [title]="
+            mission.status !== 'available'
+              ? 'Mission not available for deployment'
+              : 'Deploy clones on this mission'
+          "
+        >
           <span class="deploy-icon">🚀</span>
           Deploy Clones
         </button>
@@ -67,9 +90,14 @@
       <div class="mission-not-found">
         <div class="not-found-icon">❓</div>
         <h2>Mission Not Found</h2>
-        <p>The requested mission could not be located. It may have been removed or the ID is invalid.</p>
+        <p>
+          The requested mission could not be located. It may have been removed
+          or the ID is invalid.
+        </p>
         <button class="back-button" (click)="onBackToOverview()">
           Return to Mission Control
         </button>
-      </div>    }  </div>
+      </div>
+    }
+  </div>
 </app-standard-view>

@@ -1,3 +1,5 @@
+import { MissionPath, MissionTheme, PathComplexity } from './mission-path.model';
+
 export enum MissionType {
   EXPLORATION = 'exploration',
   MINING = 'mining',
@@ -22,4 +24,8 @@ export interface MissionOutline {
   missionType: MissionType;
   status: MissionStatus;
   discoveredAt: Date;
+  // New fields for mission path generation
+  missionPath?: MissionPath;        // Generated mission path
+  theme: MissionTheme;              // Mission environment theme
+  pathComplexity: PathComplexity;   // Simple, moderate, complex
 }
