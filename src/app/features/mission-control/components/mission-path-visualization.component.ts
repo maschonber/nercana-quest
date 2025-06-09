@@ -5,7 +5,9 @@ import {
   OnDestroy,
   ElementRef,
   ViewChild,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import mermaid from 'mermaid';
@@ -16,116 +18,137 @@ import {
   RiskLevel
 } from '../models/mission-path.model';
 
+// Configuration interfaces for better type safety
+interface LegendItem {
+  type: MissionNodeType;
+  icon: string;
+  label: string;
+}
+
+interface PathStat {
+  label: string;
+  value: number;
+}
+
+interface MermaidConfig {
+  nodeColors: Record<MissionNodeType, { fill: string; stroke: string; textColor: string }>;
+  theme: {
+    background: string;
+    textColor: string;
+    lineColor: string;
+  };
+}
+
 @Component({
   selector: 'app-mission-path-visualization',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="mission-path-container">
-      <div class="path-header">
-        <div class="path-legend">
-          <span class="legend-item">
-            <span class="legend-icon start">🚁</span>
-            <span class="legend-text">Start</span>
-          </span>
-          <span class="legend-item">
-            <span class="legend-icon encounter">⚔️</span>
-            <span class="legend-text">Combat</span>
-          </span>
-          <span class="legend-item">
-            <span class="legend-icon treasure">💎</span>
-            <span class="legend-text">Treasure</span>
-          </span>
-          <span class="legend-item">
-            <span class="legend-icon mining">⛏️</span>
-            <span class="legend-text">Mining</span>
-          </span>
-          <span class="legend-item">
-            <span class="legend-icon rest">🏕️</span>
-            <span class="legend-text">Rest</span>
-          </span>
-          <span class="legend-item">
-            <span class="legend-icon extraction">🏠</span>
-            <span class="legend-text">Exit</span>
-          </span>
-        </div>
-      </div>
-
-      @if (missionPath) {
-        <div class="mermaid-container">
-          <div #mermaidChart class="mermaid-chart"></div>
-        </div>
-
-        <div class="path-stats">
-          <span class="stat-item">
-            <strong>Total Nodes:</strong> {{ missionPath.totalNodes }}
-          </span>
-          <span class="stat-item">
-            <strong>Max Depth:</strong> {{ missionPath.maxDepth }}
-          </span>
-          <span class="stat-item">
-            <strong>Branches:</strong> {{ missionPath.branchCount }}
-          </span>
-        </div>
-      } @else {
-        <div class="no-path">
-          <p>No mission path available for this mission.</p>
-        </div>
-      }
-    </div>
-  `,
+  templateUrl: './mission-path-visualization.component.html',
   styleUrls: ['./mission-path-visualization.component.scss']
 })
-export class MissionPathVisualizationComponent implements OnInit, OnDestroy {
+export class MissionPathVisualizationComponent implements OnInit, OnDestroy, OnChanges {
   @Input() missionPath: MissionPath | null = null;
   @ViewChild('mermaidChart', { static: false }) mermaidChart!: ElementRef;
 
-  private mermaidId = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+  // Template data
+  legendItems: LegendItem[] = [];
+  pathStats: PathStat[] = [];
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  private readonly mermaidId = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
+  private readonly config: MermaidConfig = this.createMermaidConfig();
+
+  constructor(private cdr: ChangeDetectorRef) {
+    this.initializeLegendItems();
+  }
 
   ngOnInit(): void {
     this.initializeMermaid();
   }
 
   ngOnDestroy(): void {
-    // Cleanup if needed
+    // Cleanup mermaid resources if needed
+    this.clearChart();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['missionPath'] && this.missionPath) {
+      this.updatePathStats();
+      this.scheduleRender();
+    }
   }
 
   ngAfterViewInit(): void {
     if (this.missionPath) {
-      this.renderMissionPath();
+      this.scheduleRender();
     }
   }
 
-  ngOnChanges(): void {
-    if (this.missionPath && this.mermaidChart) {
-      setTimeout(() => this.renderMissionPath(), 0);
-    }
+  /**
+   * Initialize legend items for the visualization
+   */
+  private initializeLegendItems(): void {
+    this.legendItems = [
+      { type: MissionNodeType.LANDING_SITE, icon: '🚁', label: 'Start' },
+      { type: MissionNodeType.ENCOUNTER, icon: '⚔️', label: 'Combat' },
+      { type: MissionNodeType.TREASURE, icon: '💎', label: 'Treasure' },
+      { type: MissionNodeType.MINING, icon: '⛏️', label: 'Mining' },
+      { type: MissionNodeType.REST, icon: '🏕️', label: 'Rest' },
+      { type: MissionNodeType.EXTRACTION, icon: '🏠', label: 'Exit' }
+    ];
   }
+
+  /**
+   * Update path statistics based on current mission path
+   */
+  private updatePathStats(): void {
+    if (!this.missionPath) {
+      this.pathStats = [];
+      return;
+    }
+
+    this.pathStats = [
+      { label: 'Total Nodes', value: this.missionPath.totalNodes },
+      { label: 'Max Depth', value: this.missionPath.maxDepth },
+      { label: 'Branches', value: this.missionPath.branchCount }
+    ];
+  }
+
+  /**
+   * Create Mermaid configuration with futuristic dark theme
+   */
+  private createMermaidConfig(): MermaidConfig {
+    return {
+      nodeColors: {
+        [MissionNodeType.LANDING_SITE]: { fill: '#1f2937', stroke: '#10b981', textColor: '#10b981' },
+        [MissionNodeType.ENCOUNTER]: { fill: '#1f2937', stroke: '#ef4444', textColor: '#ef4444' },
+        [MissionNodeType.TREASURE]: { fill: '#1f2937', stroke: '#f59e0b', textColor: '#f59e0b' },
+        [MissionNodeType.MINING]: { fill: '#1f2937', stroke: '#3b82f6', textColor: '#3b82f6' },
+        [MissionNodeType.REST]: { fill: '#1f2937', stroke: '#8b5cf6', textColor: '#8b5cf6' },
+        [MissionNodeType.DECISION]: { fill: '#1f2937', stroke: '#6b7280', textColor: '#9ca3af' },
+        [MissionNodeType.EXTRACTION]: { fill: '#1f2937', stroke: '#10b981', textColor: '#10b981' }
+      },
+      theme: {
+        background: '#111827',
+        textColor: '#e5e7eb',
+        lineColor: '#4b5563'
+      }
+    };
+  }
+
+  /**
+   * Initialize Mermaid with optimized configuration
+   */
   private initializeMermaid(): void {
     mermaid.initialize({
       startOnLoad: false,
       theme: 'base',
       themeVariables: {
-        // Subtle futuristic dark theme colors
+        ...this.config.theme,
         primaryColor: '#1f2937',
         primaryTextColor: '#e5e7eb',
         primaryBorderColor: '#374151',
-        lineColor: '#4b5563',
-        secondaryColor: '#111827',
-        tertiaryColor: '#030712',
-        background: '#111827',
-        mainBkg: '#1f2937',
-        secondBkg: '#111827',
-        tertiaryBkg: '#030712',
-
-        // Subtle text colors
-        textColor: '#e5e7eb',
         fontFamily: 'Inter, system-ui, sans-serif',
         fontSize: '12px',
-
-        // Node styling with subtle appearance
         nodeBkg: '#1f2937',
         nodeBorder: '#374151',
         nodeTextColor: '#e5e7eb'
@@ -141,152 +164,202 @@ export class MissionPathVisualizationComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Schedule chart rendering with error handling
+   */
+  private scheduleRender(): void {
+    if (!this.mermaidChart) return;
+    
+    // Use setTimeout to ensure DOM is ready
+    setTimeout(() => this.renderMissionPath().catch(this.handleRenderError.bind(this)), 0);
+  }
+
+  /**
+   * Render the mission path as a Mermaid flowchart
+   */
   private async renderMissionPath(): Promise<void> {
-    if (!this.missionPath || !this.mermaidChart) {
+    if (!this.missionPath || !this.mermaidChart?.nativeElement) {
       return;
     }
 
     try {
-      const graphDefinition = this.generateMermaidFlowchart(this.missionPath);
-
-      // Clear previous content
-      this.mermaidChart.nativeElement.innerHTML = '';
-
-      // Render the chart
+      const graphDefinition = this.generateFlowchartDefinition(this.missionPath);
+      
+      this.clearChart();
+      
       const { svg } = await mermaid.render(this.mermaidId, graphDefinition);
       this.mermaidChart.nativeElement.innerHTML = svg;
-
-      // Add click handlers for interactivity
-      this.addNodeClickHandlers();
+      
+      this.addNodeInteractivity();
+      
     } catch (error) {
-      console.error('Error rendering mission path:', error);
-      this.mermaidChart.nativeElement.innerHTML =
-        '<p class="error">Error rendering mission path visualization</p>';
+      throw new Error(`Failed to render mission path: ${error}`);
     }
   }
-  private generateMermaidFlowchart(missionPath: MissionPath): string {
-    let flowchart = 'flowchart TD\n';
 
-    // Add styling classes with subtle, futuristic dark theme colors
-    flowchart +=
-      '  classDef startNode fill:#1f2937,stroke:#10b981,stroke-width:2px,color:#10b981\n';
-    flowchart +=
-      '  classDef encounterNode fill:#1f2937,stroke:#ef4444,stroke-width:2px,color:#ef4444\n';
-    flowchart +=
-      '  classDef treasureNode fill:#1f2937,stroke:#f59e0b,stroke-width:2px,color:#f59e0b\n';
-    flowchart +=
-      '  classDef miningNode fill:#1f2937,stroke:#3b82f6,stroke-width:2px,color:#3b82f6\n';
-    flowchart +=
-      '  classDef restNode fill:#1f2937,stroke:#8b5cf6,stroke-width:2px,color:#8b5cf6\n';
-    flowchart +=
-      '  classDef decisionNode fill:#1f2937,stroke:#6b7280,stroke-width:2px,color:#9ca3af\n';
-    flowchart +=
-      '  classDef extractionNode fill:#1f2937,stroke:#10b981,stroke-width:2px,color:#10b981\n';
+  /**
+   * Generate Mermaid flowchart definition
+   */
+  private generateFlowchartDefinition(missionPath: MissionPath): string {
+    const lines: string[] = ['flowchart TD'];
+    
+    // Add CSS class definitions
+    lines.push(...this.generateCssClassDefinitions());
+    
+    // Add nodes
+    lines.push(...this.generateNodeDefinitions(missionPath));
+    
+    // Add connections
+    lines.push(...this.generateConnectionDefinitions(missionPath));
+    
+    // Apply CSS classes
+    lines.push(...this.generateClassApplications(missionPath));
+    
+    return lines.join('\n');
+  }
 
-    // Add nodes with shorter, cleaner labels
-    for (const [nodeId, node] of missionPath.nodes) {
+  /**
+   * Generate CSS class definitions for node styling
+   */
+  private generateCssClassDefinitions(): string[] {
+    return Object.entries(this.config.nodeColors).map(([nodeType, colors]) => {
+      const className = this.getNodeCssClass(nodeType as MissionNodeType);
+      return `  classDef ${className} fill:${colors.fill},stroke:${colors.stroke},stroke-width:2px,color:${colors.textColor}`;
+    });
+  }
+
+  /**
+   * Generate node definitions with labels and icons
+   */
+  private generateNodeDefinitions(missionPath: MissionPath): string[] {
+    return Array.from(missionPath.nodes.entries()).map(([nodeId, node]) => {
       const icon = this.getNodeIcon(node.type);
       const riskIndicator = this.getRiskIndicator(node);
       const label = `${icon} ${node.title}${riskIndicator}`;
+      
+      return `  ${nodeId}["${label}"]`;
+    });
+  }
 
-      flowchart += `  ${nodeId}["${label}"]\n`;
-    }
-
-    // Add connections with shorter choice labels
+  /**
+   * Generate connection definitions between nodes
+   */
+  private generateConnectionDefinitions(missionPath: MissionPath): string[] {
+    const connections: string[] = [];
+    
     for (const [nodeId, node] of missionPath.nodes) {
       for (const choice of node.choices) {
-        flowchart += `  ${nodeId} -->|"${choice.label}"| ${choice.targetNodeId}\n`;
+        connections.push(`  ${nodeId} -->|"${choice.label}"| ${choice.targetNodeId}`);
       }
     }
+    
+    return connections;
+  }
 
-    // Apply CSS classes to nodes
-    for (const [nodeId, node] of missionPath.nodes) {
+  /**
+   * Generate CSS class applications for nodes
+   */
+  private generateClassApplications(missionPath: MissionPath): string[] {
+    return Array.from(missionPath.nodes.entries()).map(([nodeId, node]) => {
       const cssClass = this.getNodeCssClass(node.type);
-      flowchart += `  class ${nodeId} ${cssClass}\n`;
-    }
-
-    return flowchart;
+      return `  class ${nodeId} ${cssClass}`;
+    });
   }
 
+  /**
+   * Get icon for a specific node type
+   */
   private getNodeIcon(nodeType: MissionNodeType): string {
-    switch (nodeType) {
-      case MissionNodeType.LANDING_SITE:
-        return '🚁';
-      case MissionNodeType.ENCOUNTER:
-        return '⚔️';
-      case MissionNodeType.TREASURE:
-        return '💎';
-      case MissionNodeType.MINING:
-        return '⛏️';
-      case MissionNodeType.REST:
-        return '🏕️';
-      case MissionNodeType.DECISION:
-        return '🤔';
-      case MissionNodeType.EXTRACTION:
-        return '🏠';
-      default:
-        return '❓';
-    }
+    const iconMap: Record<MissionNodeType, string> = {
+      [MissionNodeType.LANDING_SITE]: '🚁',
+      [MissionNodeType.ENCOUNTER]: '⚔️',
+      [MissionNodeType.TREASURE]: '💎',
+      [MissionNodeType.MINING]: '⛏️',
+      [MissionNodeType.REST]: '🏕️',
+      [MissionNodeType.DECISION]: '🤔',
+      [MissionNodeType.EXTRACTION]: '🏠'
+    };
+    
+    return iconMap[nodeType] || '❓';
   }
 
+  /**
+   * Get risk indicator based on node choices
+   */
   private getRiskIndicator(node: MissionNode): string {
-    // Find the highest risk level among choices
     const maxRisk = node.choices.reduce((max, choice) => {
       if (choice.riskLevel === RiskLevel.HIGH) return RiskLevel.HIGH;
-      if (choice.riskLevel === RiskLevel.MEDIUM && max !== RiskLevel.HIGH)
-        return RiskLevel.MEDIUM;
+      if (choice.riskLevel === RiskLevel.MEDIUM && max !== RiskLevel.HIGH) return RiskLevel.MEDIUM;
       return max;
     }, RiskLevel.LOW);
 
-    switch (maxRisk) {
-      case RiskLevel.HIGH:
-        return ' ⚠️';
-      case RiskLevel.MEDIUM:
-        return ' ⚡';
-      case RiskLevel.LOW:
-      default:
-        return '';
-    }
+    const riskIndicators: Record<RiskLevel, string> = {
+      [RiskLevel.HIGH]: ' ⚠️',
+      [RiskLevel.MEDIUM]: ' ⚡',
+      [RiskLevel.LOW]: ''
+    };
+
+    return riskIndicators[maxRisk];
   }
 
+  /**
+   * Get CSS class name for a node type
+   */
   private getNodeCssClass(nodeType: MissionNodeType): string {
-    switch (nodeType) {
-      case MissionNodeType.LANDING_SITE:
-        return 'startNode';
-      case MissionNodeType.ENCOUNTER:
-        return 'encounterNode';
-      case MissionNodeType.TREASURE:
-        return 'treasureNode';
-      case MissionNodeType.MINING:
-        return 'miningNode';
-      case MissionNodeType.REST:
-        return 'restNode';
-      case MissionNodeType.DECISION:
-        return 'decisionNode';
-      case MissionNodeType.EXTRACTION:
-        return 'extractionNode';
-      default:
-        return 'decisionNode';
-    }
+    const classMap: Record<MissionNodeType, string> = {
+      [MissionNodeType.LANDING_SITE]: 'startNode',
+      [MissionNodeType.ENCOUNTER]: 'encounterNode',
+      [MissionNodeType.TREASURE]: 'treasureNode',
+      [MissionNodeType.MINING]: 'miningNode',
+      [MissionNodeType.REST]: 'restNode',
+      [MissionNodeType.DECISION]: 'decisionNode',
+      [MissionNodeType.EXTRACTION]: 'extractionNode'
+    };
+    
+    return classMap[nodeType] || 'decisionNode';
   }
 
-  private addNodeClickHandlers(): void {
+  /**
+   * Add click handlers for node interactivity
+   */
+  private addNodeInteractivity(): void {
     if (!this.mermaidChart?.nativeElement) return;
 
     const nodes = this.mermaidChart.nativeElement.querySelectorAll('.node');
     nodes.forEach((node: Element) => {
-      node.addEventListener('click', (event: Event) => {
-        const target = event.target as Element;
-        const nodeElement = target.closest('.node') as HTMLElement;
-        if (nodeElement) {
-          this.onNodeClick(nodeElement);
-        }
-      });
+      node.addEventListener('click', this.handleNodeClick.bind(this));
     });
   }
 
-  private onNodeClick(nodeElement: HTMLElement): void {
-    // Future: Emit event with node data for detailed view
-    console.log('Node clicked:', nodeElement);
+  /**
+   * Handle node click events
+   */
+  private handleNodeClick(event: Event): void {
+    const nodeElement = (event.target as Element).closest('.node') as HTMLElement;
+    if (nodeElement) {
+      // Future: Emit event with node data for detailed view
+      console.log('Node clicked:', nodeElement);
+      // TODO: Implement node detail modal or side panel
+    }
+  }
+
+  /**
+   * Clear the chart content
+   */
+  private clearChart(): void {
+    if (this.mermaidChart?.nativeElement) {
+      this.mermaidChart.nativeElement.innerHTML = '';
+    }
+  }
+
+  /**
+   * Handle rendering errors gracefully
+   */
+  private handleRenderError(error: Error): void {
+    console.error('Mission path visualization error:', error);
+    if (this.mermaidChart?.nativeElement) {
+      this.mermaidChart.nativeElement.innerHTML = 
+        '<div class="error"><div class="error-message">Failed to render mission path visualization</div></div>';
+    }
   }
 }

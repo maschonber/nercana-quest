@@ -1,0 +1,30 @@
+<div class="mission-path-container">
+  <div class="path-header">
+    <div class="path-legend">
+      @for (legendItem of legendItems; track legendItem.type) {
+        <span class="legend-item">
+          <span class="legend-icon" [attr.data-type]="legendItem.type">{{ legendItem.icon }}</span>
+          <span class="legend-text">{{ legendItem.label }}</span>
+        </span>
+      }
+    </div>
+  </div>
+
+  @if (missionPath) {
+    <div class="mermaid-container">
+      <div #mermaidChart class="mermaid-chart"></div>
+    </div>
+
+    <div class="path-stats">
+      @for (stat of pathStats; track stat.label) {
+        <span class="stat-item">
+          <strong>{{ stat.label }}:</strong> {{ stat.value }}
+        </span>
+      }
+    </div>
+  } @else {
+    <div class="no-path">
+      <p>No mission path available for this mission.</p>
+    </div>
+  }
+</div>
