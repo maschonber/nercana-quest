@@ -5,13 +5,14 @@ import { NavigationService } from '../../../shared/services/navigation.service';
 import { MissionStore } from '../stores/mission.store';
 import { MissionOutline, MissionType } from '../models/mission-outline.model';
 import { StandardViewComponent } from '../../../shared/components/standard-view.component';
+import { MissionPathVisualizationComponent } from './mission-path-visualization.component';
 
 @Component({
   selector: 'app-mission-details',
   templateUrl: './mission-details.component.html',
   styleUrl: './mission-details.component.scss',
   standalone: true,
-  imports: [CommonModule, StandardViewComponent]
+  imports: [CommonModule, StandardViewComponent, MissionPathVisualizationComponent]
 })
 export class MissionDetailsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

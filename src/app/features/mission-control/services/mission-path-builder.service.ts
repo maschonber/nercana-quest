@@ -85,17 +85,17 @@ export class MissionPathBuilder {
   private shouldBranch(): boolean {
     // More likely to branch in middle portion of mission
     const depthFactor =
-      this.currentDepth > 1 && this.currentDepth < this.maxDepth - 2;
+      this.currentDepth > 1 && this.currentDepth < this.maxDepth - 1;
 
     // Limit total branches to avoid overwhelming complexity
-    const branchLimit = this.branchCount < 3;
+    const branchLimit = this.branchCount < 4;
 
     // Base probability around 30-40%
     return depthFactor && branchLimit && this.randomService.rollDice(0.35);
   }
 
   private createBranches(parentNodeId: string): void {
-    const numBranches = this.randomService.randomInt(2, 4); // 2 or 3 branches
+    const numBranches = this.randomService.randomInt(2, 3);
     this.branchCount++;
 
     for (let i = 0; i < numBranches; i++) {

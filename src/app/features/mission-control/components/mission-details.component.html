@@ -60,12 +60,19 @@
         <div class="mission-section brief">
           <h3>Brief</h3>
           <p>{{ mission.briefDescription }}</p>
-        </div>
-
-        <div class="mission-section details">
+        </div>        <div class="mission-section details">
           <h3>Details</h3>
           <p>{{ mission.detailedDescription }}</p>
         </div>
+
+        @if (mission.missionPath) {
+          <div class="mission-section path-visualization">
+            <h3>Mission Path</h3>
+            <app-mission-path-visualization 
+              [missionPath]="mission.missionPath">
+            </app-mission-path-visualization>
+          </div>
+        }
       </div>
 
       <!-- Compact Action Section -->
