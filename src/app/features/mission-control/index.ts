@@ -7,4 +7,5 @@ export * from './models/mission-path.model';
 export * from './services/mission.service';
 export * from './services/mission-path-factory.service';
 export * from './services/node-generators/node-generator-strategy.service';
+export * from './services/node-generators/decision-node-generator.service';
 export * from './stores/mission.store';

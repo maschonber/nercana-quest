@@ -8,8 +8,7 @@ import { NodeGeneratorStrategy } from "./node-generator-strategy.service";
 })
 export class TreasureNodeGenerator implements NodeGeneratorStrategy {
   constructor(private randomService: RandomService) {}
-
-  generateNode(theme: MissionTheme, difficulty: number, nodeId: string): MissionNode {
+  generateNode(theme: MissionTheme, difficulty: number, nodeId: string, depth: number, parentNodeId?: string): MissionNode {
     const treasureData = this.generateTreasureData(theme, difficulty);
     
     return {
@@ -23,7 +22,10 @@ export class TreasureNodeGenerator implements NodeGeneratorStrategy {
         searchDifficulty: treasureData.searchDifficulty,
         hiddenItems: treasureData.hiddenItems,
         trapChance: treasureData.trapChance
-      }
+      },
+      depth,
+      parentNodeId,
+      isLeafNode: false // Will be set during path generation
     };
   }
 

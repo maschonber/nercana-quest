@@ -69,16 +69,21 @@ export interface MissionNode {
   type: MissionNodeType;
   title: string;
   description: string;
-  choices: MissionChoice[]; // 0-2 choices for branching (links to next nodes)
+  choices: MissionChoice[]; // 0-3 choices for branching (links to next nodes)
   requirements?: NodeRequirement[]; // Prerequisites to access this node
   rewards?: NodeReward[]; // What can be gained from this node
   content?: NodeContent; // Type-specific content (encounters, resources, etc.)
+  depth: number; // Distance from start node
+  parentNodeId?: string; // For tree traversal and validation
+  isLeafNode: boolean; // True if this node leads directly to extraction
 }
 
 export interface MissionPath {
   startNodeId: string; // ID of the landing site node
+  extractionNodeId: string; // ID of the single extraction node
   nodes: Map<string, MissionNode>; // All nodes indexed by ID for easy lookup
   totalNodes: number;
-  estimatedDuration: number; // Based on path complexity
+  maxDepth: number; // Longest path from start to extraction
+  branchCount: number; // Total number of branching points created
   difficulty: number; // Use existing challengeRating scale
 }

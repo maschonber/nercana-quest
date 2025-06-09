@@ -8,8 +8,7 @@ import { NodeGeneratorStrategy } from "./node-generator-strategy.service";
 })
 export class LandingSiteGenerator implements NodeGeneratorStrategy {
   constructor(private randomService: RandomService) {}
-
-  generateNode(theme: MissionTheme, difficulty: number, nodeId: string): MissionNode {
+  generateNode(theme: MissionTheme, difficulty: number, nodeId: string, depth: number, parentNodeId?: string): MissionNode {
     const themeData = this.getThemeData(theme);
     
     return {
@@ -20,7 +19,10 @@ export class LandingSiteGenerator implements NodeGeneratorStrategy {
       choices: [], // Will be populated by path generator
       content: {
         safeZone: true
-      }
+      },
+      depth,
+      parentNodeId,
+      isLeafNode: false // Landing site is never a leaf node
     };
   }
 

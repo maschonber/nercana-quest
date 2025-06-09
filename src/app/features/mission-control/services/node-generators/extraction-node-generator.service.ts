@@ -8,8 +8,7 @@ import { NodeGeneratorStrategy } from "./node-generator-strategy.service";
 })
 export class ExtractionNodeGenerator implements NodeGeneratorStrategy {
   constructor(private randomService: RandomService) {}
-
-  generateNode(theme: MissionTheme, difficulty: number, nodeId: string): MissionNode {
+  generateNode(theme: MissionTheme, difficulty: number, nodeId: string, depth: number, parentNodeId?: string): MissionNode {
     const extractionData = this.getExtractionData(theme);
     
     return {
@@ -23,7 +22,10 @@ export class ExtractionNodeGenerator implements NodeGeneratorStrategy {
         extractionMethod: extractionData.method,
         safeZone: true,
         missionComplete: true
-      }
+      },
+      depth,
+      parentNodeId,
+      isLeafNode: true // Extraction is always a leaf node
     };
   }
 

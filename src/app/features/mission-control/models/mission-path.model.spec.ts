@@ -56,7 +56,6 @@ describe('Mission Path Models', () => {
       expect(choice.riskLevel).toBe(RiskLevel.LOW);
     });
   });
-
   describe('MissionNode interface', () => {
     it('should create valid node objects', () => {
       const node: MissionNode = {
@@ -64,7 +63,9 @@ describe('Mission Path Models', () => {
         type: MissionNodeType.LANDING_SITE,
         title: 'Starting Point',
         description: 'The beginning of your mission',
-        choices: []
+        choices: [],
+        depth: 0,
+        isLeafNode: false
       };
 
       expect(node.id).toBe('node_1');
@@ -72,6 +73,8 @@ describe('Mission Path Models', () => {
       expect(node.title).toBe('Starting Point');
       expect(node.description).toBe('The beginning of your mission');
       expect(node.choices).toEqual([]);
+      expect(node.depth).toBe(0);
+      expect(node.isLeafNode).toBe(false);
     });
 
     it('should support optional properties', () => {
@@ -81,6 +84,9 @@ describe('Mission Path Models', () => {
         title: 'Treasure Cache',
         description: 'A hidden cache of resources',
         choices: [],
+        depth: 2,
+        parentNodeId: 'node_0',
+        isLeafNode: true,
         requirements: [
           { type: 'skill', value: 'mining' }
         ],
@@ -97,6 +103,9 @@ describe('Mission Path Models', () => {
       expect(node.requirements![0].type).toBe('skill');
       expect(node.rewards![0].type).toBe('metal');
       expect(node.content!['searchDifficulty']).toBe(3);
+      expect(node.depth).toBe(2);
+      expect(node.parentNodeId).toBe('node_0');
+      expect(node.isLeafNode).toBe(true);
     });
   });
 
@@ -108,22 +117,28 @@ describe('Mission Path Models', () => {
         type: MissionNodeType.LANDING_SITE,
         title: 'Landing Site',
         description: 'Start here',
-        choices: []
+        choices: [],
+        depth: 0,
+        isLeafNode: false
       };
       nodes.set('node_1', landingNode);
 
       const path: MissionPath = {
         startNodeId: 'node_1',
+        extractionNodeId: 'extraction',
         nodes,
         totalNodes: 1,
-        estimatedDuration: 30,
+        maxDepth: 3,
+        branchCount: 0,
         difficulty: 2
       };
 
       expect(path.startNodeId).toBe('node_1');
+      expect(path.extractionNodeId).toBe('extraction');
       expect(path.nodes.size).toBe(1);
       expect(path.totalNodes).toBe(1);
-      expect(path.estimatedDuration).toBe(30);
+      expect(path.maxDepth).toBe(3);
+      expect(path.branchCount).toBe(0);
       expect(path.difficulty).toBe(2);
     });
 
@@ -134,14 +149,19 @@ describe('Mission Path Models', () => {
         type: MissionNodeType.LANDING_SITE,
         title: 'Start',
         description: 'Beginning',
-        choices: []
+        choices: [],
+        depth: 0,
+        isLeafNode: false
       };
       const node2: MissionNode = {
         id: 'node_2',
         type: MissionNodeType.ENCOUNTER,
         title: 'Combat',
         description: 'Fight',
-        choices: []
+        choices: [],
+        depth: 1,
+        parentNodeId: 'node_1',
+        isLeafNode: true
       };
       
       nodes.set('node_1', node1);
@@ -149,9 +169,11 @@ describe('Mission Path Models', () => {
 
       const path: MissionPath = {
         startNodeId: 'node_1',
+        extractionNodeId: 'extraction',
         nodes,
         totalNodes: 2,
-        estimatedDuration: 45,
+        maxDepth: 2,
+        branchCount: 0,
         difficulty: 3
       };
 

@@ -2,12 +2,8 @@ import { Injectable } from '@angular/core';
 import { MissionOutline, MissionType } from '../models/mission-outline.model';
 import {
   MissionPath,
-  MissionNode,
   MissionTheme,
-  PathComplexity,
-  MissionNodeType,
-  MissionChoice,
-  RiskLevel
+  MissionNodeType
 } from '../models/mission-path.model';
 import { RandomService } from '../../../shared';
 import { EncounterNodeGenerator } from './node-generators/encounter-node-generator.service';
@@ -17,6 +13,8 @@ import { MiningNodeGenerator } from './node-generators/mining-node-generator.ser
 import { NodeGeneratorStrategy } from './node-generators/node-generator-strategy.service';
 import { RestNodeGenerator } from './node-generators/rest-node-generator.service';
 import { TreasureNodeGenerator } from './node-generators/treasure-node-generator.service';
+import { DecisionNodeGenerator } from './node-generators/decision-node-generator.service';
+import { MissionPathBuilder } from './mission-path-builder.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +30,8 @@ export class MissionPathFactory {
     private treasureGenerator: TreasureNodeGenerator,
     private miningGenerator: MiningNodeGenerator,
     private restGenerator: RestNodeGenerator,
-    private extractionGenerator: ExtractionNodeGenerator
+    private extractionGenerator: ExtractionNodeGenerator,
+    private decisionGenerator: DecisionNodeGenerator
   ) {
     this.initializeGenerators();
   }
@@ -50,12 +49,26 @@ export class MissionPathFactory {
       MissionNodeType.EXTRACTION,
       this.extractionGenerator
     );
+    this.nodeGenerators.set(MissionNodeType.DECISION, this.decisionGenerator);
   }
-
   createPath(outline: MissionOutline): MissionPath {
     const theme = this.determineTheme(outline);
-    const complexity = this.determineComplexity(outline);
-    return this.buildPath(theme, complexity, outline);
+    const maxDepth = this.getTargetDepth(outline.challengeRating);
+
+    const builder = MissionPathBuilder.create(
+      this.randomService,
+      theme,
+      outline.challengeRating,
+      maxDepth,
+      this.nodeGenerators
+    ).addLandingSite();
+
+    // Build the tree iteratively
+    while (!builder.isComplete()) {
+      builder.processNextLevel();
+    }
+
+    return builder.build();
   }
 
   private determineTheme(outline: MissionOutline): MissionTheme {
@@ -98,299 +111,11 @@ export class MissionPathFactory {
     return this.weightedRandomChoice(themeWeights[outline.missionType]);
   }
 
-  private determineComplexity(outline: MissionOutline): PathComplexity {
-    // Use existing complexity if already set, otherwise determine from challenge rating
-    if (outline.pathComplexity) {
-      return outline.pathComplexity;
-    }
-
-    if (outline.challengeRating <= 2) {
-      return PathComplexity.LINEAR;
-    } else if (outline.challengeRating <= 4) {
-      return this.randomService.rollDice(0.7)
-        ? PathComplexity.LINEAR
-        : PathComplexity.BRANCHING;
-    } else {
-      const roll = this.randomService.random();
-      if (roll < 0.3) return PathComplexity.LINEAR;
-      if (roll < 0.8) return PathComplexity.BRANCHING;
-      return PathComplexity.COMPLEX;
-    }
-  }
-
-  private buildPath(
-    theme: MissionTheme,
-    complexity: PathComplexity,
-    outline: MissionOutline
-  ): MissionPath {
-    const pathStructure = this.generatePathStructure(
-      complexity,
-      outline.challengeRating
-    );
-    const nodes = new Map<string, MissionNode>();
-
-    // Generate nodes
-    pathStructure.forEach((nodeType, index) => {
-      const nodeId = `node_${index + 1}`;
-      const generator = this.nodeGenerators.get(nodeType);
-
-      if (!generator) {
-        throw new Error(`No generator found for node type: ${nodeType}`);
-      }
-
-      const node = generator.generateNode(
-        theme,
-        outline.challengeRating,
-        nodeId
-      );
-      nodes.set(nodeId, node);
-    });
-
-    // Connect nodes with choices
-    this.connectNodes(Array.from(nodes.values()), pathStructure, complexity);
-
-    return {
-      startNodeId: 'node_1', // Always start with the first node (landing site)
-      nodes,
-      totalNodes: nodes.size,
-      estimatedDuration: this.calculateEstimatedDuration(
-        pathStructure,
-        outline.challengeRating
-      ),
-      difficulty: outline.challengeRating
-    };
-  }
-
-  private generatePathStructure(
-    complexity: PathComplexity,
-    challengeRating: number
-  ): MissionNodeType[] {
-    const structure: MissionNodeType[] = [];
-
-    // Always start with landing site
-    structure.push(MissionNodeType.LANDING_SITE);
-
-    const nodePool = this.getNodePool(complexity, challengeRating);
-    const targetNodeCount = this.getTargetNodeCount(complexity);
-
-    // Fill middle nodes
-    while (structure.length < targetNodeCount - 1) {
-      const nodeType = this.randomService.randomChoice(nodePool);
-      structure.push(nodeType);
-    }
-
-    // Always end with extraction
-    structure.push(MissionNodeType.EXTRACTION);
-
-    return structure;
-  }
-
-  private getNodePool(
-    complexity: PathComplexity,
-    challengeRating: number
-  ): MissionNodeType[] {
-    const basePool = [
-      MissionNodeType.ENCOUNTER,
-      MissionNodeType.TREASURE,
-      MissionNodeType.MINING
-    ];
-
-    // Add rest nodes for longer/harder missions
-    if (complexity !== PathComplexity.LINEAR || challengeRating >= 3) {
-      basePool.push(MissionNodeType.REST);
-    }
-
-    // Add decision nodes for branching missions
-    if (
-      complexity === PathComplexity.BRANCHING ||
-      complexity === PathComplexity.COMPLEX
-    ) {
-      basePool.push(MissionNodeType.DECISION);
-    }
-
-    return basePool;
-  }
-
-  private getTargetNodeCount(complexity: PathComplexity): number {
-    switch (complexity) {
-      case PathComplexity.LINEAR:
-        return this.randomService.randomInt(3, 5);
-      case PathComplexity.BRANCHING:
-        return this.randomService.randomInt(5, 8);
-      case PathComplexity.COMPLEX:
-        return this.randomService.randomInt(8, 12);
-      default:
-        return 5;
-    }
-  }
-
-  private connectNodes(
-    nodes: MissionNode[],
-    structure: MissionNodeType[],
-    complexity: PathComplexity
-  ): void {
-    for (let i = 0; i < nodes.length - 1; i++) {
-      const currentNode = nodes[i];
-      const choices = this.generateChoicesForNode(
-        currentNode,
-        nodes,
-        i,
-        structure,
-        complexity
-      );
-      currentNode.choices = choices;
-    }
-  }
-
-  private generateChoicesForNode(
-    currentNode: MissionNode,
-    allNodes: MissionNode[],
-    currentIndex: number,
-    structure: MissionNodeType[],
-    complexity: PathComplexity
-  ): MissionChoice[] {
-    const choices: MissionChoice[] = [];
-
-    // For linear paths, always connect to next node
-    if (
-      complexity === PathComplexity.LINEAR ||
-      currentIndex === allNodes.length - 2
-    ) {
-      const nextNode = allNodes[currentIndex + 1];
-      choices.push(this.createChoice(nextNode, 'continue', RiskLevel.LOW));
-    } else {
-      // For branching paths, create multiple choices
-      const branchingFactor = this.getBranchingFactor(
-        complexity,
-        currentIndex,
-        allNodes.length
-      );
-
-      for (
-        let i = 0;
-        i < branchingFactor && currentIndex + i + 1 < allNodes.length;
-        i++
-      ) {
-        const targetNode = allNodes[currentIndex + i + 1];
-        const choiceType = this.getChoiceType(i, targetNode.type);
-        const riskLevel = this.calculateRiskLevel(targetNode.type, i);
-
-        choices.push(this.createChoice(targetNode, choiceType, riskLevel));
-      }
-    }
-
-    return choices;
-  }
-
-  private getBranchingFactor(
-    complexity: PathComplexity,
-    currentIndex: number,
-    totalNodes: number
-  ): number {
-    if (complexity === PathComplexity.LINEAR) return 1;
-
-    // Reduce branching as we approach the end
-    const remainingNodes = totalNodes - currentIndex - 1;
-    if (remainingNodes <= 2) return 1;
-
-    return complexity === PathComplexity.COMPLEX
-      ? this.randomService.randomInt(1, 3)
-      : this.randomService.randomInt(1, 2);
-  }
-
-  private createChoice(
-    targetNode: MissionNode,
-    choiceType: string,
-    riskLevel: RiskLevel
-  ): MissionChoice {
-    const choiceLabels: Record<string, string> = {
-      continue: 'Continue Forward',
-      interact: 'Investigate Thoroughly',
-      bypass: 'Find Bypass Route'
-    };
-
-    const choiceDescriptions: Record<string, string> = {
-      continue: 'Proceed along the main path',
-      interact: 'Spend extra time examining this area thoroughly',
-      bypass: 'Look for a way around potential dangers'
-    };
-
-    return {
-      id: `choice_${targetNode.id}`,
-      label: choiceLabels[choiceType] || 'Continue',
-      description: choiceDescriptions[choiceType] || 'Proceed to the next area',
-      targetNodeId: targetNode.id,
-      riskLevel
-    };
-  }
-
-  private getChoiceType(
-    choiceIndex: number,
-    nodeType: MissionNodeType
-  ): string {
-    const choiceTypes = [
-      'continue',
-      'interact',
-      'bypass'
-    ];
-
-    // Bias certain choice types based on node type
-    if (nodeType === MissionNodeType.ENCOUNTER) {
-      return choiceIndex === 0 ? 'interact' : 'bypass';
-    } else if (nodeType === MissionNodeType.TREASURE) {
-      return choiceIndex === 0 ? 'interact' : 'continue';
-    } else {
-      return choiceTypes[choiceIndex] || 'continue';
-    }
-  }
-
-  private calculateRiskLevel(
-    nodeType: MissionNodeType,
-    choiceIndex: number
-  ): RiskLevel {
-    const baseRiskByType = {
-      [MissionNodeType.LANDING_SITE]: RiskLevel.LOW,
-      [MissionNodeType.ENCOUNTER]: RiskLevel.HIGH,
-      [MissionNodeType.TREASURE]: RiskLevel.MEDIUM,
-      [MissionNodeType.MINING]: RiskLevel.LOW,
-      [MissionNodeType.REST]: RiskLevel.LOW,
-      [MissionNodeType.DECISION]: RiskLevel.MEDIUM,
-      [MissionNodeType.EXTRACTION]: RiskLevel.LOW
-    };
-
-    let baseRisk = baseRiskByType[nodeType];
-
-    // Increase risk for alternative choices
-    if (choiceIndex > 0) {
-      if (baseRisk === RiskLevel.LOW) baseRisk = RiskLevel.MEDIUM;
-      else if (baseRisk === RiskLevel.MEDIUM) baseRisk = RiskLevel.HIGH;
-    }
-
-    return baseRisk;
-  }
-
-  private calculateEstimatedDuration(
-    structure: MissionNodeType[],
-    challengeRating: number
-  ): number {
-    const baseDurationByType = {
-      [MissionNodeType.LANDING_SITE]: 5,
-      [MissionNodeType.ENCOUNTER]: 15,
-      [MissionNodeType.TREASURE]: 10,
-      [MissionNodeType.MINING]: 20,
-      [MissionNodeType.REST]: 8,
-      [MissionNodeType.DECISION]: 5,
-      [MissionNodeType.EXTRACTION]: 5
-    };
-
-    const totalBaseDuration = structure.reduce((sum, nodeType) => {
-      return sum + baseDurationByType[nodeType];
-    }, 0);
-
-    // Scale by difficulty
-    const difficultyMultiplier = 1 + (challengeRating - 1) * 0.2;
-
-    return Math.floor(totalBaseDuration * difficultyMultiplier);
+  private getTargetDepth(challengeRating: number): number {
+    // Base depth is 3-5, scaled by difficulty
+    const baseDepth = 3;
+    const additionalDepth = Math.floor(challengeRating / 2);
+    return Math.min(baseDepth + additionalDepth, 7); // Cap at depth 7
   }
 
   private weightedRandomChoice(weights: Record<string, number>): MissionTheme {

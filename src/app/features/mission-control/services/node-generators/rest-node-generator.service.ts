@@ -9,10 +9,9 @@ import { NodeGeneratorStrategy } from "./node-generator-strategy.service";
 export class RestNodeGenerator implements NodeGeneratorStrategy {
   constructor(private randomService: RandomService) {}
 
-  generateNode(theme: MissionTheme, difficulty: number, nodeId: string): MissionNode {
+  generateNode(theme: MissionTheme, difficulty: number, nodeId: string, depth: number, parentNodeId?: string): MissionNode {
     const restData = this.generateRestData(theme);
-    
-    return {
+      return {
       id: nodeId,
       type: MissionNodeType.REST,
       title: restData.title,
@@ -21,7 +20,10 @@ export class RestNodeGenerator implements NodeGeneratorStrategy {
       rewards: this.generateRestRewards(),
       content: {
         healingAmount: restData.healingAmount
-      }
+      },
+      depth,
+      parentNodeId,
+      isLeafNode: false // Will be set during path generation
     };
   }
 

@@ -9,10 +9,9 @@ import { NodeGeneratorStrategy } from "./node-generator-strategy.service";
 export class MiningNodeGenerator implements NodeGeneratorStrategy {
   constructor(private randomService: RandomService) {}
 
-  generateNode(theme: MissionTheme, difficulty: number, nodeId: string): MissionNode {
+  generateNode(theme: MissionTheme, difficulty: number, nodeId: string, depth: number, parentNodeId?: string): MissionNode {
     const miningData = this.generateMiningData(theme, difficulty);
-    
-    return {
+      return {
       id: nodeId,
       type: MissionNodeType.MINING,
       title: miningData.title,
@@ -22,7 +21,10 @@ export class MiningNodeGenerator implements NodeGeneratorStrategy {
       content: {
         resourceType: miningData.resourceType,
         yield: miningData.yield
-      }
+      },
+      depth,
+      parentNodeId,
+      isLeafNode: false // Will be set during path generation
     };
   }
 

@@ -25,7 +25,6 @@ interface MissionPath {
   startNodeId: string; // ID of the landing site node
   nodes: Map<string, MissionNode>; // All nodes indexed by ID for easy lookup
   totalNodes: number;
-  estimatedDuration: number; // Based on path complexity
   difficulty: number; // Use existing challengeRating scale
 }
 
