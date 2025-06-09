@@ -12,7 +12,7 @@ import { NodeGeneratorStrategy } from './node-generators/node-generator-strategy
 export class MissionPathBuilder {
   private nodes = new Map<string, MissionNode>();
   private nodeCounter = 0;
-  private branchCount = 0;
+  private decisionNodeCount = 0; // Track decision nodes instead of general branches
   private currentDepth = 0;
   private pendingNodes: string[] = []; // Nodes that need children
 
@@ -58,11 +58,9 @@ export class MissionPathBuilder {
       this.pendingNodes.length === 0 || this.currentDepth >= this.maxDepth - 1
     );
   }
-
   get currentBranchCount(): number {
-    return this.branchCount;
-  }
-  processNextLevel(): MissionPathBuilder {
+    return this.decisionNodeCount;
+  }  processNextLevel(): MissionPathBuilder {
     if (this.isComplete()) return this;
 
     const currentLevelNodes = [...this.pendingNodes];
@@ -70,62 +68,69 @@ export class MissionPathBuilder {
     this.currentDepth++;
 
     for (const parentNodeId of currentLevelNodes) {
-      const shouldBranch = this.shouldBranch();
+      const shouldCreateDecision = this.shouldCreateDecisionNode();
 
-      if (shouldBranch) {
-        this.createBranches(parentNodeId);
+      if (shouldCreateDecision) {
+        this.createDecisionNode(parentNodeId);
       } else {
-        this.createSingleChild(parentNodeId);
+        this.createSingleContentNode(parentNodeId);
       }
     }
 
     return this;
   }
 
-  private shouldBranch(): boolean {
-    // More likely to branch in middle portion of mission
-    const depthFactor =
-      this.currentDepth > 1 && this.currentDepth < this.maxDepth - 1;
+  private shouldCreateDecisionNode(): boolean {
+    // Limit total decision nodes
+    const decisionLimit = this.decisionNodeCount < 3;
 
-    // Limit total branches to avoid overwhelming complexity
-    const branchLimit = this.branchCount < 4;
-
-    // Base probability around 30-40%
-    return depthFactor && branchLimit && this.randomService.rollDice(0.35);
+    // Base probability around 25-30%
+    return decisionLimit && this.randomService.rollDice(0.4);
   }
 
-  private createBranches(parentNodeId: string): void {
+  private createDecisionNode(parentNodeId: string): void {
+    // Create the decision node
+    const decisionNodeId = this.getNextNodeId();
+    const decisionNode = this.nodeGenerators
+      .get(MissionNodeType.DECISION)!
+      .generateNode(this.theme, this.difficulty, decisionNodeId, this.currentDepth, parentNodeId);
+    
+    this.nodes.set(decisionNodeId, decisionNode);
+    this.decisionNodeCount++;
+
+    // Create multiple content branches from this decision
     const numBranches = this.randomService.randomInt(2, 3);
-    this.branchCount++;
-
+    
     for (let i = 0; i < numBranches; i++) {
-      const childNode = this.createContentNode(parentNodeId);
-      this.nodes.set(childNode.id, childNode);
+      const contentNode = this.createContentNode(decisionNodeId);
+      this.nodes.set(contentNode.id, contentNode);
+      
+      // Add choice from decision to content node
+      const choice = this.createChoiceForNode(contentNode);
+      decisionNode.choices.push(choice);
 
-      // Add to pending if not at max depth
+      // Add content node to pending if not at max depth
       if (this.currentDepth < this.maxDepth - 1) {
-        this.pendingNodes.push(childNode.id);
+        this.pendingNodes.push(contentNode.id);
       }
     }
   }
 
-  private createSingleChild(parentNodeId: string): void {
-    const childNode = this.createContentNode(parentNodeId);
-    this.nodes.set(childNode.id, childNode);
+  private createSingleContentNode(parentNodeId: string): void {
+    const contentNode = this.createContentNode(parentNodeId);
+    this.nodes.set(contentNode.id, contentNode);
 
     // Add to pending if not at max depth
     if (this.currentDepth < this.maxDepth - 1) {
-      this.pendingNodes.push(childNode.id);
+      this.pendingNodes.push(contentNode.id);
     }
   }
-
   private createContentNode(parentNodeId: string): MissionNode {
     const contentNodeTypes = [
       MissionNodeType.ENCOUNTER,
       MissionNodeType.TREASURE,
       MissionNodeType.MINING,
-      MissionNodeType.REST,
-      MissionNodeType.DECISION
+      MissionNodeType.REST
     ];
 
     const nodeType = this.randomService.randomChoice(contentNodeTypes);
@@ -200,8 +205,7 @@ export class MissionPathBuilder {
     }
 
     return leafNodes;
-  }
-  build(): MissionPath {
+  }  build(): MissionPath {
     // Add extraction
     this.addExtraction();
 
@@ -214,27 +218,31 @@ export class MissionPathBuilder {
       nodes: this.nodes,
       totalNodes: this.nodes.size,
       maxDepth: this.maxDepth,
-      branchCount: this.branchCount,
+      branchCount: this.decisionNodeCount,
       difficulty: this.difficulty
     };
   }
-
   private generateChoices(): void {
     for (const [nodeId, node] of this.nodes) {
-      if (node.type === MissionNodeType.EXTRACTION || node.isLeafNode) {
-        continue; // Skip extraction node and leaf nodes (already connected)
+      // Skip nodes that already have choices or are terminal
+      if (node.type === MissionNodeType.EXTRACTION || 
+          node.type === MissionNodeType.DECISION || 
+          node.isLeafNode) {
+        continue;
       }
 
-      // Find all child nodes
+      // Content nodes get exactly one choice to their single child
       const childNodes = Array.from(this.nodes.values()).filter(
         (n) => n.parentNodeId === nodeId
       );
 
-      // Create choices for each child
-      childNodes.forEach((childNode) => {
-        const choice = this.createChoiceForNode(childNode);
+      if (childNodes.length === 1) {
+        const choice = this.createChoiceForNode(childNodes[0]);
         node.choices.push(choice);
-      });
+      } else if (childNodes.length === 0) {
+        // This is a leaf node, will be connected to extraction
+        node.isLeafNode = true;
+      }
     }
   }
 

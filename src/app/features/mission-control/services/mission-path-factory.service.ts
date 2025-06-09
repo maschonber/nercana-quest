@@ -51,6 +51,7 @@ export class MissionPathFactory {
     );
     this.nodeGenerators.set(MissionNodeType.DECISION, this.decisionGenerator);
   }
+
   createPath(outline: MissionOutline): MissionPath {
     const theme = this.determineTheme(outline);
     const maxDepth = this.getTargetDepth(outline.challengeRating);
@@ -114,8 +115,8 @@ export class MissionPathFactory {
   private getTargetDepth(challengeRating: number): number {
     // Base depth is 3-5, scaled by difficulty
     const baseDepth = 3;
-    const additionalDepth = Math.floor(challengeRating / 2);
-    return Math.min(baseDepth + additionalDepth, 7); // Cap at depth 7
+    const additionalDepth = Math.round(challengeRating / 2);
+    return Math.min(baseDepth + additionalDepth, 7);
   }
 
   private weightedRandomChoice(weights: Record<string, number>): MissionTheme {
